@@ -211,7 +211,7 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 // Gruppen: 1 Obst & Gemüse · 2 Fleisch & Fisch · 3 Kühlregal · 4 Brot · 5 Nudeln, Reis, Getreide · 6 Konserven & Saucen · 7 Tiefkühl & Fertig · 8 Nüsse & Sonstiges · 0 Vorrat
 const F = {
   mandel:['Mandelmilch','ml',0.13,0.004,{d:330,g:3}],
-  whey:['Body Attack Whey','g',3.8,0.77,{d:30,g:8}],
+  whey:['Body Attack Whey','g',3.8,0.833,{d:30,g:8}],
   hafer:['Haferflocken','g',3.7,0.135,{d:80,g:5}],
   milch:['Vollmilch','ml',0.64,0.034,{d:300,g:3}],
   banane:['Bananen','Stk',105,1.3,{d:1,g:1}],
@@ -270,12 +270,15 @@ const F = {
   schnitzel:['Schweineschnitzel','g',1.1,0.22,{d:200,g:2,m:1,c:0.75,cl:'gebraten'}],
   quark:['Magerquark','g',0.67,0.12,{d:250,g:3}],
   pommes:['Pommes','g',1.4,0.025,{d:250,g:7}],
+  bratwurst:['Bratwurst','g',3.0,0.14,{d:250,g:2,m:1,c:0.85,cl:'gebraten'}],
+  mixtrail:['Seeberger Mixtrail','g',4.73,0.11,{d:150,g:8}],
 };
 
 // ---------- Gerichte (Standardwerte) ----------
 const ROWS = [
  {id:'shake',name:'Shake',sub:'Nach dem Aufstehen',target:'Etwa 150–350 kcal',blocks:[
-  {id:'s1',name:'Frühshake Basis',t:'1 min',items:[['mandel',330],['whey',30]]},
+  {id:'s1',name:'Shake mit Mandelmilch',t:'1 min',items:[['mandel',330],['whey',30]]},
+  {id:'s3',name:'Shake mit Vollmilch',t:'1 min',items:[['milch',330],['whey',30]]},
   {id:'s2',name:'Frühshake Plus',t:'2 min',items:[['mandel',330],['whey',30],['banane',1],['pb',15]]},
  ]},
  {id:'fr',name:'Frühstück',sub:'',target:'Etwa 900 kcal',blocks:[
@@ -292,6 +295,7 @@ const ROWS = [
   {id:'a4',name:'Bagel Frischkäse-Schinken',t:'2 min',items:[['bagel',1],['frischk',30],['rschinken',40]]},
   {id:'a5',name:'Thunfisch-Wrap',t:'3 min',items:[['wrap',1],['thun',130],['mayo',15]]},
   {id:'a6',name:'Nüsse & Banane',t:'0 min',items:[['nuesse',50],['banane',1]]},
+  {id:'a7',name:'Mixtrail',t:'0 min',items:[['mixtrail',150]]},
  ]},
  {id:'mi',name:'Mittag',sub:'',target:'Etwa 1.100–1.200 kcal',blocks:[
   {id:'m1',name:'Hähnchen Teriyaki mit Reis',t:'20 min',items:[['hbrust',220],['reis',180],['teriyaki',80],['oel',15]]},
@@ -302,6 +306,7 @@ const ROWS = [
   {id:'m6',name:'Chili con Carne mit Reis',t:'30 min',items:[['hack',200],['kidney',250],['passata',200],['reis',100]]},
   {id:'m7',name:'Gustavo Gusto Pizza + Skyr',t:'15 min Ofen',items:[['pizza',1],['skyr',200],['honig',15]]},
   {id:'m8',name:'Hähnchen-Nudeln',t:'15 min',items:[['hbrust',400],['pasta',125],['pesto',50],['oel',10]]},
+  {id:'m9',name:'Bratwurst mit Kidneybohnen und Reis',t:'25 min, inklusive 20 g Reis, der im Topf kleben bleibt',items:[['bratwurst',250],['kidney',250],['reis',150]]},
  ]},
  {id:'sn2',name:'Snack 2',sub:'',target:'Etwa 450 kcal',blocks:[
   {id:'b1',name:'Bananenbrot & Nüsse',t:'Vorgebacken',items:[['bbrot',100],['nuesse',25]]},
@@ -309,6 +314,7 @@ const ROWS = [
   {id:'b3',name:'Reiswaffeln mit Erdnussbutter',t:'2 min',items:[['reiswaffel',4],['pb',40],['banane',1]]},
   {id:'b4',name:'Käsebrot',t:'2 min',items:[['brot',100],['gouda',50],['butter',10]]},
   {id:'b5',name:'Milchreis mit Banane',t:'0 min',items:[['milchreis',200],['banane',1],['nuesse',20]]},
+  {id:'b6',name:'Mixtrail',t:'0 min',items:[['mixtrail',150]]},
  ]},
  {id:'ab',name:'Abendessen',sub:'',target:'Etwa 900–1.000 kcal',blocks:[
   {id:'e1',name:'Gambas-Pasta',t:'15 min',items:[['gambas',300],['pasta',140],['parmesan',20],['kiwi',1],['oel',15]]},
@@ -414,7 +420,7 @@ const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 
 function itemsTable(items,editable,bid,all){
   return `<table class="items"><tbody>${items.filter(it=>all||!it.v).map(it=>`<tr><td>${esc(it.n)}<span class="hint" data-h="${it.i}">${esc(hintFor(it.f,it.q))}</span></td>
-    <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${it.u==='Stk'?1:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${it.u}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${it.u}</span>`}</td>
+    <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${it.u==='Stk'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${it.u}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${it.u}</span>`}</td>
     <td class="num" data-ik="${it.i}">${fmt(Math.round(it.kcal))}</td></tr>`).join('')}</tbody></table>`;
 }
 function vorratText(items){const v=items.filter(it=>it.v);return v.length?'Inklusive Vorrat: '+v.map(it=>`${fmt(it.q)} ${it.u} ${it.n} (+${fmt(Math.round(it.kcal))} kcal)`).join(', '):''}

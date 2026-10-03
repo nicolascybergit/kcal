@@ -170,6 +170,8 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .shop-list.pick-list li.man{margin-top:2px;padding-top:10px;border-top:1px solid var(--line)}
 .block.pick.manual .shop-list.pick-list.man-list{padding:10px 12px;border-bottom:1px solid var(--line)}
 .block.pick.manual .shop-list.pick-list li.man{margin-top:0;padding-top:0;border-top:0}
+.dish-more:not(:empty){border-bottom:1px solid var(--line)}
+.dish-more .items tr:first-child td{border-top:0}
 .vorrat .vrow{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 0;cursor:pointer}
 .vorrat .vrow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .vorrat .vrow .box{margin-top:0}
@@ -639,9 +641,9 @@ function customEl(r,d,wrap){
   el.innerHTML=`<div class="pick-in"><div class="dish"></div>
     <ul class="shop-list pick-list" data-foods>${PICK_ORDER.map(k=>{const g=opt(k).g||9;const gap=last!==null&&g!==last;last=g;const on=have.has(k);
       return `<li${gap?' class="gap"':''}><button type="button" data-f="${k}" aria-pressed="${on}"${on?' class="on"':''}><span>${esc(F[k][0])}</span><span>${fmt(defQty(k))} ${F[k][1]}</span></button></li>`}).join('')}</ul>
-    <ul class="shop-list pick-list man-list"><li class="man"><button type="button" data-man aria-pressed="${isManual(b.items)}"${isManual(b.items)?' class="on"':''}><span>Kalorien und Protein</span></button></li></ul></div>`;
-  // While active, "Kalorien und Protein" sits fixed right under the dish, above the food list
-  const placeMan=on=>{const inner=el.querySelector('.pick-in');inner.insertBefore(el.querySelector('.man-list'),on?el.querySelector('[data-foods]'):null)};
+    <div class="man-wrap"><ul class="shop-list pick-list man-list"><li class="man"><button type="button" data-man aria-pressed="${isManual(b.items)}"${isManual(b.items)?' class="on"':''}><span>Kalorien und Protein</span></button></li></ul><div class="dish-more"></div></div></div>`;
+  // While active, "Kalorien und Protein" sits fixed right under the two fields; added foods follow below it, then the food list
+  const placeMan=on=>{const inner=el.querySelector('.pick-in');inner.insertBefore(el.querySelector('.man-wrap'),on?el.querySelector('[data-foods]'):null)};
   placeMan(isManual(b.items));
   paintDish(r,d,wrap,el);
   el.querySelectorAll('[data-f]').forEach(btn=>btn.addEventListener('click',()=>{
@@ -668,13 +670,16 @@ function paintDish(r,d,wrap,el){
   dish.innerHTML=`<div class="b-top"><button class="b-head" type="button" role="radio" aria-checked="${on}"><span class="box"></span><span class="b-name">${CUSTOM_NAME}</span></button>
       <button class="rst" type="button" title="Eigenes Gericht löschen" aria-label="${r.name}, eigenes Gericht löschen">${X_SVG}</button></div>
     <div class="b-meta">${has?`<span><b class="num" data-k>${fmt(m.kcal)}</b> kcal, <b class="num" data-p>${fmt(m.p)}</b> g Protein</span>`:'<span>Zutaten unten antippen</span>'}</div>
-    ${has?itemsTable(m.items,true,b.id,true):''}`;
+    ${has?itemsTable(isManual(b.items)?m.items.filter(it=>opt(it.f).x):m.items,true,b.id,true):''}`;
+  const more=el.querySelector('.dish-more');const extra=isManual(b.items)?m.items.filter(it=>!opt(it.f).x):[];
+  more.innerHTML=extra.length?itemsTable(extra,true,b.id,true):'';
   dish.querySelector('.b-head').addEventListener('click',()=>{if(!b.items.length||d.sel[r.id]===b.id)return;
     d.sel[r.id]=b.id;r.blocks.forEach(x=>{if(d.off[x.id]){delete d.off[x.id];paintBlock(x)}});d.touched=true;markSel(wrap,r,d);paintDish(r,d,wrap,el);totals()});
   dish.querySelector('.rst').addEventListener('click',async()=>{if(d.sel[r.id]===b.id&&b.items.length&&!await confirmAlert(`Soll das Gericht aus ${r.name} entfernt werden?`,'Entfernen'))return;d.custom[r.id]=[];picking.delete(r.id);
     if(d.sel[r.id]===b.id)d.sel[r.id]=null;d.touched=true;saveDrafts();swapCustom(r,d,wrap);markSel(wrap,r,d);totals()});
-  dish.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{if(isNaN(parseFloat(String(inp.value).replace(',','.'))))inp.value=b.items[+inp.dataset.i][1]}));
-  dish.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
+  const inputs=[...dish.querySelectorAll('input'),...more.querySelectorAll('input')];
+  inputs.forEach(inp=>inp.addEventListener('change',()=>{if(isNaN(parseFloat(String(inp.value).replace(',','.'))))inp.value=b.items[+inp.dataset.i][1]}));
+  inputs.forEach(inp=>inp.addEventListener('input',()=>{
     const v=parseFloat(String(inp.value).replace(',','.'));if(isNaN(v)||v<0)return;
     b.items[+inp.dataset.i][1]=v;d.touched=true;saveDrafts();paintBlock(b);totals();}));
 }
@@ -937,7 +942,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='a90638024c8a';
+const BUILD='75d5f5ed72a3';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

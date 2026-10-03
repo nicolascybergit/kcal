@@ -870,7 +870,7 @@ function lcDraw(){
   for(let i=Math.max(0,Math.ceil(LC.x0));i<=Math.min(LC.days.length-1,Math.floor(LC.x1));i++)if((LC.days.length-1-i)%xs===0){const x=X(i),y=H-B+10;
     g+=`<text class="axis" x="${x}" y="${y}" text-anchor="end" dominant-baseline="middle" transform="rotate(-90 ${x} ${y})">${dayLabel(LC.days[i]).slice(3,9)}</text>`}
   g+=`<g clip-path="url(#lcClip)">`;
-  if(M.goal)g+=`<line class="goal" x1="${L}" x2="${W-R}" y1="${Y(M.goal)}" y2="${Y(M.goal)}"/><text class="glabel" x="${W-R-4}" y="${Y(M.goal)-7}" text-anchor="end">Ziel ${fmt(M.goal)}</text>`;
+  if(M.goal)g+=`<line class="goal" x1="${L}" x2="${W-R}" y1="${Y(M.goal)}" y2="${Y(M.goal)}"/><text class="glabel" x="${L+6}" y="${Y(M.goal)-8}" text-anchor="start" paint-order="stroke" stroke="var(--surface)" stroke-width="4">Ziel ${fmt(M.goal)}</text>`;
   let seg=[];const segs=[];LC.days.forEach((iso,i)=>{const t=recTotal(iso);if(t){seg.push([X(i),Y(M.get(t))])}else if(seg.length){segs.push(seg);seg=[]}});if(seg.length)segs.push(seg);
   segs.forEach(sg=>{if(sg.length>1)g+=`<polyline class="line" points="${sg.map(p=>p.join(',')).join(' ')}"/>`});
   LC.days.forEach((iso,i)=>{const t=recTotal(iso);if(!t)return;const v=M.get(t);g+=`<circle class="pt ${M.level?M.level(v):''}" data-i="${i}" cx="${X(i)}" cy="${Y(v)}" r="5"/>`});
@@ -1059,7 +1059,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='3094f49549fe';
+const BUILD='025c24b05adb';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

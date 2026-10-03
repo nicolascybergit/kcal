@@ -202,7 +202,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .shop-list li span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
 .view textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:0;background:var(--surface);color:var(--fg);padding:10px;box-sizing:border-box}
 .pop-bg{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.12);display:flex;align-items:flex-start;justify-content:flex-end;padding:calc(70px + env(safe-area-inset-top,0px)) 16px 24px}
-.pop{box-sizing:border-box;position:relative;width:min(360px,100%);max-height:min(70vh,560px);max-height:100%;overflow-y:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);border-radius:0;box-shadow:0 10px 30px rgba(0,0,0,.14);padding:14px 14px 12px;display:flex;flex-direction:column;gap:14px;animation:alert-in .18s ease-out}
+.pop{box-sizing:border-box;position:relative;width:min(360px,100%);max-height:min(70vh,560px);overflow-y:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);border-radius:0;box-shadow:0 10px 30px rgba(0,0,0,.14);padding:14px 14px 12px;display:flex;flex-direction:column;gap:14px;animation:alert-in .18s ease-out}
 .pop .dayhead b{font-size:17px}
 .pop .dayhead{padding-right:34px}
 .pop .x{position:absolute;top:8px;right:8px}
@@ -909,7 +909,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='6b0af6cf4884';
+const BUILD='cfd9c8872821';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

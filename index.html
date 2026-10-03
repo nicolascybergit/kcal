@@ -139,8 +139,8 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .vorrat .vrow{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 0;cursor:pointer}
 .vorrat .vrow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .vorrat .vrow .box{margin-top:0}
-.block:not(.active) .vrow .box{visibility:hidden}
-.block:not(.active) .vrow{cursor:default}
+.block:not(.on) .vrow .box{visibility:hidden}
+.block:not(.on) .vrow{cursor:default;pointer-events:none}
 .vorrat .vrow:not(.on) .box{border-color:var(--line-strong);background:none}
 .vorrat .vrow:not(.on) .box::after{content:none}
 .vorrat{color:var(--muted);font-size:12px;padding:6px 12px 10px;border-top:1px solid var(--line);margin-top:auto}
@@ -510,8 +510,6 @@ function blockEl(r,d,wrap,b){
     ${itemsTable(m.items,true,b.id)}
     ${m.items.some(it=>it.v)?'<div class="vorrat" data-v></div>':''}`;
   paintVorrat(el,b,m);
-  el.addEventListener('pointerdown',()=>{el.dataset.was=el.classList.contains('active')?'1':'';setActive(el)},true);
-  el.addEventListener('focusin',()=>setActive(el));
   el.querySelector('.b-head').addEventListener('click',()=>{d.sel[r.id]=(d.sel[r.id]===b.id)?null:b.id;d.touched=true;saveDrafts();markSel(wrap,r,d);totals()});
   el.querySelector('.rst').addEventListener('click',e=>{
     const btn=e.currentTarget;btn.classList.remove('spin');void btn.offsetWidth;btn.classList.add('spin');
@@ -570,14 +568,12 @@ function paintDish(r,d,wrap,el){
 }
 function swapCustom(r,d,wrap){const el=customEl(r,d,wrap);document.getElementById('blk-x-'+r.id).replaceWith(el);
   el.scrollIntoView({block:'nearest',inline:'nearest'})}
-// Pantry line in edit mode: always visible, text unchanged; the block-style checkbox shows only in the block being worked in (.active)
-function setActive(el){document.querySelectorAll('.block.active').forEach(x=>{if(x!==el)x.classList.remove('active')});if(el)el.classList.add('active')}
-document.addEventListener('pointerdown',e=>{if(!e.target.closest('.block'))setActive(null)});
+// Pantry line in edit mode: always visible, text unchanged; the block-style checkbox shows and works only while the dish is selected (.block.on)
 function paintVorrat(el,b,m){
   const v=el.querySelector('[data-v]');if(!v)return;
   v.innerHTML=m.items.filter(it=>it.v).map(it=>{const raw=itemCalc(it.f,it.q);const on=it.use!==0;
     return `<button type="button" class="vrow${on?' on':''}" role="checkbox" aria-checked="${on}" data-vi="${it.i}"><span>Inklusive Vorrat: ${fmt(it.q)} ${it.u} ${esc(it.n)} (+${fmt(Math.round(raw.kcal))} kcal)</span><span class="box"></span></button>`}).join('');
-  v.querySelectorAll('.vrow').forEach(btn=>btn.addEventListener('click',ev=>{if(!el.classList.contains('active')||(el.dataset.was===''&&ev.detail))return;const d=draftFor(cur);const o=(d.off[b.id]=d.off[b.id]||{});
+  v.querySelectorAll('.vrow').forEach(btn=>btn.addEventListener('click',()=>{if(!el.classList.contains('on'))return;const d=draftFor(cur);const o=(d.off[b.id]=d.off[b.id]||{});
     const i=btn.dataset.vi;if(o[i])delete o[i];else o[i]=true;if(!Object.keys(o).length)delete d.off[b.id];
     d.touched=true;saveDrafts();paintBlock(b);totals()}));
 }

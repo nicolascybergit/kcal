@@ -551,7 +551,7 @@ let resizeT;window.addEventListener('resize',()=>{clearTimeout(resizeT);resizeT=
 
 // ---------- Mahlzeiten ----------
 const rowsEl=document.getElementById('rows');
-const PLUS_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+const PLUS_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 // Rotation runs on the inner <g> (repainted as vector, stays sharp)
 // Inner <g> scales the arrows to 88 %, slightly larger than the cross; stroke 2.9 × 0.88 renders as the cross's 2.55
 const RST_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="rot"><g transform="translate(12 12) scale(.88) translate(-12 -12)"><path d="M3.3 9.7A9 9 0 0 1 12 3a9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3.1V8h-4.9"/><path d="M20.7 14.3A9 9 0 0 1 12 21a9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M7.9 16H3v4.9"/></g></g></svg>';
@@ -604,7 +604,7 @@ function renderEdit(){
 }
 // Trash column: hidden (0 px) until the row is scrolled to its end and pushed further; scrolling back hides it again.
 // It is the only way to leave a meal row empty, and asks first.
-const TRASH_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 6h17M9 6V4.5c0-.8.7-1.5 1.5-1.5h3c.8 0 1.5.7 1.5 1.5V6M18.5 6l-.8 13.1a2 2 0 0 1-2 1.9H8.3a2 2 0 0 1-2-1.9L5.5 6M10 10.5v6M14 10.5v6"/></svg>';
+const TRASH_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 6h17M9 6V4.5c0-.8.7-1.5 1.5-1.5h3c.8 0 1.5.7 1.5 1.5V6M18.5 6l-.8 13.1a2 2 0 0 1-2 1.9H8.3a2 2 0 0 1-2-1.9L5.5 6M10 10.5v6M14 10.5v6"/></svg>';
 function trashEl(r,d,wrap){
   const el=document.createElement('article');el.className='block trashcol';
   el.innerHTML=`<button class="trash" type="button" tabindex="-1" title="Gericht entfernen" aria-label="${r.name}, Gericht entfernen">${TRASH_SVG}</button>`;
@@ -1054,7 +1054,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='58e430b612e3';
+const BUILD='ea9ba3fe3c0c';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

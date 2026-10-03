@@ -175,16 +175,17 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .vorrat .vrow:not(.on) .box::after{content:none}
 .vorrat{color:var(--muted);font-size:13.5px;padding:6px 12px 10px;border-top:1px solid var(--line);margin-top:auto}
 
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line-strong);padding:18px 16px calc(10px + env(safe-area-inset-bottom,0px))}
-.bar-in{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:16px}
-.bar-info{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 22px}
-.bar .big{font-size:18px;font-weight:600}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line-strong);padding:12px 16px max(4px,calc(env(safe-area-inset-bottom,0px) - 16px))}
+/* compact: the figures may run down into the home-indicator area */
+.bar-in{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:8px}
+.bar-info{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 18px;line-height:1.3}
+.bar .big{font-size:16px;font-weight:600}
 /* Meter: 3/4 width, centred, fully rounded; the 4.000 mark is a small rounded capsule */
-.meter{width:75%;height:10px;border-radius:999px;background:var(--line);position:relative}
-.meter i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--muted)}
+.meter{width:75%;height:10px;border-radius:3px;background:var(--line);position:relative}
+.meter i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--muted)}
 .meter i.ok{background:var(--ok)}
 .meter i.low{background:var(--low)}
-.meter b{position:absolute;top:-8px;bottom:-8px;width:12px;margin-left:-6px;border-radius:999px;background:var(--fg);border:3px solid var(--surface);box-sizing:border-box;left:calc(100%/1.15)}
+.meter b{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;background:var(--fg);left:calc(100%/1.15)}
 .status.ok{color:var(--ok)} .status.low{color:var(--low)}
 .bar .lbl{color:var(--muted);font-size:13.5px}
 @media (prefers-reduced-motion:no-preference){.meter i{transition:width .25s}}
@@ -911,7 +912,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='a414ab741c0a';
+const BUILD='f57e5f23370d';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

@@ -1,8 +1,8 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="Web/manifest.webmanifest"><link rel="apple-touch-icon" href="Web/apple_touch_icon.png"><link rel="icon" href="Web/icon_192.png"><meta name="theme-color" content="#ffffff"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="kcal"><meta name="apple-mobile-web-app-status-bar-style" content="default"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>kcal</title>
+<title>4000 kcal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap">
 <style>
 /* Layout: plain document table — sticky day strip on top, one row per meal with option blocks as columns, sticky day total at the bottom */
 :root{
@@ -14,21 +14,24 @@
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#121417; --surface:#1a1d21; --line:#2e343b; --line-strong:#56606b;
-  --fg:#e7e9ec; --muted:#98a1ab; --accent:#86a8ff; --sel:#1b2440; --hover:rgba(231,233,236,.08);
+  --fg:#e7e9ec; --muted:#98a1ab; --accent:#4d8dff; --sel:#262a31; --hover:rgba(231,233,236,.08);
   --ok:#5fd095; --warn:#f0b35a; --err:#ff8a7a; --low:#dd978e; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121417; --surface:#1a1d21; --line:#2e343b; --line-strong:#56606b;
-  --fg:#e7e9ec; --muted:#98a1ab; --accent:#86a8ff; --sel:#1b2440; --hover:rgba(231,233,236,.08);
+  --fg:#e7e9ec; --muted:#98a1ab; --accent:#4d8dff; --sel:#262a31; --hover:rgba(231,233,236,.08);
   --ok:#5fd095; --warn:#f0b35a; --err:#ff8a7a; --low:#dd978e; color-scheme:dark}
 
 [hidden]{display:none!important}
 html{background:var(--bg)}
 body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.45}
-.wrap{max-width:1500px;margin:0 auto;padding:18px 16px 130px}
+.wrap{max-width:1500px;margin:0 auto;padding:18px 16px 230px}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
-.top{display:flex;align-items:center;gap:10px}
-h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;white-space:nowrap;flex:1 1 auto;min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+/* Logo: digits in the number font, the word in the logo font (Space Grotesk, as in the app icon) */
+h1.logo{margin:4px 0 0;text-align:center;font-size:32px;line-height:1.1;white-space:nowrap}
+h1.logo .ln{font-family:var(--mono);font-weight:600;letter-spacing:-.04em}
+h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spacing:-.045em}
 .tools{display:flex;align-items:center;gap:8px}
 /* Header: plain icons for refresh/export, large pill for Einkauf (its cart matches the icon size) */
 .ibtn{all:unset;display:grid;place-items:center;width:44px;height:44px;color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -38,7 +41,7 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;white-space:now
 .shopbtn:hover{border-color:var(--line-strong)}
 .shopbtn svg{width:27px;height:27px;flex:none}
 #refreshBtn .rot{transform-box:view-box;transform-origin:12px 12px}
-@media (max-width:440px){h1{font-size:22px}.tools{gap:2px}.ibtn{width:40px}.shopbtn{font-size:16px;height:48px;padding:0 16px 0 14px;gap:8px;margin-left:4px}}
+@media (max-width:440px){h1.logo{font-size:28px}.tools{gap:2px}.ibtn{width:40px}.shopbtn{font-size:16px;height:48px;padding:0 16px 0 14px;gap:8px;margin-left:4px}}
 #refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1) infinite}
 .tbtn{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer}
 .tbtn:hover{border-color:var(--line-strong)}
@@ -48,26 +51,26 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;white-space:now
 /* Floating day strip: no background or divider, chips touch, today is centred (spacers allow centring the first/last day) */
 :root{padding-top:0}
 .head{position:sticky;top:0;z-index:5;background:var(--surface);margin:-18px -16px 0;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0}
-.days{margin:12px -16px 0}
+.days{margin:10px -16px 0;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
 .days-scroll{position:relative;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;background:linear-gradient(90deg,var(--surface) 50%,var(--bg) 50%)}
 /* the container background shows during overscroll: grey continues endlessly right of today */
 .day-pad{flex:0 0 calc(50% - 62px);display:flex;justify-content:flex-end;overflow:hidden}
 .day-pad.right{background:var(--bg)}
-.day-pad.left+.day{margin-left:-1px}
 .day-pad .day.fill{flex:none}
 .days-scroll::-webkit-scrollbar{display:none}
 .day.fill{cursor:default;pointer-events:none}
-.day{all:unset;position:relative;cursor:pointer;flex:none;width:124px;scroll-snap-align:center;box-sizing:border-box;padding:6px 12px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
-.day+.day{margin-left:-1px}
-.day:hover{border-color:var(--line-strong);z-index:1}
+.day{all:unset;position:relative;isolation:isolate;cursor:pointer;flex:none;width:124px;scroll-snap-align:center;box-sizing:border-box;padding:9px 14px 11px;border-right:1px solid color-mix(in srgb,var(--line) 70%,transparent);background:var(--surface);display:flex;flex-direction:column;gap:1px}
+.day:hover .d2{color:var(--accent)}
 .day:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .day .d1{font-size:12px;color:var(--muted)}
-.day .d2{font-weight:600;font-size:17px}
-.day .d3{font-size:11.5px;color:var(--muted)}
+.day .d2{font-family:var(--mono);font-weight:500;font-size:17px;letter-spacing:-.02em}
+.day .d3{font-size:12px;color:var(--muted)}
 .day.saved .d3{color:var(--fg)}
 .day .d3.ok{color:var(--ok)}
 .day .d3.low{color:var(--low)}
-.day.cur{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);background:var(--sel);z-index:2}
+.day.cur::before{content:"";position:absolute;inset:5px;border-radius:12px;background:var(--sel);z-index:-1}
+.day.cur::after{content:"";position:absolute;left:50%;bottom:4px;width:26px;height:3px;margin-left:-13px;border-radius:999px;background:var(--accent)}
+.day.cur .d2{font-weight:600}
 
 #dbNote{color:var(--warn);font-size:12.5px;margin:0 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .login{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%}
@@ -140,8 +143,8 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .add:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .add svg{width:22px;height:22px}
 .trashcol{display:grid;overflow:hidden;min-width:0;border-right:0}
-.trash{all:unset;display:grid;place-items:center;min-height:120px;color:var(--low);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.trash.dim{color:var(--line-strong);cursor:default}
+.trash{all:unset;display:grid;place-items:center;min-height:120px;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.trash:hover{color:var(--fg)}
 .trash:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .trash svg{width:22px;height:22px}
 /* Apple-style confirmation */
@@ -203,19 +206,45 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .sheet textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg);padding:10px;box-sizing:border-box}
 .sheet-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .msg{font-size:12.5px;color:var(--ok)}
+/* Verlauf: stat tiles, three single-series bar charts on one axis each, table view */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{border:1px solid var(--line);border-radius:16px;padding:10px 12px}
+.tile span{display:block;font-size:12px;color:var(--muted)}
+.tile b{display:block;font-family:var(--mono);font-size:20px;font-weight:600;letter-spacing:-.02em;margin-top:2px}
+.tile b.ok{color:var(--ok)} .tile b.low{color:var(--low)}
+.chart{border:1px solid var(--line);border-radius:16px;padding:12px 12px 6px}
+.chart h3{font-size:15px;font-weight:600;margin:0}
+.chart p{font-size:12px;color:var(--muted);margin:2px 0 6px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .goal{stroke:var(--fg);stroke-width:1.5;stroke-dasharray:4 4;opacity:.55}
+.chart .axis{font-family:var(--mono);font-size:10px;fill:var(--muted)}
+.chart .bar{fill:var(--accent)} .chart .bar.ok{fill:var(--ok)} .chart .bar.low{fill:var(--low)}
+.chart .hit{fill:transparent;cursor:pointer}
+.chart .hit:hover+.bar,.chart g.on .bar{opacity:.8}
+.ctable{width:100%;border-collapse:collapse;font-size:13px}
+.ctable th{font-weight:500;color:var(--muted);text-align:right;padding:4px 0}
+.ctable th:first-child,.ctable td:first-child{text-align:left}
+.ctable td{text-align:right;padding:4px 0;font-family:var(--mono);border-top:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
+.ctable td:first-child{font-family:var(--sans)}
+.ctip{position:fixed;z-index:12;pointer-events:none;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:6px 9px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);white-space:nowrap}
+.ctip b{font-family:var(--mono);font-weight:600}
 .msg.err{color:var(--err)}
 </style>
 
 <div class="wrap">
   <header class="head">
   <div class="top">
-    <h1>4000 kcal</h1>
     <div class="tools">
       <button class="ibtn" id="refreshBtn" type="button" title="Neu laden" aria-label="Neu laden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="rot"><g transform="translate(12 12) scale(.88) translate(-12 -12)"><path d="M3.3 9.7A9 9 0 0 1 12 3a9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3.1V8h-4.9"/><path d="M20.7 14.3A9 9 0 0 1 12 21a9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M7.9 16H3v4.9"/></g></g></svg></button>
+      <button class="ibtn" id="openChart" type="button" title="Verlauf" aria-label="Verlauf über die Tage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20.5h16.5M6.5 16.5V12M11 16.5V6.5M15.5 16.5v-6.5M20 16.5V9"/></svg></button>
+    </div>
+    <div class="tools">
       <button class="ibtn" id="openExport" type="button" title="Export" aria-label="Alle gespeicherten Tage exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15.5V3M6.5 8.5 12 3l5.5 5.5M3.5 14v5.5c0 .8.7 1.5 1.5 1.5h14c.8 0 1.5-.7 1.5-1.5V14"/></svg></button>
       <button class="shopbtn" id="openShop" type="button" aria-label="Einkaufsliste für diesen Tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Einkauf</button>
     </div>
   </div>
+  <h1 class="logo"><span class="ln">4000</span> <span class="lw">kcal</span></h1>
   <nav class="days" aria-label="Tage"><div class="days-scroll" id="days"></div></nav>
   </header>
 
@@ -247,6 +276,16 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
     <ul class="shop-list" id="shopList"></ul>
     <p class="sub" id="shopVorrat"></p>
     <div class="sheet-actions"><button class="btn" type="button" id="copyShop">Liste kopieren</button><span class="msg" id="shopMsg" aria-live="polite"></span></div>
+  </div>
+</div>
+
+<div class="sheet-bg" id="chartSheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="chartTitle">
+    <div class="sheet-head"><h2 id="chartTitle">Verlauf</h2><button class="btn big" type="button" data-close>Schließen</button></div>
+    <div class="dayhead"><b id="chartSub"></b><span id="chartSub2"></span></div>
+    <div class="tiles" id="chartTiles"></div>
+    <div id="charts"></div>
+    <div class="ctip" id="ctip" hidden></div>
   </div>
 </div>
 
@@ -535,7 +574,7 @@ function renderEdit(){
     wrap.style.setProperty('--n',r.blocks.length);
     r.blocks.forEach(b=>wrap.appendChild(blockEl(r,d,wrap,b)));
     wrap.appendChild(customEl(r,d,wrap));
-    wrap.appendChild(trashEl(r,d,wrap));armTrash(wrap);
+    wrap.appendChild(trashEl(r,d,wrap));armTrash(wrap,()=>!!d.sel[r.id]);
     sec.appendChild(wrap);rowsEl.appendChild(sec);markSel(wrap,r,d);
   });
 }
@@ -545,22 +584,24 @@ const TRASH_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 function trashEl(r,d,wrap){
   const el=document.createElement('article');el.className='block trashcol';
   el.innerHTML=`<button class="trash" type="button" tabindex="-1" title="Gericht entfernen" aria-label="${r.name}, Gericht entfernen">${TRASH_SVG}</button>`;
-  el.querySelector('.trash').addEventListener('click',async()=>{if(!d.sel[r.id])return;
+  el.querySelector('.trash').addEventListener('click',async()=>{if(!d.sel[r.id]){wrap.dispatchEvent(new Event('trash-hide'));return}
     if(!await confirmAlert('Gericht entfernen?',`${r.name} hat danach kein Gericht mehr.`,'Entfernen'))return;
     d.sel[r.id]=null;r.blocks.forEach(x=>{if(d.off[x.id]){delete d.off[x.id];paintBlock(x)}});d.touched=true;
     markSel(wrap,r,d);totals();wrap.dispatchEvent(new Event('trash-hide'))});
   return el;
 }
-function armTrash(wrap){
-  let shown=false,anchor=0,tx=null;
+// Pull distance needed past the end: wheel/trackpad 220 px accumulated, touch 110 px
+function armTrash(wrap,allowed){
+  let shown=false,anchor=0,tx=null,acc=0,accT=0;
   const atEnd=()=>wrap.scrollLeft+wrap.clientWidth>=wrap.scrollWidth-2;
-  const show=()=>{if(shown)return;shown=true;wrap.style.setProperty('--trash','80px');
+  const show=()=>{if(shown||!allowed())return;shown=true;wrap.style.setProperty('--trash','80px');
     const t=wrap.querySelector('.trash');t.style.animation='none';void t.offsetWidth;t.style.animation='';
     requestAnimationFrame(()=>{wrap.scrollTo({left:wrap.scrollWidth,behavior:'smooth'});setTimeout(()=>{anchor=wrap.scrollWidth-wrap.clientWidth},400)})};
   const hide=()=>{if(!shown)return;shown=false;anchor=0;wrap.style.setProperty('--trash','0px')};
-  wrap.addEventListener('wheel',e=>{const dx=e.deltaX||(e.shiftKey?e.deltaY:0);if(dx>0&&atEnd())show()},{passive:true});
-  wrap.addEventListener('touchstart',e=>{tx=atEnd()?e.touches[0].clientX:null},{passive:true});
-  wrap.addEventListener('touchmove',e=>{if(tx!==null&&tx-e.touches[0].clientX>36){tx=null;show()}},{passive:true});
+  wrap.addEventListener('wheel',e=>{const dx=e.deltaX||(e.shiftKey?e.deltaY:0);const now=Date.now();
+    if(dx<=0||!atEnd()||now-accT>500)acc=0;accT=now;if(dx>0&&atEnd()){acc+=dx;if(acc>=220){acc=0;show()}}},{passive:true});
+  wrap.addEventListener('touchstart',e=>{tx=atEnd()&&allowed()?e.touches[0].clientX:null},{passive:true});
+  wrap.addEventListener('touchmove',e=>{if(tx!==null&&tx-e.touches[0].clientX>110){tx=null;show()}},{passive:true});
   wrap.addEventListener('scroll',()=>{if(shown&&anchor&&wrap.scrollLeft<anchor-50)hide()},{passive:true});
   wrap.addEventListener('trash-hide',hide);
 }
@@ -575,7 +616,7 @@ function confirmAlert(title,text,ok){return new Promise(res=>{
 function markSel(wrap,r,d){wrap.querySelectorAll('.block').forEach(x=>{const o=x.id==='blk-'+d.sel[r.id];x.classList.toggle('on',o);
   const h=x.querySelector('.b-head');if(h)h.setAttribute('aria-checked',o)});
   const sec=wrap.closest('.row');if(sec)sec.classList.toggle('has-sel',!!d.sel[r.id]);
-  const t=wrap.querySelector('.trash');if(t)t.classList.toggle('dim',!d.sel[r.id])}
+  if(!d.sel[r.id])wrap.dispatchEvent(new Event('trash-hide'))}
 function blockEl(r,d,wrap,b){
   const m=mealFromDraft(d,b);const on=d.sel[r.id]===b.id;
   const el=document.createElement('article');el.className='block'+(on?' on':'');el.id='blk-'+b.id;
@@ -776,9 +817,56 @@ function copyText(text,box,msgEl){navigator.clipboard.writeText(text).then(()=>{
 document.getElementById('copyCsv').addEventListener('click',()=>copyText(buildCsv().replace('﻿',''),document.getElementById('csvBox'),document.getElementById('expMsg')));
 document.getElementById('copyShop').addEventListener('click',()=>copyText(shopText,document.getElementById('shopList'),document.getElementById('shopMsg')));
 
+// ---------- Verlauf ----------
+// Last 30 days (START..today); a day without saved meals has no bar (not 0). kcal bars use the app's status colours.
+function barPath(x,y,w,h,r){r=Math.min(r,w/2,h);return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`}
+function chartSvg(days,get,goal,unit,level){
+  const W=380,H=150,L=40,B=20,T=8,pw=W-L-6,ph=H-B-T;
+  const vals=days.map(get),max=Math.max(goal||0,...vals.filter(v=>v!=null),1)*1.12;
+  const step=pw/days.length,bw=Math.max(3,Math.min(18,step*0.62));
+  const y=v=>T+ph-(v/max)*ph;
+  const ticks=goal?[0,goal/2,goal]:[0,max/1.12/2,max/1.12].map(v=>Math.round(v/10)*10);
+  let g=ticks.map(t=>`<line class="grid" x1="${L}" x2="${W-6}" y1="${y(t)}" y2="${y(t)}"/><text class="axis" x="${L-6}" y="${y(t)+3}" text-anchor="end">${fmt(t)}</text>`).join('');
+  if(goal)g+=`<line class="goal" x1="${L}" x2="${W-6}" y1="${y(goal)}" y2="${y(goal)}"/>`;
+  const every=Math.ceil(days.length/7);
+  days.forEach((iso,i)=>{const v=vals[i];const cx=L+step*i+step/2;
+    if(i%every===0||i===days.length-1)g+=`<text class="axis" x="${cx}" y="${H-5}" text-anchor="middle">${dayLabel(iso).slice(3,9)}</text>`;
+    g+=`<g data-i="${i}"><rect class="hit" x="${L+step*i}" y="${T}" width="${step}" height="${ph}"/>${v!=null&&v>0?`<path class="bar ${level?level(v):''}" d="${barPath(cx-bw/2,y(v),bw,y(0)-y(v),4)}"/>`:''}</g>`});
+  return `<svg viewBox="0 0 ${W} ${H}" role="img">${g}</svg>`;
+}
+function renderCharts(){
+  const all=dayList(),days=all.slice(-30),rec=days.filter(iso=>store[iso]&&store[iso].total&&store[iso].total.kcal!=null);
+  const T=iso=>store[iso]&&store[iso].total&&store[iso].total.kcal!=null?store[iso].total:null;
+  document.getElementById('chartSub').textContent=`${dayLabel(days[0])} bis ${dayLabel(days[days.length-1])}`;
+  document.getElementById('chartSub2').textContent=`${rec.length} von ${days.length} Tagen erfasst`;
+  const last7=rec.slice(-7),avg=k=>last7.length?Math.round(last7.reduce((a,iso)=>a+(T(iso)[k]||0),0)/last7.length):null;
+  const ak=avg('kcal'),inGoal=rec.filter(iso=>T(iso).kcal>=3850).length;
+  document.getElementById('chartTiles').innerHTML=
+    `<div class="tile"><span>Schnitt kcal</span><b class="${ak!=null?kcalLevel(ak):''}">${ak!=null?fmt(ak):'–'}</b></div>`+
+    `<div class="tile"><span>Tage im Ziel</span><b>${inGoal}/${rec.length}</b></div>`+
+    `<div class="tile"><span>Schnitt Protein</span><b>${avg('p')!=null?fmt(avg('p'))+' g':'–'}</b></div>`;
+  const C=[
+    {t:'Kalorien',p:'Pro Tag, Ziel 4.000 kcal',get:iso=>T(iso)?T(iso).kcal:null,goal:4000,unit:'kcal',level:kcalLevel},
+    {t:'Protein',p:'Pro Tag, Ziel 180 g',get:iso=>T(iso)?T(iso).p:null,goal:180,unit:'g'},
+    {t:'Fleisch und Fisch gekocht',p:'Pro Tag in Gramm',get:iso=>T(iso)?(T(iso).meatc!=null?T(iso).meatc:T(iso).meat):null,unit:'g'}];
+  const box=document.getElementById('charts');
+  box.innerHTML=C.map((c,ci)=>`<div class="chart" data-c="${ci}"><h3>${c.t}</h3><p>${c.p}</p>${chartSvg(days,c.get,c.goal,c.unit,c.level)}</div>`).join('')+
+    `<table class="ctable"><thead><tr><th>Tag</th><th>kcal</th><th>Protein</th><th>Fleisch</th></tr></thead><tbody>${rec.slice().reverse().map(iso=>{const t=T(iso);
+      return `<tr><td>${dayLabel(iso)}</td><td>${fmt(t.kcal)}</td><td>${fmt(t.p)} g</td><td>${fmt(t.meatc!=null?t.meatc:t.meat)} g</td></tr>`}).join('')||'<tr><td colspan="4">Noch kein Tag erfasst</td></tr>'}</tbody></table>`;
+  const tip=document.getElementById('ctip');
+  box.querySelectorAll('.chart').forEach(ch=>{const c=C[+ch.dataset.c];
+    ch.querySelectorAll('g[data-i]').forEach(g=>{const show=e=>{const iso=days[+g.dataset.i],v=c.get(iso);
+      ch.querySelectorAll('g.on').forEach(x=>x.classList.remove('on'));g.classList.add('on');
+      tip.innerHTML=`${dayLabel(iso)}: ${v!=null?`<b>${fmt(v)}</b> ${c.unit}`:'Nicht erfasst'}${c.level&&v!=null?', '+(Math.abs(v-4000)<=150?'Im Ziel':v<4000?fmt(4000-v)+' kcal fehlen':fmt(v-4000)+' kcal über Plan'):''}`;
+      tip.hidden=false;const r=g.getBoundingClientRect();tip.style.left=Math.max(8,Math.min(window.innerWidth-tip.offsetWidth-8,r.left+r.width/2-tip.offsetWidth/2))+'px';tip.style.top=(r.top-tip.offsetHeight-6)+'px'};
+      g.addEventListener('pointerenter',show);g.addEventListener('pointerdown',show)});
+    ch.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'){tip.hidden=true;ch.querySelectorAll('g.on').forEach(x=>x.classList.remove('on'))}})});
+  document.querySelector('#chartSheet .sheet').onscroll=()=>{tip.hidden=true};
+}
+
 // ---------- Sheets ----------
 function openSheet(id){const s=document.getElementById(id);s.hidden=false;s.querySelector('.sheet').scrollTop=0;document.documentElement.style.overflow='hidden'}
-function closeSheets(){document.querySelectorAll('.sheet-bg').forEach(b=>b.hidden=true);document.documentElement.style.overflow=''}
+function closeSheets(){document.getElementById('ctip').hidden=true;document.querySelectorAll('.sheet-bg').forEach(b=>b.hidden=true);document.documentElement.style.overflow=''}
 document.querySelectorAll('.sheet-bg').forEach(bg=>{bg.addEventListener('click',e=>{if(e.target===bg||e.target.hasAttribute('data-close'))closeSheets()})});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('alertBg').hidden)closeSheets()});
 document.getElementById('openShop').addEventListener('click',()=>{renderShop();openSheet('shopSheet')});
@@ -786,6 +874,7 @@ document.getElementById('openShop').addEventListener('click',()=>{renderShop();o
 document.getElementById('refreshBtn').addEventListener('click',e=>{const b=e.currentTarget;b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');
   setTimeout(()=>location.reload(),750)});
 document.getElementById('openExport').addEventListener('click',()=>{renderExport();openSheet('expSheet')});
+document.getElementById('openChart').addEventListener('click',()=>{openSheet('chartSheet');renderCharts()});
 
 // ---------- Datei-Speicher (lokale HTML) ----------
 // Outside claude.ai the page keeps a full copy of every saved day inside its own HTML file (JSON block #ebk-data).
@@ -898,7 +987,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='2bf1e893fbe6';
+const BUILD='cbc0c9994d16';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

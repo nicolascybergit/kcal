@@ -84,7 +84,7 @@ body.exporting .days{display:none}
 .dayhead b{font-size:17px;font-weight:600;color:var(--fg)}
 .dayhead>span{font-size:13.5px;color:var(--muted)}
 .modebar .dayhead b{font-size:22px;letter-spacing:-.01em}
-/* Pill buttons: .btn 46px (actions), .btn.big 52px */
+/* Pill buttons: .btn 46px */
 .btn{font:inherit;font-size:16px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 22px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .btn:hover{border-color:var(--line-strong)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;padding:0 26px}
@@ -102,7 +102,7 @@ body.exporting .days{display:none}
 .row-head h2{font-size:17px;font-weight:600;margin:0}
 .row-head .sub{color:var(--muted);font-size:13.5px}
 .row-head .target{margin-left:auto;color:var(--muted);font-size:13.5px}
-.blocks{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(286px,304px);overflow-x:auto}
+.blocks{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(286px,304px);overflow-x:auto;overflow-y:hidden;overscroll-behavior-y:none}
 .block{border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
 .block:last-child{border-right:0}
 .block.on{background:var(--sel);box-shadow:inset 0 3px 0 var(--accent)}
@@ -793,12 +793,11 @@ document.getElementById('copyShop').addEventListener('click',()=>copyText(shopTe
 let curView=null;
 function openView(id){
   document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==id);document.getElementById('mainView').hidden=true;
-  curView=id;const sb=document.getElementById('openShop');sb.classList.add('closing');document.getElementById('shopLbl').textContent='Schließen';
-  sb.setAttribute('aria-label','Schließen');window.scrollTo(0,0)}
+  curView=id;document.body.classList.add('exporting');const eb=document.getElementById('openExport');eb.classList.add('open');eb.setAttribute('aria-label','Export schließen');window.scrollTo(0,0)}
 function closeView(){
   document.querySelectorAll('.view').forEach(v=>v.hidden=true);document.getElementById('mainView').hidden=false;
-  curView=null;const sb=document.getElementById('openShop');sb.classList.remove('closing');document.getElementById('shopLbl').textContent='Einkauf';
-  sb.setAttribute('aria-label','Einkaufsliste für diesen Tag');window.scrollTo(0,0)}
+  curView=null;document.body.classList.remove('exporting');const eb=document.getElementById('openExport');eb.classList.remove('open');eb.setAttribute('aria-label','Alle gespeicherten Tage exportieren');
+  window.scrollTo(0,0);renderDays()}
 document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!document.getElementById('alertBg').hidden)return;if(curView)closeView();else if(shopOpen){shopOpen=false;render()}});
 // Refresh: spin, then reload (fresh data, newest app version, unsaved changes reset)
 document.getElementById('refreshBtn').addEventListener('click',e=>{const b=e.currentTarget;b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');
@@ -916,7 +915,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='5e32087badce';
+const BUILD='018fdcd6e052';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

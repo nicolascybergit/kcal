@@ -146,8 +146,8 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .trash svg{width:22px;height:22px}
 /* iOS 26 style confirmation, measured from the reference screenshot (3x): card 8px from the screen edges, ~26px radius,
    message 22/28px regular at 85% ink inset 24px, buttons 46px capsules inset 8px with 8px gap, label 20px semibold, action blue #3F8EF7 */
-.alert-bg{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.3);display:grid;place-items:center;padding:8px}
-.alert{box-sizing:border-box;width:min(440px,calc(100vw - 16px));border-radius:26px;padding:22px 8px 8px;background:rgba(246,246,248,.82);-webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);box-shadow:0 18px 60px rgba(0,0,0,.25);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",var(--sans);animation:alert-in .22s cubic-bezier(.2,.9,.3,1.15)}
+.alert-bg{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.3);display:grid;place-items:center;padding:32px}
+.alert{box-sizing:border-box;width:min(400px,calc(100vw - 64px));border-radius:26px;padding:22px 8px 8px;background:rgba(246,246,248,.82);-webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);box-shadow:0 18px 60px rgba(0,0,0,.25);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",var(--sans);animation:alert-in .22s cubic-bezier(.2,.9,.3,1.15)}
 .alert p{font-size:22px;line-height:28px;font-weight:400;margin:0 16px 23px;color:rgba(0,0,0,.85);letter-spacing:-.01em}
 .alert:focus{outline:none}
 .alert-btns{display:flex;flex-direction:column;gap:8px}
@@ -912,7 +912,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='f57e5f23370d';
+const BUILD='018e9b38fbda';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

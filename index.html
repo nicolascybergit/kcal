@@ -34,10 +34,14 @@ h1{font-size:21px;font-weight:600;margin:0;text-wrap:balance;flex:1 1 auto}
 .tbtn:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .tbtn svg{width:16px;height:16px}
 
-.days{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin:12px -16px 0;padding:8px 16px;border-bottom:1px solid var(--line)}
-.days-scroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
-.day{all:unset;cursor:pointer;flex:none;min-width:74px;padding:6px 9px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
-.day:hover{border-color:var(--line-strong)}
+/* Floating day strip: no background or divider, chips touch, today is centred (spacers allow centring the first/last day) */
+.days{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;margin:12px -16px 0;padding:8px 0 0}
+.days-scroll{position:relative;display:flex;overflow-x:auto;scrollbar-width:none}
+.days-scroll::-webkit-scrollbar{display:none}
+.days-scroll::before,.days-scroll::after{content:"";flex:0 0 calc(50% - 47px)}
+.day{all:unset;position:relative;cursor:pointer;flex:none;min-width:94px;box-sizing:border-box;padding:6px 12px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
+.day+.day{margin-left:-1px}
+.day:hover{border-color:var(--line-strong);z-index:1}
 .day:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .day .d1{font-size:12px;color:var(--muted)}
 .day .d2{font-weight:600;font-size:13.5px}
@@ -45,7 +49,7 @@ h1{font-size:21px;font-weight:600;margin:0;text-wrap:balance;flex:1 1 auto}
 .day.saved .d3{color:var(--fg)}
 .day .d3.ok{color:var(--ok)}
 .day .d3.low{color:var(--low)}
-.day.cur{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);background:var(--sel)}
+.day.cur{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);background:var(--sel);z-index:2}
 
 .lead{color:var(--muted);margin:14px 0 4px;max-width:85ch}
 .pantry{color:var(--muted);font-size:12.5px;margin:0 0 14px;max-width:95ch}
@@ -417,8 +421,7 @@ function renderDays(scrollEnd){
     b.addEventListener('click',()=>{cur=iso;render()});
     daysEl.appendChild(b);
   });
-  if(scrollEnd)daysEl.scrollLeft=daysEl.scrollWidth;
-  else{const c=daysEl.querySelector('.cur');if(c)c.scrollIntoView({block:'nearest',inline:'nearest'})}
+  const c=daysEl.querySelector('.cur');if(c)daysEl.scrollLeft=c.offsetLeft-(daysEl.clientWidth-c.offsetWidth)/2;
 }
 
 // ---------- Mahlzeiten ----------

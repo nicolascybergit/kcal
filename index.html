@@ -29,26 +29,28 @@ body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px
 .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;text-wrap:balance;flex:1 1 auto}
 .tools{display:flex;align-items:center;gap:8px}
-/* Rounded header buttons: circles for icons, pill for Einkauf */
-.rbtn{font:inherit;font-size:15px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 18px 0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.rbtn.icon{width:42px;padding:0}
-.rbtn:hover{border-color:var(--line-strong)}
-.rbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.rbtn svg{width:21px;height:21px;flex:none}
-.rbtn.icon svg{width:20px;height:20px}
+/* Header: plain icons for refresh/export, large pill for Einkauf (its cart matches the icon size) */
+.ibtn{all:unset;display:grid;place-items:center;width:44px;height:44px;color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ibtn:focus-visible,.shopbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ibtn svg{width:27px;height:27px}
+.shopbtn{font:inherit;font-size:17px;font-weight:500;display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 24px 0 20px;margin-left:6px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.shopbtn:hover{border-color:var(--line-strong)}
+.shopbtn svg{width:27px;height:27px;flex:none}
 #refreshBtn .rot{transform-box:view-box;transform-origin:12px 12px}
-#refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1)}
+#refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1) infinite}
 .tbtn{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);cursor:pointer}
 .tbtn:hover{border-color:var(--accent);color:var(--accent)}
 .tbtn:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .tbtn svg{width:16px;height:16px}
 
 /* Floating day strip: no background or divider, chips touch, today is centred (spacers allow centring the first/last day) */
-.days{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;margin:12px -16px 0;padding:8px 0 0}
+:root{padding-top:0}
+.head{position:sticky;top:0;z-index:5;background:var(--surface);margin:-18px -16px 0;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0}
+.days{margin:12px -16px 0}
 .days-scroll{position:relative;display:flex;overflow-x:auto;scrollbar-width:none}
 .days-scroll::-webkit-scrollbar{display:none}
-.days-scroll::before,.days-scroll::after{content:"";flex:0 0 calc(50% - 47px)}
-.day{all:unset;position:relative;cursor:pointer;flex:none;min-width:94px;box-sizing:border-box;padding:6px 12px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
+.day.fill{cursor:default;pointer-events:none}
+.day{all:unset;position:relative;cursor:pointer;flex:none;min-width:124px;box-sizing:border-box;padding:6px 12px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
 .day+.day{margin-left:-1px}
 .day:hover{border-color:var(--line-strong);z-index:1}
 .day:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
@@ -172,16 +174,17 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 </style>
 
 <div class="wrap">
+  <header class="head">
   <div class="top">
     <h1>4000 kcal</h1>
     <div class="tools">
-      <button class="rbtn icon" id="refreshBtn" type="button" title="Neu laden" aria-label="Neu laden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="rot"><g transform="translate(12 12) scale(.88) translate(-12 -12)"><path d="M3.3 9.7A9 9 0 0 1 12 3a9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3.1V8h-4.9"/><path d="M20.7 14.3A9 9 0 0 1 12 21a9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M7.9 16H3v4.9"/></g></g></svg></button>
-      <button class="rbtn icon" id="openExport" type="button" title="Export" aria-label="Alle gespeicherten Tage exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8M4 15.5v3A2.5 2.5 0 0 0 6.5 21h11a2.5 2.5 0 0 0 2.5-2.5v-3"/></svg></button>
-      <button class="rbtn" id="openShop" type="button" aria-label="Einkaufsliste für diesen Tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8.5" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2.5 3h2.6l2.4 11.6a1.8 1.8 0 0 0 1.8 1.4h8.3a1.8 1.8 0 0 0 1.8-1.4L21 7H6"/></svg>Einkauf</button>
+      <button class="ibtn" id="refreshBtn" type="button" title="Neu laden" aria-label="Neu laden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="rot"><g transform="translate(12 12) scale(.88) translate(-12 -12)"><path d="M3.3 9.7A9 9 0 0 1 12 3a9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3.1V8h-4.9"/><path d="M20.7 14.3A9 9 0 0 1 12 21a9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M7.9 16H3v4.9"/></g></g></svg></button>
+      <button class="ibtn" id="openExport" type="button" title="Export" aria-label="Alle gespeicherten Tage exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15.5V3M6.5 8.5 12 3l5.5 5.5M3.5 14v5.5c0 .8.7 1.5 1.5 1.5h14c.8 0 1.5-.7 1.5-1.5V14"/></svg></button>
+      <button class="shopbtn" id="openShop" type="button" aria-label="Einkaufsliste für diesen Tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Einkauf</button>
     </div>
   </div>
-
   <nav class="days" aria-label="Tage"><div class="days-scroll" id="days"></div></nav>
+  </header>
 
   <p class="lead">Pro Zeile einen Block anklicken, nochmal klicken hebt die Auswahl auf. Mengen kannst du direkt ändern, der Kreis rechts setzt ein Gericht auf die Standardwerte zurück. Ganz rechts in jeder Zeile stellt das Plus ein eigenes Gericht zusammen. Fleisch, Fisch, Reis und Nudeln sind roh gewogen.</p>
   <p class="pantry">Nicht aufgeführt, weil immer im Haus: Zwiebeln, Knoblauch, Salz, Pfeffer, Gewürze, Ketchup, Senf, Süßsenf, Mayo, Öl, Butter, Honig. Wo davon nennenswert Kalorien kommen, steht es grau unter dem Block und zählt in der Summe mit.</p>
@@ -424,18 +427,26 @@ function currentMeals(){
 
 // ---------- Tagesleiste ----------
 const daysEl=document.getElementById('days');
-function renderDays(scrollEnd){
-  daysEl.innerHTML='';
+// Strip always fills the full width: blank filler cells on both sides; a click glides the chosen day to the centre
+let glideNext=false;
+function renderDays(){
+  const prev=daysEl.scrollLeft;daysEl.innerHTML='';
+  const nFill=Math.ceil((daysEl.clientWidth||window.innerWidth)/2/124)+1;
+  const filler=()=>{const f=document.createElement('div');f.className='day fill';f.setAttribute('aria-hidden','true');return f};
+  for(let i=0;i<nFill;i++)daysEl.appendChild(filler());
   dayList().forEach(iso=>{
     const b=document.createElement('button');b.type='button';b.className='day'+(store[iso]?' saved':'')+(iso===cur?' cur':'');
     b.setAttribute('aria-pressed',iso===cur?'true':'false');
     const s=store[iso];
     b.innerHTML=`<span class="d1">${iso===TODAY?'Heute':WD[parseIso(iso).getDay()]}</span><span class="d2">${dayLabel(iso).slice(3)}</span><span class="d3 num ${s&&s.total.kcal!=null?kcalLevel(s.total.kcal):''}">${!s?'Offen':s.total.kcal==null?'Leer':fmt(s.total.kcal)+' kcal'}</span>`;
-    b.addEventListener('click',()=>{cur=iso;render()});
+    b.addEventListener('click',()=>{cur=iso;glideNext=true;render()});
     daysEl.appendChild(b);
   });
-  const c=daysEl.querySelector('.cur');if(c)daysEl.scrollLeft=c.offsetLeft-(daysEl.clientWidth-c.offsetWidth)/2;
+  for(let i=0;i<nFill;i++)daysEl.appendChild(filler());
+  const c=daysEl.querySelector('.cur');if(!c)return;const target=c.offsetLeft-(daysEl.clientWidth-c.offsetWidth)/2;
+  if(glideNext){glideNext=false;daysEl.scrollLeft=prev;daysEl.scrollTo({left:target,behavior:'smooth'})}else daysEl.scrollLeft=target;
 }
+let resizeT;window.addEventListener('resize',()=>{clearTimeout(resizeT);resizeT=setTimeout(renderDays,150)});
 
 // ---------- Mahlzeiten ----------
 const rowsEl=document.getElementById('rows');
@@ -453,7 +464,7 @@ function itemsTable(items,editable,bid,all){
 function vorratText(items){const v=items.filter(it=>it.v&&it.use!==0);return v.length?'Inklusive Vorrat: '+v.map(it=>`${fmt(it.q)} ${it.u} ${it.n} (+${fmt(Math.round(it.kcal))} kcal)`).join(', '):''}
 
 function render(){
-  renderDays(false);
+  renderDays();
   const ed=isEditing(cur);
   const s=store[cur];
   const mb=document.getElementById('modebar');
@@ -827,14 +838,14 @@ function startCloud(uid){
 }
 
 // ---------- Start ----------
-render();renderDays(true);
+render();
 
 function applyStore(next){
   store=next;
   // Ein unberührter Entwurf für einen gespeicherten Tag wird verworfen, damit der gespeicherte Stand gilt
   Object.keys(store).forEach(dt=>{if(drafts[dt]&&!drafts[dt].touched&&!editing.has(dt)){delete drafts[dt]}
     else if(drafts[dt]&&drafts[dt].touched&&!editing.has(dt)&&dt===cur){editing.add(dt)}});
-  if(isEditing(cur)){renderDays(false);totals()}else render();
+  if(isEditing(cur)){renderDays();totals()}else render();
 }
 (async()=>{
   const c=window.claude;

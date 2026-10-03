@@ -210,6 +210,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .shopview{display:flex;flex-direction:column;gap:14px}
 .shopview .sub{color:var(--muted);font-size:13.5px;margin:0}
 .mb-actions{display:flex;gap:8px;margin-left:auto}
+.editbar{display:flex;justify-content:flex-end;margin:0 0 12px}
 .btn .cart{width:22px;height:22px;flex:none;margin-right:8px}
 .btn.shop{width:150px;padding:0}
 .view-actions,.shopview .view-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -243,6 +244,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
   </section>
   <div id="mainView">
   <div class="modebar" id="modebar"></div>
+  <div class="editbar" id="editbar" hidden></div>
   <section class="shopview" id="shopSheet" aria-label="Einkaufsliste" hidden>
     <ul class="shop-list" id="shopList"></ul>
     <p class="sub" id="shopVorrat"></p>
@@ -515,21 +517,25 @@ function render(){
   const s=store[cur];
   const mb=document.getElementById('modebar');
   const sr=document.getElementById('saverow');
+  // Bearbeiten/Verwerfen belong to the meals below, never to the title row (no shift of title or Einkauf)
+  const eb=document.getElementById('editbar');
   const label=(cur===TODAY?'Heute, ':'')+dayLabel(cur);
   if(ed){
-    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${s?numify(savedText(s)):'Noch nicht gespeichert'}</span></div><div class="mb-actions">${SHOP_BTN()}${s&&!shopOpen?'<button class="btn" type="button" id="discardBtn">Verwerfen</button>':''}</div>`;
+    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${s?numify(savedText(s)):'Noch nicht gespeichert'}</span></div><div class="mb-actions">${SHOP_BTN()}</div>`;
+    eb.innerHTML=s?'<button class="btn" type="button" id="discardBtn">Verwerfen</button>':'';
     // Verwerfen sits exactly where Bearbeiten was: drop the changes, back to the saved state
     const dc=document.getElementById('discardBtn');if(dc)dc.addEventListener('click',()=>{delete drafts[cur];editing.delete(cur);picking.clear();render()});
     sr.innerHTML=`<span id="saveMsg" aria-live="polite"></span><button class="btn primary" type="button" id="saveBtn">Speichern</button>`;
     document.getElementById('saveBtn').addEventListener('click',saveDay);
   } else {
-    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${numify(savedText(s))}</span></div><div class="mb-actions">${SHOP_BTN()}${shopOpen?'':'<button class="btn" type="button" id="editBtn">Bearbeiten</button>'}</div>`;
+    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${numify(savedText(s))}</span></div><div class="mb-actions">${SHOP_BTN()}</div>`;
+    eb.innerHTML='<button class="btn" type="button" id="editBtn">Bearbeiten</button>';
     sr.innerHTML='';
-    const eb=document.getElementById('editBtn');if(eb)eb.addEventListener('click',()=>{delete drafts[cur];editing.add(cur);picking.clear();render()});
+    document.getElementById('editBtn').addEventListener('click',()=>{delete drafts[cur];editing.add(cur);picking.clear();render()});
   }
   document.getElementById('shopToggle').addEventListener('click',()=>{shopOpen=!shopOpen;picking.clear();render()});
   // Einkauf open: title and sub line stay, the list replaces everything below them
-  document.getElementById('shopSheet').hidden=!shopOpen;rowsEl.hidden=shopOpen;sr.hidden=shopOpen;
+  document.getElementById('shopSheet').hidden=!shopOpen;rowsEl.hidden=shopOpen;sr.hidden=shopOpen;eb.hidden=shopOpen||!eb.innerHTML;
   if(shopOpen)renderShop();
   rowsEl.innerHTML='';
   if(ed)renderEdit();else renderFrozen();
@@ -916,7 +922,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='058909e16be0';
+const BUILD='56705f5cc30e';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

@@ -151,7 +151,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .alert p{font-size:22px;line-height:28px;font-weight:400;margin:0 16px 23px;color:rgba(0,0,0,.85);letter-spacing:-.01em}
 .alert:focus{outline:none}
 .alert-btns{display:flex;flex-direction:column;gap:8px}
-.alert-btns button{all:unset;box-sizing:border-box;width:100%;height:46px;border-radius:999px;background:rgba(0,0,0,.07);color:#000;font-size:20px;font-weight:600;letter-spacing:-.01em;text-align:center;line-height:46px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.alert-btns button{all:unset;box-sizing:border-box;width:100%;height:50px;border-radius:999px;background:rgba(0,0,0,.07);color:#000;font-size:20px;font-weight:600;letter-spacing:-.01em;text-align:center;line-height:50px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .alert-btns button.primary{background:#3F8EF7;color:#fff}
 .alert-btns button:active{filter:brightness(.92)}
 .alert-btns button:focus-visible{outline:2px solid #3F8EF7;outline-offset:2px}
@@ -912,7 +912,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='063cda3abc11';
+const BUILD='e431f331ec76';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

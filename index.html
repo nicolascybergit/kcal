@@ -657,9 +657,9 @@ function customEl(r,d,wrap){
     b.items.splice(0,b.items.length,...(on?MANUAL.map(k=>[k,0]):[]),...foods);
     el.classList.toggle('manual',on);btn.classList.toggle('on',on);btn.setAttribute('aria-pressed',on);placeMan(on);
     if(on&&d.sel[r.id]!==b.id){d.sel[r.id]=b.id;r.blocks.forEach(x=>{if(d.off[x.id]){delete d.off[x.id];paintBlock(x)}});markSel(wrap,r,d)}
-    else if(!on&&d.sel[r.id]===b.id){d.sel[r.id]=null;markSel(wrap,r,d)}
+    else if(!on&&!b.items.length&&d.sel[r.id]===b.id){d.sel[r.id]=null;markSel(wrap,r,d)}
     d.touched=true;saveDrafts();paintDish(r,d,wrap,el);totals();
-    if(on){const inp=el.querySelector('.dish input');if(inp)inp.focus({preventScroll:true})}});
+    if(on){el.querySelector('.pick-in').scrollTo({top:0,behavior:'smooth'});const inp=el.querySelector('.dish input');if(inp)inp.focus({preventScroll:true})}});
   return el;
 }
 function paintDish(r,d,wrap,el){
@@ -937,7 +937,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='efa4a4dc7f8c';
+const BUILD='dc4ccebe7d03';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

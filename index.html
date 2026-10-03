@@ -37,11 +37,11 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .ibtn{all:unset;display:grid;place-items:center;width:44px;height:44px;color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .ibtn:focus-visible,.shopbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ibtn svg{width:27px;height:27px}
-.shopbtn{font:inherit;font-size:17px;font-weight:500;display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 24px 0 20px;margin-left:6px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.shopbtn{font:inherit;font-size:17px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:10px;width:150px;box-sizing:border-box;height:52px;padding:0;margin-left:6px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .shopbtn:hover{border-color:var(--line-strong)}
 .shopbtn svg{width:27px;height:27px;flex:none}
 #refreshBtn .rot{transform-box:view-box;transform-origin:12px 12px}
-@media (max-width:440px){h1.logo{font-size:28px}.tools{gap:2px}.ibtn{width:40px}.shopbtn{font-size:16px;height:48px;padding:0 16px 0 14px;gap:8px;margin-left:4px}}
+@media (max-width:440px){h1.logo{font-size:28px}.tools{gap:2px}.ibtn{width:40px}.shopbtn{font-size:16px;height:48px;width:128px;gap:8px;margin-left:4px}}
 #refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1) infinite}
 .tbtn{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer}
 .tbtn:hover{border-color:var(--line-strong)}
@@ -87,9 +87,9 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .btn:hover{border-color:var(--line-strong)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;padding:0 26px}
 .btn.primary:hover{filter:brightness(1.08)}
-.btn.big{height:52px;font-size:17px;padding:0 24px}
+.btn.big{height:52px;font-size:17px;width:150px;box-sizing:border-box;padding:0}
 /* must come after .btn.big: on small phones Einkauf shrinks, so the close button shrinks with it */
-@media (max-width:440px){.btn.big{height:48px;font-size:16px;padding:0 16px}}
+@media (max-width:440px){.btn.big{height:48px;font-size:16px;width:128px}}
 .btn[disabled]{opacity:.5;cursor:default}
 .saverow{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:8px}
 #saveMsg{font-size:13px}
@@ -194,14 +194,14 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .bar .lbl{color:var(--muted);font-size:12px}
 @media (prefers-reduced-motion:no-preference){.meter i{transition:width .25s}}
 
-.sheet-bg{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:10;background:rgba(0,0,0,.35);display:flex;justify-content:flex-end}
-.sheet{background:var(--bg);color:var(--fg);width:min(440px,100%);height:100%;box-sizing:border-box;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:calc(12px + env(safe-area-inset-top,0px)) 34px calc(28px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.sheet-bg{position:fixed;top:0;left:0;right:0;overflow:hidden;overscroll-behavior:none;height:100vh;height:100dvh;z-index:10;background:rgba(0,0,0,.35);display:flex;justify-content:flex-end}
+.sheet{background:var(--bg);color:var(--fg);width:min(440px,100%);height:100%;box-sizing:border-box;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:calc(12px + env(safe-area-inset-top,0px)) 34px calc(28px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
 .sheet-head{display:flex;align-items:center;gap:10px;margin-right:-18px}
 /* content inset 34px = distance of card text (e.g. "Shake") to the screen edge; the close button sits where Einkauf is */
 .sheet h2{font-size:22px;letter-spacing:-.01em;margin:0;flex:1}
 .sheet .sub{color:var(--muted);font-size:12px;margin:0}
 .sheet .dayhead{flex:none}
-.sheet .dayhead b{font-size:17px}
+.sheet .dayhead b{font-size:22px;letter-spacing:-.01em}
 .shop-list{list-style:none;margin:0;padding:0}
 .shop-list li{display:flex;justify-content:space-between;gap:12px;padding:4px 0}
 .shop-list li+li:not(.gap){border-top:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
@@ -221,7 +221,8 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .donut .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .donut .mid b{font-family:var(--mono);font-size:clamp(28px,9vw,40px);font-weight:600;letter-spacing:-.04em;line-height:1}
 .donut .mid span{font-size:12px;color:var(--muted);margin-top:4px}
-.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tile span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 12px}
 .tile span{display:block;font-size:12px;color:var(--muted)}
 .tile b{display:block;font-family:var(--mono);font-size:20px;font-weight:600;letter-spacing:-.02em;margin-top:2px}
@@ -304,8 +305,8 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
     <div class="sheet-head"><h2 id="chartTitle">Verlauf</h2><button class="btn big" type="button" data-close>Schließen</button></div>
     <div class="dayhead"><b id="chartSub"></b><span id="chartSub2"></span></div>
     <div class="charts">
-      <div class="donut" id="donut"></div>
       <div class="tiles" id="chartTiles"></div>
+      <div class="donut" id="donut"></div>
       <div class="seg" id="chartSeg" role="tablist"><button type="button" data-m="kcal" class="on">Kalorien</button><button type="button" data-m="p">Protein</button><button type="button" data-m="meat">Fleisch</button></div>
       <div class="chart"><h3 id="lcTitle"></h3><p id="lcSub"></p><svg id="lineChart" role="img"></svg></div>
       <div id="chartTable"></div>
@@ -1056,7 +1057,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='977f0978b21a';
+const BUILD='b10ba22d9999';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

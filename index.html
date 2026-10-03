@@ -53,15 +53,16 @@ body.exporting .days,body.exporting .bar{display:none}
 /* Floating day strip: no background or divider, chips touch, today is centred (spacers allow centring the first/last day) */
 :root{padding-top:0}
 .head{position:sticky;top:0;z-index:5;background:var(--surface);margin:-18px -16px 0;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0}
-.days{margin:10px -16px 0;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
-.days-scroll{position:relative;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;background:linear-gradient(90deg,var(--surface) 50%,var(--bg) 50%)}
+/* Day strip in the earlier card look: grey band, framed cells that touch, current day framed in blue with a bottom bar */
+.days{margin:10px -16px 0;padding:8px 0;background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.days-scroll{position:relative;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;background:var(--bg)}
 /* the container background shows during overscroll: grey continues endlessly right of today */
 .day-pad{flex:0 0 calc(50% - 62px);display:flex;justify-content:flex-end;overflow:hidden}
 .day-pad.right{background:var(--bg)}
 .day-pad .day.fill{flex:none}
 .days-scroll::-webkit-scrollbar{display:none}
 .day.fill{cursor:default;pointer-events:none}
-.day{all:unset;position:relative;isolation:isolate;cursor:pointer;flex:none;width:124px;scroll-snap-align:center;box-sizing:border-box;padding:11px 16px 15px;border-right:1px solid color-mix(in srgb,var(--line) 55%,transparent);background:var(--surface);display:flex;flex-direction:column;gap:1px}
+.day{all:unset;position:relative;isolation:isolate;cursor:pointer;flex:none;width:124px;scroll-snap-align:center;box-sizing:border-box;padding:11px 16px 13px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
 .day:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .day .d1{font-size:14.5px;color:var(--muted)}
 .day .d2{font-family:var(--mono);font-weight:500;font-size:21px;line-height:1.2;letter-spacing:-.03em;margin:1px 0}
@@ -69,8 +70,8 @@ body.exporting .days,body.exporting .bar{display:none}
 .day.saved .d3{color:var(--fg)}
 .day .d3.ok{color:var(--ok)}
 .day .d3.low{color:var(--low)}
-.day.cur{background:var(--sel)}
-.day.cur::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--accent)}
+.day+.day,.day-pad.left+.day,.day-pad .day.fill+.day.fill{margin-left:-1px}
+.day.cur{background:var(--sel);border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);z-index:2}
 .day.cur .d2{font-weight:600}
 
 #dbNote{color:var(--muted);font-size:13.5px;margin:0 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -915,7 +916,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='98bde90879f9';
+const BUILD='058909e16be0';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

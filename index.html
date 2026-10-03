@@ -509,7 +509,9 @@ function render(){
   const sr=document.getElementById('saverow');
   const label=(cur===TODAY?'Heute, ':'')+dayLabel(cur);
   if(ed){
-    mb.innerHTML=`<div class="dayhead"><b>${label}</b><span>${s?'Wird bearbeitet, '+savedText(s).replace('Gespeichert','gespeichert')+' bleibt bis zum Speichern':'Noch nicht gespeichert'}</span></div>`;
+    mb.innerHTML=`<div class="dayhead"><b>${label}</b><span>${s?'Wird bearbeitet, '+savedText(s).replace('Gespeichert','gespeichert')+' bleibt bis zum Speichern':'Noch nicht gespeichert'}</span></div>${s?'<button class="btn" type="button" id="discardBtn">Verwerfen</button>':''}`;
+    // Verwerfen sits exactly where Bearbeiten was: drop the changes, back to the saved state
+    const dc=document.getElementById('discardBtn');if(dc)dc.addEventListener('click',()=>{delete drafts[cur];editing.delete(cur);picking.clear();render()});
     sr.innerHTML=`<span id="saveMsg" aria-live="polite"></span><button class="btn primary" type="button" id="saveBtn">Speichern</button>`;
     document.getElementById('saveBtn').addEventListener('click',saveDay);
   } else {
@@ -896,7 +898,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='410dba98edd8';
+const BUILD='2bf1e893fbe6';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

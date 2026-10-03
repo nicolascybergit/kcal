@@ -435,6 +435,13 @@ try{localStorage.removeItem(LS_DRAFT)}catch(e){}
 const saveDrafts=()=>{};
 
 const isEditing=date=>!store[date]||editing.has(date);
+// Leaving a saved day in edit mode: if the draft would save exactly what is stored, drop it so the day shows its saved view again
+function leaveIfUnchanged(date){
+  const d=drafts[date];if(!d||!store[date]||!editing.has(date))return;
+  const sig=x=>JSON.stringify(draftMeals(x).map(m=>[m.row,m.block,m.items.map(it=>[it.f,it.q,it.use])]));
+  delete drafts[date];const fresh=draftFor(date);drafts[date]=d;
+  if(sig(d)===sig(fresh)){delete drafts[date];editing.delete(date)}
+}
 
 function draftFor(date){
   if(drafts[date]){drafts[date].custom=drafts[date].custom||{};drafts[date].off=drafts[date].off||{};return drafts[date]}
@@ -468,8 +475,9 @@ function mealFromDraft(d,b){
   return {row:b.row,block:b.id,name:b.name,t:b.t,items,...sums(items)};
 }
 function sums(items){let kcal=0,p=0,meat=0,meatc=0;items.forEach(it=>{kcal+=it.kcal;p+=it.p;meat+=it.m;meatc+=it.mc||0});return {kcal:Math.round(kcal),p:Math.round(p),meat:Math.round(meat),meatc:Math.round(meatc)}}
+const draftMeals=d=>ROWS.map(r=>{const b=d.sel[r.id]&&blockOf(d,d.sel[r.id]);return b&&b.items.length?mealFromDraft(d,b):null}).filter(Boolean);
 function currentMeals(){
-  if(isEditing(cur)){const d=draftFor(cur);return ROWS.map(r=>{const b=d.sel[r.id]&&blockOf(d,d.sel[r.id]);return b&&b.items.length?mealFromDraft(d,b):null}).filter(Boolean)}
+  if(isEditing(cur))return draftMeals(draftFor(cur));
   return store[cur].meals||[];
 }
 
@@ -486,7 +494,7 @@ function renderDays(){
     b.setAttribute('aria-pressed',iso===cur?'true':'false');
     const s=store[iso];
     b.innerHTML=`<span class="d1">${iso===TODAY?'Heute':WD[parseIso(iso).getDay()]}</span><span class="d2">${dayLabel(iso).slice(3)}</span><span class="d3${s&&s.total.kcal!=null?' num '+kcalLevel(s.total.kcal):''}">${!s?'Offen':s.total.kcal==null?'Leer':fmt(s.total.kcal)+' kcal'}</span>`;
-    b.addEventListener('click',()=>{cur=iso;glideNext=true;picking.clear();render()});
+    b.addEventListener('click',()=>{if(iso!==cur)leaveIfUnchanged(cur);cur=iso;glideNext=true;picking.clear();render()});
     daysEl.appendChild(b);
   });
   const right=document.createElement('div');right.className='day-pad right';right.setAttribute('aria-hidden','true');daysEl.appendChild(right);
@@ -942,7 +950,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='75d5f5ed72a3';
+const BUILD='6903f12ee626';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

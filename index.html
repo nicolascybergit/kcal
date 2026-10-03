@@ -842,6 +842,17 @@ function startCloud(uid){
     ()=>{n.hidden=false;n.textContent='Gespeicherte Tage konnten nicht geladen werden. Lade die Seite neu.'});
 }
 
+// ---------- Update-Check ----------
+// BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
+// (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
+const BUILD='954a465bcb52';
+async function checkUpdate(){
+  if(BUILD==='local'||location.protocol!=='https:')return;
+  try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
+    if(m&&m[1]!==BUILD&&sessionStorage.getItem('ebk-reloaded')!==m[1]){sessionStorage.setItem('ebk-reloaded',m[1]);location.reload()}}catch(e){}
+}
+checkUpdate();document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});
+
 // ---------- Start ----------
 render();
 

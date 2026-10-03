@@ -166,6 +166,9 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .pick-list button{all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:12px;width:100%;padding:3px 0}
 .pick-list button:focus-visible{outline:2px solid var(--accent)}
 .pick-list button.on{color:var(--accent);font-weight:600}
+.shop-list.pick-list li.man{margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}
+.block.pick.manual .pick-list li:not(.man){display:none}
+.block.pick.manual .pick-list li.man{margin-top:0;padding-top:0;border-top:0}
 .vorrat .vrow{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 0;cursor:pointer}
 .vorrat .vrow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .vorrat .vrow .box{margin-top:0}
@@ -287,7 +290,8 @@ const F = {
   granola:['Granola','g',4.5,0.09,{d:60,g:5}],
   nuesse:['Nussmix','g',6.2,0.18,{d:30,g:8}],
   skyr:['Skyr','g',0.63,0.11,{d:250,g:3}],
-  bbrot:['Bananenbrot','g',3.0,0.05,{d:100,g:4}],
+  // Own protein banana bread: 4 small bananas, 3 eggs, 375 g Aldi protein flour, almond milk, blueberries or choc chips; ~2,080 kcal, ~104 g protein, ~960 g baked
+  bbrot:['Bananenbrot','g',2.15,0.11,{d:200,g:4}],
   wrap:['Tortilla-Wraps','Stk',200,5.5,{d:2,g:4}],
   thun:['Thunfisch','g',1.1,0.25,{d:130,g:2,m:1}],
   mayo:['Mayo','g',6.8,0.01,{d:15,v:1}],
@@ -331,6 +335,9 @@ const F = {
   bratwurst:['Bratwurst','g',3.0,0.14,{d:250,g:2,m:1,c:0.85,cl:'gebraten'}],
   mixtrail:['Seeberger Mixtrail','g',4.73,0.11,{d:150,g:8}],
   tomsauce:['Tomatensauce','g',0.39,0.018,{d:100,g:6}],
+  // Manual entry (x:1): no food, the amount is the value itself; never in the pick list or the shopping list
+  okcal:['Kalorien','kcal',1,0,{x:1}],
+  oprot:['Protein','g',0,1,{x:1}],
 };
 
 // ---------- Gerichte (Standardwerte) ----------
@@ -350,7 +357,7 @@ const ROWS = [
  {id:'sn1',name:'Snack 1',sub:'Zum Mitnehmen',target:'Etwa 450 kcal',blocks:[
   {id:'a1',name:'Skyr-Granola-Becher',t:'2 min',items:[['skyr',250],['granola',50],['honig',15]]},
   {id:'a2',name:'Schinken-Käse-Sandwich',t:'3 min',items:[['brot',100],['kschinken',80],['gouda',30],['butter',10]]},
-  {id:'a3',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',150]]},
+  {id:'a3',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200]]},
   {id:'a4',name:'Bagel Frischkäse-Schinken',t:'2 min',items:[['bagel',1],['frischk',30],['rschinken',40]]},
   {id:'a5',name:'Thunfisch-Wrap',t:'3 min',items:[['wrap',1],['thun',130],['mayo',15]]},
   {id:'a6',name:'Nüsse & Banane',t:'0 min',items:[['nuesse',50],['banane',1]]},
@@ -368,7 +375,7 @@ const ROWS = [
   {id:'m9',name:'Bratwurst mit Kidneybohnen und Reis',t:'25 min, inklusive 20 g Reis, der im Topf kleben bleibt',items:[['bratwurst',250],['kidney',250],['reis',150]]},
  ]},
  {id:'sn2',name:'Snack 2',sub:'',target:'Etwa 450 kcal',blocks:[
-  {id:'b1',name:'Bananenbrot & Nüsse',t:'Vorgebacken',items:[['bbrot',100],['nuesse',25]]},
+  {id:'b1',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200]]},
   {id:'b2',name:'Milch-Shake',t:'2 min',items:[['milch',400],['whey',30],['banane',1]]},
   {id:'b3',name:'Reiswaffeln mit Erdnussbutter',t:'2 min',items:[['reiswaffel',4],['pb',40],['banane',1]]},
   {id:'b4',name:'Käsebrot',t:'2 min',items:[['brot',100],['gouda',50],['butter',10]]},
@@ -444,7 +451,9 @@ const isCustom=id=>typeof id==='string'&&id.startsWith('x-');
 const customBlock=(d,row)=>({id:'x-'+row,row,name:CUSTOM_NAME,t:'',custom:true,items:(d.custom[row]=d.custom[row]||[])});
 const blockOf=(d,id)=>isCustom(id)?customBlock(d,id.slice(2)):BLOCK[id];
 const defQty=k=>opt(k).d||(F[k][1]==='Stk'?1:100);
-const PICK_ORDER=Object.keys(F).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
+const PICK_ORDER=Object.keys(F).filter(k=>!opt(k).x).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
+const MANUAL=Object.keys(F).filter(k=>opt(k).x);
+const isManual=items=>items.some(x=>opt(x[0]).x);
 const qty=(d,b,i)=>{if(b.custom)return b.items[i][1];const o=d.q[b.id];return (o&&o[i]!=null)?o[i]:b.items[i][1]};
 // Pantry items carry use 1/0; a deselected one stays in the record but counts 0 kcal/protein
 function mealFromDraft(d,b){
@@ -491,8 +500,8 @@ const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 
 function itemsTable(items,editable,bid,all){
   return `<table class="items"><tbody>${items.filter(it=>all||!it.v).map(it=>`<tr><td>${esc(it.n)}<span class="hint" data-h="${it.i}">${numify(hintFor(it.f,it.q))}</span></td>
-    <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${it.u==='Stk'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${it.u}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${it.u}</span>`}</td>
-    <td class="num" data-ik="${it.i}">${fmt(Math.round(it.kcal))}</td></tr>`).join('')}</tbody></table>`;
+    <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${opt(it.f).x?1:it.u==='Stk'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${it.u}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${it.u}</span>`}</td>
+    ${F[it.f]&&opt(it.f).x?'<td></td>':`<td class="num" data-ik="${it.i}">${fmt(Math.round(it.kcal))}</td>`}</tr>`).join('')}</tbody></table>`;
 }
 function vorratText(items){const v=items.filter(it=>it.v&&it.use!==0);return v.length?'Inklusive Vorrat: '+v.map(it=>`${fmt(it.q)} ${it.u} ${it.n} (+${fmt(Math.round(it.kcal))} kcal)`).join(', '):''}
 
@@ -622,11 +631,12 @@ function customEl(r,d,wrap){
     el.querySelector('.add').addEventListener('click',()=>{picking.add(r.id);swapCustom(r,d,wrap)});
     return el;
   }
-  el.className='block pick'+(d.sel[r.id]===b.id?' on':'');
+  el.className='block pick'+(d.sel[r.id]===b.id?' on':'')+(isManual(b.items)?' manual':'');
   const have=new Set(b.items.map(x=>x[0]));let last=null;
   el.innerHTML=`<div class="pick-in"><div class="dish"></div>
     <ul class="shop-list pick-list">${PICK_ORDER.map(k=>{const g=opt(k).g||9;const gap=last!==null&&g!==last;last=g;const on=have.has(k);
-      return `<li${gap?' class="gap"':''}><button type="button" data-f="${k}" aria-pressed="${on}"${on?' class="on"':''}><span>${esc(F[k][0])}</span><span>${fmt(defQty(k))} ${F[k][1]}</span></button></li>`}).join('')}</ul></div>`;
+      return `<li${gap?' class="gap"':''}><button type="button" data-f="${k}" aria-pressed="${on}"${on?' class="on"':''}><span>${esc(F[k][0])}</span><span>${fmt(defQty(k))} ${F[k][1]}</span></button></li>`}).join('')}
+      <li class="man"><button type="button" data-man aria-pressed="${isManual(b.items)}"${isManual(b.items)?' class="on"':''}><span>Kalorien und Protein</span></button></li></ul></div>`;
   paintDish(r,d,wrap,el);
   el.querySelectorAll('[data-f]').forEach(btn=>btn.addEventListener('click',()=>{
     const f=btn.dataset.f;const i=b.items.findIndex(x=>x[0]===f);
@@ -635,6 +645,15 @@ function customEl(r,d,wrap){
     if(b.items.length&&d.sel[r.id]!==b.id){d.sel[r.id]=b.id;r.blocks.forEach(x=>{if(d.off[x.id]){delete d.off[x.id];paintBlock(x)}});markSel(wrap,r,d)}
     else if(!b.items.length&&d.sel[r.id]===b.id){d.sel[r.id]=null;markSel(wrap,r,d)}
     d.touched=true;saveDrafts();paintDish(r,d,wrap,el);totals();}));
+  // Manual entry: replaces all foods with two fields (kcal, then protein); tapping again goes back to the food list
+  el.querySelector('[data-man]').addEventListener('click',e=>{const btn=e.currentTarget;const on=!isManual(b.items);
+    b.items.splice(0,b.items.length,...(on?MANUAL.map(k=>[k,0]):[]));
+    el.classList.toggle('manual',on);btn.classList.toggle('on',on);btn.setAttribute('aria-pressed',on);
+    el.querySelectorAll('[data-f]').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-pressed',false)});
+    if(on&&d.sel[r.id]!==b.id){d.sel[r.id]=b.id;r.blocks.forEach(x=>{if(d.off[x.id]){delete d.off[x.id];paintBlock(x)}});markSel(wrap,r,d)}
+    else if(!on&&d.sel[r.id]===b.id){d.sel[r.id]=null;markSel(wrap,r,d)}
+    d.touched=true;saveDrafts();paintDish(r,d,wrap,el);totals();
+    if(on){const inp=el.querySelector('.dish input');if(inp)inp.focus({preventScroll:true})}});
   return el;
 }
 function paintDish(r,d,wrap,el){
@@ -752,7 +771,7 @@ function renderShop(){
   document.getElementById('shopSub').innerHTML=numify(isEditing(cur)?'Aktuelle Auswahl':savedText(store[cur]));
   const buy={},pan={};
   currentMeals().forEach(m=>m.items.forEach(it=>{if(it.v&&it.use===0)return;const t=it.v?pan:buy;t[it.f]=(t[it.f]||0)+it.q}));
-  const keys=Object.keys(buy).filter(k=>F[k]).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
+  const keys=Object.keys(buy).filter(k=>F[k]&&!opt(k).x).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
   const ul=document.getElementById('shopList');ul.innerHTML='';const lines=[];let lastG=null;
   keys.forEach(k=>{const g=opt(k).g||9;const li=document.createElement('li');if(lastG!==null&&g!==lastG){li.className='gap';lines.push('')}
     lastG=g;const s=unitOut(buy[k],F[k][1]);li.innerHTML=`<span>${esc(F[k][0])}</span><span>${s}</span>`;ul.appendChild(li);lines.push(`${F[k][0]} ${s}`)});
@@ -912,7 +931,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='e431f331ec76';
+const BUILD='484c7d30023e';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

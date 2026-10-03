@@ -258,12 +258,10 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
   <div class="top">
     <div class="tools">
       <button class="ibtn" id="refreshBtn" type="button" title="Neu laden" aria-label="Neu laden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="rot"><g transform="translate(12 12) scale(.88) translate(-12 -12)"><path d="M3.3 9.7A9 9 0 0 1 12 3a9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3.1V8h-4.9"/><path d="M20.7 14.3A9 9 0 0 1 12 21a9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M7.9 16H3v4.9"/></g></g></svg></button>
-      <button class="ibtn" id="openChart" type="button" title="Verlauf" aria-label="Verlauf über die Tage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 21h17M7 17v-6.5M12 17V3.5M17 17V8"/></svg></button>
-    </div>
-    <div class="tools">
       <button class="ibtn" id="openExport" type="button" title="Export" aria-label="Alle gespeicherten Tage exportieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15.5V3M6.5 8.5 12 3l5.5 5.5M3.5 14v5.5c0 .8.7 1.5 1.5 1.5h14c.8 0 1.5-.7 1.5-1.5V14"/></svg></button>
-      <button class="shopbtn" id="openShop" type="button" aria-label="Einkaufsliste für diesen Tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Einkauf</button>
+      <button class="ibtn" id="openChart" type="button" title="Verlauf" aria-label="Verlauf über die Tage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 21h17M5.5 17v-6.5M12 17V3.5M18.5 17V8"/></svg></button>
     </div>
+    <button class="shopbtn" id="openShop" type="button" aria-label="Einkaufsliste für diesen Tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Einkauf</button>
   </div>
   <h1 class="logo"><span class="ln">4000</span> <span class="lw">kcal</span></h1>
   <nav class="days" aria-label="Tage"><div class="days-scroll" id="days"></div></nav>
@@ -1057,7 +1055,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='b10ba22d9999';
+const BUILD='44227d3a5f45';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

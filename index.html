@@ -2,7 +2,7 @@
 <title>4000 kcal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: plain document table — sticky day strip on top, one row per meal with option blocks as columns, sticky day total at the bottom */
 :root{
@@ -25,29 +25,18 @@
 html{background:var(--bg)}
 body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45}
 .wrap{max-width:1500px;margin:0 auto;padding:18px 16px 230px}
-.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.num{font-variant-numeric:tabular-nums}
 
 .top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
-.top .tools{justify-self:start;gap:4px}
-/* Einkauf in the earlier square style: no rounding */
-.sqbtn{justify-self:end;font:inherit;font-size:15px;font-weight:500;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 14px;border:1px solid var(--line-strong);border-radius:0;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.sqbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.sqbtn .cart{width:22px;height:22px;margin:0}
-@media (max-width:440px){.sqbtn{padding:0 10px;gap:6px;font-size:14px}.top .tools{gap:0}.ibtn{width:38px}}
-/* Logo: digits in the number font, the word in the logo font (Space Grotesk, as in the app icon) */
-h1.logo{margin:0;text-align:center;font-size:30px;line-height:1.1;white-space:nowrap}
-h1.logo .ln{font-family:var(--mono);font-weight:600;letter-spacing:-.04em}
-h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spacing:-.045em}
+.top #openExport{justify-self:start}
+.top #openShop{justify-self:end}
+h1{font-size:21px;font-weight:600;margin:0;text-align:center;white-space:nowrap}
 .tools{display:flex;align-items:center;gap:8px}
 /* Header: plain icons for refresh/export, large pill for Einkauf (its cart matches the icon size) */
-.ibtn{all:unset;display:grid;place-items:center;width:44px;height:44px;color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.ibtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.ibtn svg{width:27px;height:27px}
-#refreshBtn .rot{transform-box:view-box;transform-origin:12px 12px}
-@media (max-width:440px){h1.logo{font-size:27px}}
 #refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1) infinite}
-.tbtn{font:inherit;font-size:14.5px;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer}
-.tbtn:hover{border-color:var(--line-strong)}
+.modebar .rst{margin-left:auto}
+.tbtn{font:inherit;font-size:13.5px;display:inline-flex;align-items:center;gap:6px;height:auto;padding:6px 10px;border:1px solid var(--line-strong);border-radius:0;background:var(--surface);color:var(--fg);cursor:pointer}
+.tbtn:hover{border-color:var(--fg)}
 .tbtn:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .tbtn svg{width:16px;height:16px}
 
@@ -56,53 +45,52 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .head{position:sticky;top:0;z-index:5;background:var(--surface);margin:-18px -16px 0;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0}
 /* Day strip in the earlier card look: grey band, framed cells that touch, current day framed in blue with a bottom bar */
 .days{margin:10px -16px 0;padding:8px 0;background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.days-scroll{position:relative;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;background:var(--bg)}
+.days-scroll{position:relative;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;background:var(--bg)}
 /* the container background shows during overscroll: grey continues endlessly right of today */
-.day-pad{flex:0 0 calc(50% - 62px);display:flex;justify-content:flex-end;overflow:hidden}
+.day-pad{flex:0 0 calc(50% - 46px)}
 .day-pad.right{background:var(--bg)}
-.day-pad .day.fill{flex:none}
 .days-scroll::-webkit-scrollbar{display:none}
 .day.fill{cursor:default;pointer-events:none}
-.day{all:unset;position:relative;isolation:isolate;cursor:pointer;flex:none;width:124px;scroll-snap-align:center;box-sizing:border-box;padding:4px 9px 6px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
+.day{all:unset;position:relative;isolation:isolate;cursor:pointer;flex:none;width:92px;scroll-snap-align:center;box-sizing:border-box;padding:6px 9px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
 .day:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.day .d1{font-size:14.5px;color:var(--muted)}
-.day .d2{font-family:var(--mono);font-weight:500;font-size:21px;line-height:1.15;letter-spacing:-.03em;margin:0}
-.day .d3{font-size:14.5px;color:var(--muted)}
+.day .d1{font-size:12.5px;color:var(--muted)}
+.day .d2{font-weight:600;font-size:15px;line-height:1.3}
+.day .d3{font-size:12.5px;color:var(--muted)}
 .day.saved .d3{color:var(--fg)}
 .day .d3.ok{color:var(--ok)}
 .day .d3.low{color:var(--low)}
-.day+.day,.day-pad.left+.day,.day-pad .day.fill+.day.fill{margin-left:-1px}
 .day.cur{background:var(--sel);border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);z-index:2}
-.day.cur .d2{font-weight:600}
 
 #dbNote{color:var(--muted);font-size:13.5px;margin:0 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .login{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%}
 .login span{flex:1 1 100%}
-.login input{font:inherit;font-size:14px;height:46px;box-sizing:border-box;padding:0 16px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);flex:1 1 160px;min-width:0}
+.login input{font:inherit;font-size:14px;height:34px;box-sizing:border-box;padding:0 10px;border-radius:0;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);flex:1 1 160px;min-width:0}
 .login input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 
-.modebar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0 14px;min-height:46px}
+.modebar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:28px 0 14px;min-height:40px}
 .dayhead{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 .dayhead b{font-size:17px;font-weight:600;color:var(--fg)}
 .dayhead>span{font-size:13.5px;color:var(--muted)}
 .modebar .dayhead b{font-size:22px;letter-spacing:-.01em}
 /* Pill buttons: .btn 46px */
-.btn{font:inherit;font-size:16px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 22px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.btn:hover{border-color:var(--line-strong)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;padding:0 26px}
+.btn{font:inherit;font-size:14px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;height:auto;padding:7px 14px;border:1px solid var(--line-strong);border-radius:0;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn:hover{border-color:var(--fg)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
 .btn.primary:hover{filter:brightness(1.08)}
 .btn[disabled]{opacity:.5;cursor:default}
 .saverow{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:8px}
 /* Bottom actions in the square style of the Einkauf button */
-.sq{font:inherit;font-size:16px;font-weight:500;height:46px;padding:0 22px;border:1px solid var(--line-strong);border-radius:0;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.sq.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;padding:0 26px}
+.sq{font:inherit;font-size:14px;font-weight:500;height:auto;padding:7px 14px;border:1px solid var(--line-strong);border-radius:0;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sq.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.sq:hover{border-color:var(--fg)}
+.sq.primary:hover{filter:brightness(1.08)}
 .sq:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sq[disabled]{opacity:.5;cursor:default}
 #saveMsg{font-size:14.5px}
 #saveMsg:empty{display:none}
 #saveMsg.err{color:var(--fg)}
 
-.row{position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--surface);margin-bottom:14px;padding-left:5px}
+.row{position:relative;border:1px solid var(--line);border-radius:0;overflow:hidden;background:var(--surface);margin-bottom:14px;padding-left:5px}
 .row::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:transparent}
 .row.has-sel::before{background:var(--accent)}
 .row-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;padding:10px 12px;border-bottom:1px solid var(--line)}
@@ -138,7 +126,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .items td:last-child{padding-right:12px;text-align:right;white-space:nowrap}
 .items .hint{display:block;color:var(--muted);font-size:13.5px;white-space:pre-line}
 .q{display:flex;align-items:center;gap:3px;white-space:nowrap}
-.q input{width:52px;font:inherit;font-family:var(--mono);font-size:13.5px;text-align:right;padding:2px 5px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
+.q input{width:52px;font:inherit;font-family:var(--mono);font-size:13.5px;text-align:right;padding:2px 4px;border:1px solid var(--line);border-radius:0;background:var(--surface);color:var(--fg)}
 .q input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 @media (pointer:coarse){.q input{font-size:16px;width:60px}.login input{font-size:16px}body:has(.q input:focus,.login input:focus) .bar{display:none}}
 .q span{color:var(--muted);font-size:13.5px;min-width:20px}
@@ -211,11 +199,13 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .shop-list li{display:flex;justify-content:space-between;gap:12px;padding:4px 0}
 .shop-list li+li:not(.gap){border-top:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
 .shop-list li.gap{margin-top:18px}
-.shop-list li span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
-.view textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);padding:10px;box-sizing:border-box}
-.pop-bg{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.12);display:flex;align-items:flex-start;justify-content:center;padding:calc(70px + env(safe-area-inset-top,0px)) 16px 24px}
-.pop{box-sizing:border-box;width:min(480px,100%);max-height:100%;overflow-y:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.18);padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px;animation:alert-in .18s ease-out}
-.pop .dayhead b{font-size:22px;letter-spacing:-.01em}
+.shop-list li span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+.view textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:0;background:var(--surface);color:var(--fg);padding:10px;box-sizing:border-box}
+.pop-bg{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.12);display:flex;align-items:flex-start;justify-content:flex-end;padding:calc(70px + env(safe-area-inset-top,0px)) 16px 24px}
+.pop{box-sizing:border-box;position:relative;width:min(360px,100%);max-height:min(70vh,560px);max-height:100%;overflow-y:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);border-radius:0;box-shadow:0 10px 30px rgba(0,0,0,.14);padding:14px 14px 12px;display:flex;flex-direction:column;gap:14px;animation:alert-in .18s ease-out}
+.pop .dayhead b{font-size:17px}
+.pop .dayhead{padding-right:34px}
+.pop .x{position:absolute;top:8px;right:8px}
 .pop .sub{color:var(--muted);font-size:13.5px;margin:0}
 .editbar{display:flex;justify-content:flex-end;margin:0 0 12px}
 .view-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -228,12 +218,9 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 <div class="wrap">
   <header class="head">
   <div class="top">
-    <div class="tools">
-      <button class="ibtn" id="refreshBtn" type="button" title="Neu laden" aria-label="Neu laden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="rot"><g transform="translate(12 12) scale(.88) translate(-12 -12)"><path d="M3.3 9.7A9 9 0 0 1 12 3a9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3.1V8h-4.9"/><path d="M20.7 14.3A9 9 0 0 1 12 21a9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M7.9 16H3v4.9"/></g></g></svg></button>
-      <button class="ibtn" id="openExport" type="button" title="CSV herunterladen" aria-label="Alle Tage als CSV herunterladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15.5V3M6.5 8.5 12 3l5.5 5.5M3.5 14v5.5c0 .8.7 1.5 1.5 1.5h14c.8 0 1.5-.7 1.5-1.5V14"/></svg></button>
-    </div>
-    <h1 class="logo"><span class="ln">4000</span> <span class="lw">kcal</span></h1>
-    <button class="sqbtn" id="openShop" type="button" aria-label="Einkaufsliste für diesen Tag"><svg class="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Einkauf</button>
+    <button class="tbtn" id="openExport" type="button" aria-label="Alle Tage als CSV herunterladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/></svg>Export</button>
+    <h1>4000 kcal</h1>
+    <button class="tbtn" id="openShop" type="button" aria-label="Einkaufsliste für diesen Tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Einkauf</button>
   </div>
   <nav class="days" aria-label="Tage"><div class="days-scroll" id="days"></div></nav>
   </header>
@@ -248,6 +235,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 
 <div class="pop-bg" id="shopPop" hidden>
   <div class="pop" role="dialog" aria-modal="true" aria-label="Einkaufsliste">
+    <button class="rst x" type="button" id="shopClose" aria-label="Schließen"></button>
     <div class="dayhead"><b id="shopDay"></b><span id="shopSub"></span></div>
     <ul class="shop-list" id="shopList"></ul>
     <p class="sub" id="shopVorrat"></p>
@@ -475,10 +463,7 @@ const daysEl=document.getElementById('days');
 let glideNext=false;
 function renderDays(){
   const prev=daysEl.scrollLeft;daysEl.innerHTML='';
-  const nFill=Math.ceil((daysEl.clientWidth||window.innerWidth)/2/124)+1;
-  const left=document.createElement('div');left.className='day-pad left';left.setAttribute('aria-hidden','true');
-  for(let i=0;i<nFill;i++){const f=document.createElement('div');f.className='day fill';left.appendChild(f)}
-  daysEl.appendChild(left);
+  const left=document.createElement('div');left.className='day-pad left';left.setAttribute('aria-hidden','true');daysEl.appendChild(left);
   dayList().forEach(iso=>{
     const b=document.createElement('button');b.type='button';b.className='day'+(store[iso]?' saved':'')+(iso===cur?' cur':'');
     b.setAttribute('aria-pressed',iso===cur?'true':'false');
@@ -508,6 +493,8 @@ function itemsTable(items,editable,bid,all){
 }
 function vorratText(items){const v=items.filter(it=>it.v&&it.use!==0);return v.length?'Inklusive Vorrat: '+v.map(it=>`${fmt(it.q)} ${it.u} ${it.n} (+${fmt(Math.round(it.kcal))} kcal)`).join(', '):''}
 
+// Refresh sits beside the day title, same size as the Reset-Dreher in the cards
+const REFRESH_BTN='<button class="rst" id="refreshBtn" type="button" title="Neu laden" aria-label="Neu laden">'+RST_SVG+'</button>';
 function render(){
   renderDays();
   const ed=isEditing(cur);
@@ -518,7 +505,7 @@ function render(){
   const eb=document.getElementById('editbar');
   const label=(cur===TODAY?'Heute, ':'')+dayLabel(cur);
   if(ed){
-    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${s?numify(savedText(s)):'Noch nicht gespeichert'}</span></div>`;
+    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${s?numify(savedText(s)):'Noch nicht gespeichert'}</span></div>${REFRESH_BTN}`;
     eb.innerHTML=s?'<button class="btn" type="button" id="discardBtn">Verwerfen</button>':'';
     // Verwerfen sits exactly where Bearbeiten was: drop the changes, back to the saved state
     const dc=document.getElementById('discardBtn');if(dc)dc.addEventListener('click',()=>{delete drafts[cur];editing.delete(cur);picking.clear();render()});
@@ -526,12 +513,13 @@ function render(){
     document.getElementById('saveBtn').addEventListener('click',saveDay);
     const rb=document.getElementById('resetBtn');if(rb)rb.addEventListener('click',resetDay);
   } else {
-    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${numify(savedText(s))}</span></div>`;
+    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${numify(savedText(s))}</span></div>${REFRESH_BTN}`;
     eb.innerHTML='<button class="btn" type="button" id="editBtn">Bearbeiten</button>';
     sr.innerHTML='';
     document.getElementById('editBtn').addEventListener('click',()=>{delete drafts[cur];editing.add(cur);picking.clear();render()});
   }
   eb.hidden=!eb.innerHTML;
+  document.getElementById('refreshBtn').addEventListener('click',doRefresh);
   if(!document.getElementById('shopPop').hidden)renderShop();
   rowsEl.innerHTML='';
   if(ed)renderEdit();else renderFrozen();
@@ -755,6 +743,7 @@ function openShop(){renderShop();const p=document.getElementById('shopPop');p.hi
 function closeShop(){document.getElementById('shopPop').hidden=true}
 document.getElementById('shopPop').addEventListener('click',e=>{if(e.target.id==='shopPop')closeShop()});
 document.getElementById('openShop').addEventListener('click',openShop);
+document.getElementById('shopClose').innerHTML=X_SVG;document.getElementById('shopClose').addEventListener('click',closeShop);
 function renderShop(){
   document.getElementById('shopDay').innerHTML=numify((cur===TODAY?'Heute, ':'')+dayLabel(cur));
   document.getElementById('shopSub').innerHTML=numify(isEditing(cur)?'Aktuelle Auswahl':savedText(store[cur]));
@@ -805,8 +794,8 @@ document.getElementById('copyShop').addEventListener('click',()=>copyText(shopTe
 // ---------- Sheets ----------
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('alertBg').hidden)closeShop()});
 // Refresh: spin, then reload (fresh data, newest app version, unsaved changes reset)
-document.getElementById('refreshBtn').addEventListener('click',e=>{const b=e.currentTarget;b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');
-  setTimeout(()=>location.reload(),750)});
+function doRefresh(e){const b=e.currentTarget;b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');
+  setTimeout(()=>location.reload(),750)}
 document.getElementById('openExport').addEventListener('click',exportCsv);
 
 // ---------- Datei-Speicher (lokale HTML) ----------
@@ -920,7 +909,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='5720b59d3647';
+const BUILD='6b0af6cf4884';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

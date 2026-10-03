@@ -40,8 +40,8 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;white-space:now
 #refreshBtn .rot{transform-box:view-box;transform-origin:12px 12px}
 @media (max-width:440px){h1{font-size:22px}.tools{gap:2px}.ibtn{width:40px}.shopbtn{font-size:16px;height:48px;padding:0 16px 0 14px;gap:8px;margin-left:4px}}
 #refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1) infinite}
-.tbtn{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);cursor:pointer}
-.tbtn:hover{border-color:var(--accent);color:var(--accent)}
+.tbtn{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer}
+.tbtn:hover{border-color:var(--line-strong)}
 .tbtn:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .tbtn svg{width:16px;height:16px}
 
@@ -62,41 +62,39 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;white-space:now
 .day:hover{border-color:var(--line-strong);z-index:1}
 .day:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .day .d1{font-size:12px;color:var(--muted)}
-.day .d2{font-weight:600;font-size:13.5px}
+.day .d2{font-weight:600;font-size:17px}
 .day .d3{font-size:11.5px;color:var(--muted)}
 .day.saved .d3{color:var(--fg)}
 .day .d3.ok{color:var(--ok)}
 .day .d3.low{color:var(--low)}
 .day.cur{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);background:var(--sel);z-index:2}
 
-.lead{color:var(--muted);margin:14px 0 4px;max-width:85ch}
-.pantry{color:var(--muted);font-size:12.5px;margin:0 0 14px;max-width:95ch}
 #dbNote{color:var(--warn);font-size:12.5px;margin:0 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-#dbNote .tbtn{font-size:12.5px;padding:3px 9px}
 .login{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%}
 .login span{flex:1 1 100%}
-.login input{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);flex:1 1 160px;min-width:0}
+.login input{font:inherit;font-size:14px;height:40px;box-sizing:border-box;padding:0 14px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);flex:1 1 160px;min-width:0}
 .login input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 
-.modebar{display:flex;align-items:center;gap:10px;margin:0 0 10px;min-height:32px}
+.modebar{display:flex;align-items:center;gap:10px;margin:18px 0 14px;min-height:46px}
 .dayhead{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 .dayhead b{font-size:17px;font-weight:600;color:var(--fg)}
-.dayhead span{font-size:13px;color:var(--muted)}
-.btn{font:inherit;font-size:13.5px;padding:7px 14px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);cursor:pointer}
-.btn:hover{border-color:var(--accent);color:var(--accent)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
-.btn.primary:hover{filter:brightness(1.08);color:var(--surface)}
+.dayhead span{font-size:12px;color:var(--muted)}
+.modebar .dayhead b{font-size:22px;letter-spacing:-.01em}
+/* Pill buttons: .btn 46px (actions), .btn.big 52px like Einkauf (sheet close sits exactly where Einkauf is) */
+.btn{font:inherit;font-size:16px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 22px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.btn:hover{border-color:var(--line-strong)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;padding:0 26px}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.big{height:52px;font-size:17px;padding:0 26px}
 .btn[disabled]{opacity:.5;cursor:default}
 .saverow{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:8px}
-.savebtn{font:inherit;font-size:16px;font-weight:600;height:46px;padding:0 26px;border:1px solid var(--accent);border-radius:999px;background:var(--accent);color:var(--surface);cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.savebtn:hover{filter:brightness(1.08)}
-.savebtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.savebtn[disabled]{opacity:.5;cursor:default}
 #saveMsg{font-size:13px}
 #saveMsg:empty{display:none}
 #saveMsg.err{color:var(--err)}
 
-.row{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--surface);margin-bottom:14px}
+.row{position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--surface);margin-bottom:14px;padding-left:5px}
+.row::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:transparent}
+.row.has-sel::before{background:var(--accent)}
 .row-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;padding:10px 12px;border-bottom:1px solid var(--line)}
 .row-head h2{font-size:17px;font-weight:600;margin:0}
 .row-head .sub{color:var(--muted);font-size:13px}
@@ -130,15 +128,33 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .items td:last-child{padding-right:12px;text-align:right;white-space:nowrap}
 .items .hint{display:block;color:var(--muted);font-size:11.5px;white-space:pre-line}
 .q{display:flex;align-items:center;gap:3px;white-space:nowrap}
-.q input{width:52px;font:inherit;font-family:var(--mono);font-size:12.5px;text-align:right;padding:2px 4px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.q input{width:52px;font:inherit;font-family:var(--mono);font-size:12.5px;text-align:right;padding:2px 5px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
 .q input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .q span{color:var(--muted);font-size:12px;min-width:20px}
-.blocks.edit{grid-template-columns:repeat(var(--n),minmax(262px,280px)) var(--last,56px)}
+.blocks.edit{grid-template-columns:repeat(var(--n),minmax(262px,280px)) var(--last,80px) var(--trash,0px);transition:grid-template-columns .25s ease}
 .addcol{display:grid}
 .add{all:unset;display:grid;place-items:center;min-height:120px;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .add:hover{color:var(--fg)}
 .add:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .add svg{width:22px;height:22px}
+.trashcol{display:grid;overflow:hidden;min-width:0;border-right:0}
+.trash{all:unset;display:grid;place-items:center;min-height:120px;color:var(--low);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.trash.dim{color:var(--line-strong);cursor:default}
+.trash:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.trash svg{width:22px;height:22px}
+/* Apple-style confirmation */
+.alert-bg{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.28);display:grid;place-items:center;padding:16px}
+.alert{width:min(272px,100%);border-radius:14px;overflow:hidden;background:rgba(250,250,252,.94);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:0 10px 40px rgba(0,0,0,.18);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",var(--sans);text-align:center;animation:alert-in .22s cubic-bezier(.2,.9,.3,1.2)}
+.alert-body{padding:19px 16px 17px}
+.alert h3{font-size:17px;font-weight:600;margin:0 0 4px;color:#111}
+.alert p{font-size:13px;line-height:1.35;margin:0;color:#333}
+.alert-btns{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(60,60,67,.29)}
+.alert-btns button{all:unset;height:44px;font-size:17px;color:var(--accent);cursor:pointer;text-align:center}
+.alert-btns button+button{border-left:1px solid rgba(60,60,67,.29)}
+.alert-btns .danger{color:var(--low);font-weight:600}
+.alert-btns button:focus-visible{background:rgba(0,0,0,.05)}
+@keyframes alert-in{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alert{background:rgba(44,44,46,.94)}:root:not([data-theme="light"]) .alert h3{color:#fff}:root:not([data-theme="light"]) .alert p{color:#ddd}}
 .block.pick{position:relative;min-height:380px}
 .pick-in{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain}
 .dish{border-bottom:1px solid var(--line)}
@@ -170,8 +186,8 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .bar .lbl{color:var(--muted);font-size:12.5px}
 @media (prefers-reduced-motion:no-preference){.meter i{transition:width .25s}}
 
-.sheet-bg{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.35);display:flex;justify-content:flex-end}
-.sheet{background:var(--surface);color:var(--fg);width:min(420px,100%);height:100%;overflow-y:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 18px calc(20px + env(safe-area-inset-bottom,0px));border-left:1px solid var(--line-strong);display:flex;flex-direction:column;gap:12px}
+.sheet-bg{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:10;background:rgba(0,0,0,.35);display:flex;justify-content:flex-end}
+.sheet{background:var(--surface);color:var(--fg);width:min(420px,100%);height:100%;box-sizing:border-box;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:calc(12px + env(safe-area-inset-top,0px)) 16px calc(28px + env(safe-area-inset-bottom,0px)) 18px;border-left:1px solid var(--line-strong);display:flex;flex-direction:column;gap:12px}
 .sheet-head{display:flex;align-items:center;gap:10px}
 .sheet h2{font-size:17px;margin:0;flex:1}
 .sheet .sub{color:var(--muted);font-size:13px;margin:0}
@@ -182,7 +198,7 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .shop-list li+li:not(.gap){border-top:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
 .shop-list li.gap{margin-top:18px}
 .shop-list li span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
-.sheet textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);background:var(--bg);color:var(--fg);padding:8px;box-sizing:border-box}
+.sheet textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg);padding:10px;box-sizing:border-box}
 .sheet-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .msg{font-size:12.5px;color:var(--ok)}
 .msg.err{color:var(--err)}
@@ -201,14 +217,14 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
   <nav class="days" aria-label="Tage"><div class="days-scroll" id="days"></div></nav>
   </header>
 
-  <p class="lead">Pro Zeile einen Block anklicken, nochmal klicken hebt die Auswahl auf. Mengen kannst du direkt ändern, der Kreis rechts setzt ein Gericht auf die Standardwerte zurück. Ganz rechts in jeder Zeile stellt das Plus ein eigenes Gericht zusammen. Fleisch, Fisch, Reis und Nudeln sind roh gewogen.</p>
-  <p class="pantry">Nicht aufgeführt, weil immer im Haus: Zwiebeln, Knoblauch, Salz, Pfeffer, Gewürze, Ketchup, Senf, Süßsenf, Mayo, Öl, Butter, Honig. Wo davon nennenswert Kalorien kommen, steht es grau unter dem Block und zählt in der Summe mit.</p>
   <p id="dbNote" hidden></p>
 
   <div class="modebar" id="modebar"></div>
   <div id="rows"></div>
   <div class="saverow" id="saverow"></div>
 </div>
+
+<div class="alert-bg" id="alertBg" hidden><div class="alert" role="alertdialog" aria-modal="true" aria-labelledby="alertT" aria-describedby="alertM"><div class="alert-body"><h3 id="alertT"></h3><p id="alertM"></p></div><div class="alert-btns"><button type="button" data-a="0">Abbrechen</button><button type="button" data-a="1" class="danger">Entfernen</button></div></div></div>
 
 <div class="bar" aria-live="polite">
   <div class="bar-in">
@@ -224,7 +240,7 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 
 <div class="sheet-bg" id="shopSheet" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
-    <div class="sheet-head"><h2 id="shopTitle">Einkauf</h2><button class="btn" type="button" data-close>Schließen</button></div>
+    <div class="sheet-head"><h2 id="shopTitle">Einkauf</h2><button class="btn big" type="button" data-close>Schließen</button></div>
     <div class="dayhead"><b id="shopDay"></b><span id="shopSub"></span></div>
     <ul class="shop-list" id="shopList"></ul>
     <p class="sub" id="shopVorrat"></p>
@@ -234,7 +250,7 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 
 <div class="sheet-bg" id="expSheet" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="expTitle">
-    <div class="sheet-head"><h2 id="expTitle">Export</h2><button class="btn" type="button" data-close>Schließen</button></div>
+    <div class="sheet-head"><h2 id="expTitle">Export</h2><button class="btn big" type="button" data-close>Schließen</button></div>
     <div class="dayhead"><b id="expSub"></b><span id="expLast"></span></div>
     <div class="sheet-actions">
       <button class="btn primary" type="button" id="saveCsv">CSV herunterladen</button>
@@ -458,7 +474,7 @@ function renderDays(){
     const b=document.createElement('button');b.type='button';b.className='day'+(store[iso]?' saved':'')+(iso===cur?' cur':'');
     b.setAttribute('aria-pressed',iso===cur?'true':'false');
     const s=store[iso];
-    b.innerHTML=`<span class="d1">${iso===TODAY?'Heute':WD[parseIso(iso).getDay()]}</span><span class="d2">${dayLabel(iso).slice(3)}</span><span class="d3 num ${s&&s.total.kcal!=null?kcalLevel(s.total.kcal):''}">${!s?'Offen':s.total.kcal==null?'Leer':fmt(s.total.kcal)+' kcal'}</span>`;
+    b.innerHTML=`<span class="d1">${iso===TODAY?'Heute':WD[parseIso(iso).getDay()]}</span><span class="d2">${dayLabel(iso).slice(3)}</span><span class="d3${s&&s.total.kcal!=null?' num '+kcalLevel(s.total.kcal):''}">${!s?'Offen':s.total.kcal==null?'Leer':fmt(s.total.kcal)+' kcal'}</span>`;
     b.addEventListener('click',()=>{cur=iso;glideNext=true;render()});
     daysEl.appendChild(b);
   });
@@ -492,7 +508,7 @@ function render(){
   const label=(cur===TODAY?'Heute, ':'')+dayLabel(cur);
   if(ed){
     mb.innerHTML=`<div class="dayhead"><b>${label}</b><span>${s?'Wird bearbeitet, '+savedText(s).replace('Gespeichert','gespeichert')+' bleibt bis zum Speichern':'Noch nicht gespeichert'}</span></div>`;
-    sr.innerHTML=`<span id="saveMsg" aria-live="polite"></span><button class="savebtn" type="button" id="saveBtn">Speichern</button>`;
+    sr.innerHTML=`<span id="saveMsg" aria-live="polite"></span><button class="btn primary" type="button" id="saveBtn">Speichern</button>`;
     document.getElementById('saveBtn').addEventListener('click',saveDay);
   } else {
     mb.innerHTML=`<div class="dayhead"><b>${label}</b><span>${savedText(s)}</span></div><button class="btn" type="button" id="editBtn">Bearbeiten</button>`;
@@ -515,11 +531,46 @@ function renderEdit(){
     wrap.style.setProperty('--n',r.blocks.length);
     r.blocks.forEach(b=>wrap.appendChild(blockEl(r,d,wrap,b)));
     wrap.appendChild(customEl(r,d,wrap));
-    sec.appendChild(wrap);rowsEl.appendChild(sec);
+    wrap.appendChild(trashEl(r,d,wrap));armTrash(wrap);
+    sec.appendChild(wrap);rowsEl.appendChild(sec);markSel(wrap,r,d);
   });
 }
+// Trash column: hidden (0 px) until the row is scrolled to its end and pushed further; scrolling back hides it again.
+// It is the only way to leave a meal row empty, and asks first.
+const TRASH_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 6h17M9 6V4.5c0-.8.7-1.5 1.5-1.5h3c.8 0 1.5.7 1.5 1.5V6M18.5 6l-.8 13.1a2 2 0 0 1-2 1.9H8.3a2 2 0 0 1-2-1.9L5.5 6M10 10.5v6M14 10.5v6"/></svg>';
+function trashEl(r,d,wrap){
+  const el=document.createElement('article');el.className='block trashcol';
+  el.innerHTML=`<button class="trash" type="button" tabindex="-1" title="Gericht entfernen" aria-label="${r.name}, Gericht entfernen">${TRASH_SVG}</button>`;
+  el.querySelector('.trash').addEventListener('click',async()=>{if(!d.sel[r.id])return;
+    if(!await confirmAlert('Gericht entfernen?',`${r.name} hat danach kein Gericht mehr.`,'Entfernen'))return;
+    d.sel[r.id]=null;r.blocks.forEach(x=>{if(d.off[x.id]){delete d.off[x.id];paintBlock(x)}});d.touched=true;
+    markSel(wrap,r,d);totals();wrap.dispatchEvent(new Event('trash-hide'))});
+  return el;
+}
+function armTrash(wrap){
+  let shown=false,anchor=0,tx=null;
+  const atEnd=()=>wrap.scrollLeft+wrap.clientWidth>=wrap.scrollWidth-2;
+  const show=()=>{if(shown)return;shown=true;wrap.style.setProperty('--trash','80px');
+    setTimeout(()=>{wrap.scrollTo({left:wrap.scrollWidth,behavior:'smooth'});setTimeout(()=>{anchor=wrap.scrollWidth-wrap.clientWidth},350)},260)};
+  const hide=()=>{if(!shown)return;shown=false;anchor=0;wrap.style.setProperty('--trash','0px')};
+  wrap.addEventListener('wheel',e=>{const dx=e.deltaX||(e.shiftKey?e.deltaY:0);if(dx>0&&atEnd())show()},{passive:true});
+  wrap.addEventListener('touchstart',e=>{tx=atEnd()?e.touches[0].clientX:null},{passive:true});
+  wrap.addEventListener('touchmove',e=>{if(tx!==null&&tx-e.touches[0].clientX>36){tx=null;show()}},{passive:true});
+  wrap.addEventListener('scroll',()=>{if(shown&&anchor&&wrap.scrollLeft<anchor-50)hide()},{passive:true});
+  wrap.addEventListener('trash-hide',hide);
+}
+function confirmAlert(title,text,ok){return new Promise(res=>{
+  const bg=document.getElementById('alertBg');
+  document.getElementById('alertT').textContent=title;document.getElementById('alertM').textContent=text;bg.querySelector('[data-a="1"]').textContent=ok;
+  bg.hidden=false;bg.querySelector('[data-a="0"]').focus();
+  const done=v=>{bg.hidden=true;bg.onclick=null;document.removeEventListener('keydown',key);res(v)};
+  const key=e=>{if(e.key==='Escape')done(false)};document.addEventListener('keydown',key);
+  bg.onclick=e=>{const b=e.target.closest('[data-a]');if(b)done(b.dataset.a==='1');else if(e.target===bg)done(false)};
+})}
 function markSel(wrap,r,d){wrap.querySelectorAll('.block').forEach(x=>{const o=x.id==='blk-'+d.sel[r.id];x.classList.toggle('on',o);
-  const h=x.querySelector('.b-head');if(h)h.setAttribute('aria-checked',o)})}
+  const h=x.querySelector('.b-head');if(h)h.setAttribute('aria-checked',o)});
+  const sec=wrap.closest('.row');if(sec)sec.classList.toggle('has-sel',!!d.sel[r.id]);
+  const t=wrap.querySelector('.trash');if(t)t.classList.toggle('dim',!d.sel[r.id])}
 function blockEl(r,d,wrap,b){
   const m=mealFromDraft(d,b);const on=d.sel[r.id]===b.id;
   const el=document.createElement('article');el.className='block'+(on?' on':'');el.id='blk-'+b.id;
@@ -529,7 +580,7 @@ function blockEl(r,d,wrap,b){
     ${itemsTable(m.items,true,b.id)}
     ${m.items.some(it=>it.v)?'<div class="vorrat" data-v></div>':''}`;
   paintVorrat(el,b,m);
-  el.querySelector('.b-head').addEventListener('click',()=>{d.sel[r.id]=(d.sel[r.id]===b.id)?null:b.id;d.touched=true;
+  el.querySelector('.b-head').addEventListener('click',()=>{if(d.sel[r.id]===b.id)return;d.sel[r.id]=b.id;d.touched=true;
     // A dish that is no longer selected forgets its pantry choice (back to all ticked)
     r.blocks.forEach(x=>{if(x.id!==d.sel[r.id]&&d.off[x.id]){delete d.off[x.id];paintBlock(x)}});
     saveDrafts();markSel(wrap,r,d);totals()});
@@ -550,7 +601,7 @@ function blockEl(r,d,wrap,b){
 // Tapping an ingredient adds/removes it; the dish grows above the list, no auto-scroll. The cross deletes the dish.
 function customEl(r,d,wrap){
   const b=customBlock(d,r.id);const open=picking.has(r.id)||b.items.length>0;
-  wrap.style.setProperty('--last',open?'minmax(262px,280px)':'56px');
+  wrap.style.setProperty('--last',open?'minmax(262px,280px)':'80px');
   const el=document.createElement('article');el.id='blk-'+b.id;
   if(!open){
     el.className='block addcol';
@@ -580,8 +631,8 @@ function paintDish(r,d,wrap,el){
       <button class="rst" type="button" title="Eigenes Gericht löschen" aria-label="${r.name}, eigenes Gericht löschen">${X_SVG}</button></div>
     <div class="b-meta">${has?`<span><b class="num" data-k>${fmt(m.kcal)}</b> kcal, <b class="num" data-p>${fmt(m.p)}</b> g Protein</span>`:'<span>Zutaten unten antippen</span>'}</div>
     ${has?itemsTable(m.items,true,b.id,true):''}`;
-  dish.querySelector('.b-head').addEventListener('click',()=>{if(!b.items.length)return;
-    d.sel[r.id]=on&&d.sel[r.id]===b.id?null:(d.sel[r.id]===b.id?null:b.id);d.touched=true;saveDrafts();markSel(wrap,r,d);paintDish(r,d,wrap,el);totals()});
+  dish.querySelector('.b-head').addEventListener('click',()=>{if(!b.items.length||d.sel[r.id]===b.id)return;
+    d.sel[r.id]=b.id;r.blocks.forEach(x=>{if(d.off[x.id]){delete d.off[x.id];paintBlock(x)}});d.touched=true;markSel(wrap,r,d);paintDish(r,d,wrap,el);totals()});
   dish.querySelector('.rst').addEventListener('click',()=>{d.custom[r.id]=[];picking.delete(r.id);
     if(d.sel[r.id]===b.id)d.sel[r.id]=null;d.touched=true;saveDrafts();swapCustom(r,d,wrap);markSel(wrap,r,d);totals()});
   dish.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
@@ -611,7 +662,7 @@ function renderFrozen(){
   const meals={};(store[cur].meals||[]).forEach(m=>meals[m.row]=m);
   ROWS.forEach(r=>{
     const m=meals[r.id];
-    const sec=document.createElement('section');sec.className='row frozen';
+    const sec=document.createElement('section');sec.className='row frozen'+(m?' has-sel':'');
     sec.innerHTML=`<header class="row-head"><h2>${r.name}</h2>${r.sub?`<span class="sub">${r.sub}</span>`:''}</header>`+
       (m?`<div class="blocks"><article class="block"><div class="b-top"><div class="b-head"><span class="b-name">${esc(m.name)}</span></div></div>
         <div class="b-meta"><span><b class="num">${fmt(m.kcal)}</b> kcal, <b class="num">${fmt(m.p)}</b> g Protein</span></div>
@@ -721,9 +772,10 @@ document.getElementById('copyCsv').addEventListener('click',()=>copyText(buildCs
 document.getElementById('copyShop').addEventListener('click',()=>copyText(shopText,document.getElementById('shopList'),document.getElementById('shopMsg')));
 
 // ---------- Sheets ----------
-function openSheet(id){const s=document.getElementById(id);s.hidden=false;const c=s.querySelector('[data-close]');if(c)c.focus()}
-document.querySelectorAll('.sheet-bg').forEach(bg=>{bg.addEventListener('click',e=>{if(e.target===bg||e.target.hasAttribute('data-close'))bg.hidden=true})});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.sheet-bg').forEach(b=>b.hidden=true)});
+function openSheet(id){const s=document.getElementById(id);s.hidden=false;s.querySelector('.sheet').scrollTop=0;document.documentElement.style.overflow='hidden'}
+function closeSheets(){document.querySelectorAll('.sheet-bg').forEach(b=>b.hidden=true);document.documentElement.style.overflow=''}
+document.querySelectorAll('.sheet-bg').forEach(bg=>{bg.addEventListener('click',e=>{if(e.target===bg||e.target.hasAttribute('data-close'))closeSheets()})});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('alertBg').hidden)closeSheets()});
 document.getElementById('openShop').addEventListener('click',()=>{renderShop();openSheet('shopSheet')});
 // Refresh: one spin, then reload (fresh data and newest app version; drafts survive in localStorage)
 document.getElementById('refreshBtn').addEventListener('click',e=>{const b=e.currentTarget;b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');
@@ -841,7 +893,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='a7a7ce661aa8';
+const BUILD='5669a653778b';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

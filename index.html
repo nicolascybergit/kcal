@@ -94,7 +94,7 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .saverow{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:8px}
 #saveMsg{font-size:14.5px}
 #saveMsg:empty{display:none}
-#saveMsg.err{color:var(--err)}
+#saveMsg.err{color:var(--fg)}
 
 .row{position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--surface);margin-bottom:14px;padding-left:5px}
 .row::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:transparent}
@@ -210,7 +210,8 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .shop-list li span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
 .sheet textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);padding:10px;box-sizing:border-box}
 .sheet-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.msg{font-size:13.5px;color:var(--ok)}
+.msg{font-size:13.5px;color:var(--muted)}
+/* feedback stays neutral: colour is reserved for the kcal goal */
 /* Verlauf: stat tiles, three single-series bar charts on one axis each, table view */
 .charts{display:flex;flex-direction:column;gap:14px}
 /* Donut: share of recorded days at 3.850 kcal or more; green only when high */
@@ -253,7 +254,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .ctable td:first-child{font-family:var(--sans)}
 .ctip{position:fixed;z-index:12;pointer-events:none;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:6px 9px;font-size:13.5px;box-shadow:0 4px 16px rgba(0,0,0,.12);white-space:nowrap}
 .ctip b{font-family:var(--mono);font-weight:600}
-.msg.err{color:var(--err)}
+.msg.err{color:var(--fg)}
 </style>
 
 <div class="wrap">
@@ -297,7 +298,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
     <div class="dayhead"><b id="shopDay"></b><span id="shopSub"></span></div>
     <ul class="shop-list" id="shopList"></ul>
     <p class="sub" id="shopVorrat"></p>
-    <div class="sheet-actions"><button class="btn" type="button" id="copyShop">Liste kopieren</button><span class="msg" id="shopMsg" aria-live="polite"></span></div>
+    <div class="sheet-actions"><button class="btn" type="button" id="copyShop">Kopieren</button><span class="msg" id="shopMsg" aria-live="polite"></span></div>
   </div>
 </div>
 
@@ -323,7 +324,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
     <div class="dayhead"><b id="expSub"></b><span id="expLast"></span></div>
     <div class="sheet-actions">
       <button class="btn primary" type="button" id="saveCsv">CSV herunterladen</button>
-      <button class="btn" type="button" id="copyCsv">CSV kopieren</button>
+      <button class="btn" type="button" id="copyCsv">Kopieren</button>
       <span class="msg" id="expMsg" aria-live="polite"></span>
     </div>
     <textarea id="csvBox" readonly aria-label="CSV-Vorschau"></textarea>
@@ -841,7 +842,7 @@ document.getElementById('saveCsv').addEventListener('click',async()=>{const msg=
   const name='essensprotokoll_'+TODAY+'.csv',data=buildCsv();
   if(dl){try{await dl.save({filename:name,data});msg.textContent='Heruntergeladen';return}
     catch(e){if(e&&e.code==='declined'){msg.textContent='Abgebrochen';return}if(e&&e.code==='rate_limited'){msg.className='msg err';msg.textContent='Kurz warten, dann nochmal';return}}}
-  try{downloadFile(name,data);msg.textContent='Heruntergeladen'}catch(e){msg.className='msg err';msg.textContent='Download geht hier nicht, nutze CSV kopieren'}});
+  try{downloadFile(name,data);msg.textContent='Heruntergeladen'}catch(e){msg.className='msg err';msg.textContent='Download geht hier nicht, nutze Kopieren'}});
 function copyText(text,box,msgEl){navigator.clipboard.writeText(text).then(()=>{msgEl.className='msg';msgEl.textContent='Kopiert';setTimeout(()=>msgEl.textContent='',1800)})
   .catch(()=>{if(box.select){box.focus();box.select()}else{const r=document.createRange();r.selectNodeContents(box);const s=getSelection();s.removeAllRanges();s.addRange(r)}msgEl.className='msg';msgEl.textContent='Markiert, jetzt kopieren'})}
 document.getElementById('copyCsv').addEventListener('click',()=>copyText(buildCsv().replace('﻿',''),document.getElementById('csvBox'),document.getElementById('expMsg')));
@@ -1060,7 +1061,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='0c6fae3983f4';
+const BUILD='e48265e74c8d';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

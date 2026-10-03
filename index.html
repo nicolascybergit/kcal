@@ -27,7 +27,13 @@ body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px
 .wrap{max-width:1500px;margin:0 auto;padding:18px 16px 230px}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
-.top{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px}
+.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.top .tools{justify-self:start;gap:4px}
+/* Einkauf in the earlier square style: no rounding */
+.sqbtn{justify-self:end;font:inherit;font-size:15px;font-weight:500;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 14px;border:1px solid var(--line-strong);border-radius:0;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sqbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sqbtn .cart{width:22px;height:22px;margin:0}
+@media (max-width:440px){.sqbtn{padding:0 10px;gap:6px;font-size:14px}.top .tools{gap:0}.ibtn{width:38px}}
 /* Logo: digits in the number font, the word in the logo font (Space Grotesk, as in the app icon) */
 h1.logo{margin:0;text-align:center;font-size:30px;line-height:1.1;white-space:nowrap}
 h1.logo .ln{font-family:var(--mono);font-weight:600;letter-spacing:-.04em}
@@ -37,11 +43,6 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .ibtn{all:unset;display:grid;place-items:center;width:44px;height:44px;color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .ibtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ibtn svg{width:27px;height:27px}
-#openExport .ico-x{display:none}
-#openExport.open .ico-up{display:none}
-#openExport.open .ico-x{display:block}
-/* Export open: the sticky header keeps only refresh, logo and the close icon */
-body.exporting .days,body.exporting .bar{display:none}
 #refreshBtn .rot{transform-box:view-box;transform-origin:12px 12px}
 @media (max-width:440px){h1.logo{font-size:27px}}
 #refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1) infinite}
@@ -207,13 +208,12 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .shop-list li.gap{margin-top:18px}
 .shop-list li span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
 .view textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);padding:10px;box-sizing:border-box}
-.shopview{display:flex;flex-direction:column;gap:14px}
-.shopview .sub{color:var(--muted);font-size:13.5px;margin:0}
-.mb-actions{display:flex;gap:8px;margin-left:auto}
+.pop-bg{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.12);display:flex;align-items:flex-start;justify-content:center;padding:calc(70px + env(safe-area-inset-top,0px)) 16px 24px}
+.pop{box-sizing:border-box;width:min(480px,100%);max-height:100%;overflow-y:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.18);padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px;animation:alert-in .18s ease-out}
+.pop .dayhead b{font-size:22px;letter-spacing:-.01em}
+.pop .sub{color:var(--muted);font-size:13.5px;margin:0}
 .editbar{display:flex;justify-content:flex-end;margin:0 0 12px}
-.btn .cart{width:22px;height:22px;flex:none;margin-right:8px}
-.btn.shop{width:150px;padding:0}
-.view-actions,.shopview .view-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.view-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .msg{font-size:13.5px;color:var(--muted)}
 /* feedback stays neutral: colour is reserved for the kcal goal */
 /* Verlauf: stat tiles, three single-series bar charts on one axis each, table view */
@@ -223,35 +223,30 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 <div class="wrap">
   <header class="head">
   <div class="top">
-    <button class="ibtn" id="refreshBtn" type="button" title="Neu laden" aria-label="Neu laden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="rot"><g transform="translate(12 12) scale(.88) translate(-12 -12)"><path d="M3.3 9.7A9 9 0 0 1 12 3a9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3.1V8h-4.9"/><path d="M20.7 14.3A9 9 0 0 1 12 21a9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M7.9 16H3v4.9"/></g></g></svg></button>
+    <div class="tools">
+      <button class="ibtn" id="refreshBtn" type="button" title="Neu laden" aria-label="Neu laden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="rot"><g transform="translate(12 12) scale(.88) translate(-12 -12)"><path d="M3.3 9.7A9 9 0 0 1 12 3a9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3.1V8h-4.9"/><path d="M20.7 14.3A9 9 0 0 1 12 21a9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M7.9 16H3v4.9"/></g></g></svg></button>
+      <button class="ibtn" id="openExport" type="button" title="CSV herunterladen" aria-label="Alle Tage als CSV herunterladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15.5V3M6.5 8.5 12 3l5.5 5.5M3.5 14v5.5c0 .8.7 1.5 1.5 1.5h14c.8 0 1.5-.7 1.5-1.5V14"/></svg></button>
+    </div>
     <h1 class="logo"><span class="ln">4000</span> <span class="lw">kcal</span></h1>
-    <button class="ibtn" id="openExport" type="button" title="Export" aria-label="Alle gespeicherten Tage exportieren"><svg class="ico-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15.5V3M6.5 8.5 12 3l5.5 5.5M3.5 14v5.5c0 .8.7 1.5 1.5 1.5h14c.8 0 1.5-.7 1.5-1.5V14"/></svg><svg class="ico-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13"/></svg></button>
+    <button class="sqbtn" id="openShop" type="button" aria-label="Einkaufsliste für diesen Tag"><svg class="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Einkauf</button>
   </div>
   <nav class="days" aria-label="Tage"><div class="days-scroll" id="days"></div></nav>
   </header>
 
   <p id="dbNote" hidden></p>
 
-  <section class="view" id="expSheet" aria-labelledby="expTitle" hidden>
-    <div class="view-head"><h2 id="expTitle">Export</h2></div>
-    <div class="dayhead"><b id="expSub"></b><span id="expLast"></span></div>
-    <div class="view-actions">
-      <button class="btn primary" type="button" id="saveCsv">CSV herunterladen</button>
-      <button class="btn" type="button" id="copyCsv">Kopieren</button>
-      <span class="msg" id="expMsg" aria-live="polite"></span>
-    </div>
-    <textarea id="csvBox" readonly aria-label="CSV-Vorschau"></textarea>
-  </section>
-  <div id="mainView">
   <div class="modebar" id="modebar"></div>
   <div class="editbar" id="editbar" hidden></div>
-  <section class="shopview" id="shopSheet" aria-label="Einkaufsliste" hidden>
+  <div id="rows"></div>
+  <div class="saverow" id="saverow"></div>
+</div>
+
+<div class="pop-bg" id="shopPop" hidden>
+  <div class="pop" role="dialog" aria-modal="true" aria-label="Einkaufsliste">
+    <div class="dayhead"><b id="shopDay"></b><span id="shopSub"></span></div>
     <ul class="shop-list" id="shopList"></ul>
     <p class="sub" id="shopVorrat"></p>
     <div class="view-actions"><button class="btn" type="button" id="copyShop">Kopieren</button><span class="msg" id="shopMsg" aria-live="polite"></span></div>
-  </section>
-  <div id="rows"></div>
-  <div class="saverow" id="saverow"></div>
   </div>
 </div>
 
@@ -508,9 +503,6 @@ function itemsTable(items,editable,bid,all){
 }
 function vorratText(items){const v=items.filter(it=>it.v&&it.use!==0);return v.length?'Inklusive Vorrat: '+v.map(it=>`${fmt(it.q)} ${it.u} ${it.n} (+${fmt(Math.round(it.kcal))} kcal)`).join(', '):''}
 
-// Einkauf toggle beside the day title; turns into "Schließen" in place
-let shopOpen=false;
-const SHOP_BTN=()=>shopOpen?'<button class="btn shop" type="button" id="shopToggle">Schließen</button>':'<button class="btn shop" type="button" id="shopToggle" aria-label="Einkaufsliste für diesen Tag"><svg class="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Einkauf</button>';
 function render(){
   renderDays();
   const ed=isEditing(cur);
@@ -521,22 +513,20 @@ function render(){
   const eb=document.getElementById('editbar');
   const label=(cur===TODAY?'Heute, ':'')+dayLabel(cur);
   if(ed){
-    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${s?numify(savedText(s)):'Noch nicht gespeichert'}</span></div><div class="mb-actions">${SHOP_BTN()}</div>`;
+    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${s?numify(savedText(s)):'Noch nicht gespeichert'}</span></div>`;
     eb.innerHTML=s?'<button class="btn" type="button" id="discardBtn">Verwerfen</button>':'';
     // Verwerfen sits exactly where Bearbeiten was: drop the changes, back to the saved state
     const dc=document.getElementById('discardBtn');if(dc)dc.addEventListener('click',()=>{delete drafts[cur];editing.delete(cur);picking.clear();render()});
     sr.innerHTML=`<span id="saveMsg" aria-live="polite"></span><button class="btn primary" type="button" id="saveBtn">Speichern</button>`;
     document.getElementById('saveBtn').addEventListener('click',saveDay);
   } else {
-    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${numify(savedText(s))}</span></div><div class="mb-actions">${SHOP_BTN()}</div>`;
+    mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${numify(savedText(s))}</span></div>`;
     eb.innerHTML='<button class="btn" type="button" id="editBtn">Bearbeiten</button>';
     sr.innerHTML='';
     document.getElementById('editBtn').addEventListener('click',()=>{delete drafts[cur];editing.add(cur);picking.clear();render()});
   }
-  document.getElementById('shopToggle').addEventListener('click',()=>{shopOpen=!shopOpen;picking.clear();render()});
-  // Einkauf open: title and sub line stay, the list replaces everything below them
-  document.getElementById('shopSheet').hidden=!shopOpen;rowsEl.hidden=shopOpen;sr.hidden=shopOpen;eb.hidden=shopOpen||!eb.innerHTML;
-  if(shopOpen)renderShop();
+  eb.hidden=!eb.innerHTML;
+  if(!document.getElementById('shopPop').hidden)renderShop();
   rowsEl.innerHTML='';
   if(ed)renderEdit();else renderFrozen();
   totals();
@@ -742,7 +732,13 @@ async function saveDay(){
 function unitOut(q,u){if(u==='Stk')return fmt(Math.ceil(q-1e-9))+' Stk';
   if(u==='g'&&q>=1000)return fmt(q/1000,2)+' kg';if(u==='ml'&&q>=1000)return fmt(q/1000,2)+' l';return fmt(Math.round(q))+' '+u}
 let shopText='';
+function openShop(){renderShop();const p=document.getElementById('shopPop');p.hidden=false;p.querySelector('.pop').scrollTop=0}
+function closeShop(){document.getElementById('shopPop').hidden=true}
+document.getElementById('shopPop').addEventListener('click',e=>{if(e.target.id==='shopPop')closeShop()});
+document.getElementById('openShop').addEventListener('click',openShop);
 function renderShop(){
+  document.getElementById('shopDay').innerHTML=numify((cur===TODAY?'Heute, ':'')+dayLabel(cur));
+  document.getElementById('shopSub').innerHTML=numify(isEditing(cur)?'Aktuelle Auswahl':savedText(store[cur]));
   const buy={},pan={};
   currentMeals().forEach(m=>m.items.forEach(it=>{if(it.v&&it.use===0)return;const t=it.v?pan:buy;t[it.f]=(t[it.f]||0)+it.q}));
   const keys=Object.keys(buy).filter(k=>F[k]).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
@@ -774,42 +770,25 @@ function buildCsv(){
       m.items.forEach(it=>{const x=meatCsv(it);rows.push([date,wd,r.name,m.name,it.n,dec(it.q),it.u,dec(it.kcal),dec(it.p),x.m,x.mc,it.v?'ja':'nein',it.v?(it.use===0?'nein':'ja'):'',tk,tp,dm,dmc].map(cell).join(';'))})});});
   return '﻿'+rows.join('\r\n');
 }
-function renderExport(){
-  const days=dayList(),n=days.filter(x=>store[x]).length;
-  document.getElementById('expSub').innerHTML=numify(`${days.length} ${days.length===1?'Tag':'Tage'} von ${dayLabel(days[0])} bis ${dayLabel(days[days.length-1])}, davon ${n} gespeichert`);
-  const last=Object.values(store).filter(x=>x&&x.savedAt).sort((a,b)=>a.savedAt<b.savedAt?1:-1)[0];
-  document.getElementById('expLast').innerHTML=last?numify('Zuletzt '+savedText(last).replace('Gespeichert','gespeichert')+', Eintrag für '+dayLabel(last.date)):'Noch nichts gespeichert';
-  document.getElementById('csvBox').value=buildCsv().replace('﻿','');
-  document.getElementById('expMsg').textContent='';
-}
 // Plain browser download (desktop: Downloads folder, iPhone/Android: Files app); inside claude.ai the downloads capability is used first
 function downloadFile(name,text){const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));
   const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000)}
-document.getElementById('saveCsv').addEventListener('click',async()=>{const msg=document.getElementById('expMsg');msg.className='msg';
+// Export icon downloads the CSV right away (claude.ai downloads capability first, else a plain browser download)
+async function exportCsv(){
   const name='essensprotokoll_'+TODAY+'.csv',data=buildCsv();
-  if(dl){try{await dl.save({filename:name,data});msg.textContent='Heruntergeladen';return}
-    catch(e){if(e&&e.code==='declined'){msg.textContent='Abgebrochen';return}if(e&&e.code==='rate_limited'){msg.className='msg err';msg.textContent='Kurz warten, dann nochmal';return}}}
-  try{downloadFile(name,data);msg.textContent='Heruntergeladen'}catch(e){msg.className='msg err';msg.textContent='Download geht hier nicht, nutze Kopieren'}});
+  if(dl){try{await dl.save({filename:name,data});return}catch(e){if(e&&(e.code==='declined'||e.code==='rate_limited'))return}}
+  try{downloadFile(name,data)}catch(e){}
+}
 function copyText(text,box,msgEl){navigator.clipboard.writeText(text).then(()=>{msgEl.className='msg';msgEl.textContent='Kopiert';setTimeout(()=>msgEl.textContent='',1800)})
   .catch(()=>{if(box.select){box.focus();box.select()}else{const r=document.createRange();r.selectNodeContents(box);const s=getSelection();s.removeAllRanges();s.addRange(r)}msgEl.className='msg';msgEl.textContent='Markiert, jetzt kopieren'})}
-document.getElementById('copyCsv').addEventListener('click',()=>copyText(buildCsv().replace('﻿',''),document.getElementById('csvBox'),document.getElementById('expMsg')));
 document.getElementById('copyShop').addEventListener('click',()=>copyText(shopText,document.getElementById('shopList'),document.getElementById('shopMsg')));
 
 // ---------- Sheets ----------
-// Export view replaces the main view; the export icon turns into a close icon and the day strip hides
-let curView=null;
-function openView(id){
-  document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==id);document.getElementById('mainView').hidden=true;
-  curView=id;document.body.classList.add('exporting');const eb=document.getElementById('openExport');eb.classList.add('open');eb.setAttribute('aria-label','Export schließen');window.scrollTo(0,0)}
-function closeView(){
-  document.querySelectorAll('.view').forEach(v=>v.hidden=true);document.getElementById('mainView').hidden=false;
-  curView=null;document.body.classList.remove('exporting');const eb=document.getElementById('openExport');eb.classList.remove('open');eb.setAttribute('aria-label','Alle gespeicherten Tage exportieren');
-  window.scrollTo(0,0);renderDays()}
-document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!document.getElementById('alertBg').hidden)return;if(curView)closeView();else if(shopOpen){shopOpen=false;render()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('alertBg').hidden)closeShop()});
 // Refresh: spin, then reload (fresh data, newest app version, unsaved changes reset)
 document.getElementById('refreshBtn').addEventListener('click',e=>{const b=e.currentTarget;b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');
   setTimeout(()=>location.reload(),750)});
-document.getElementById('openExport').addEventListener('click',()=>{if(curView==='expSheet'){closeView();return}renderExport();openView('expSheet')});
+document.getElementById('openExport').addEventListener('click',exportCsv);
 
 // ---------- Datei-Speicher (lokale HTML) ----------
 // Outside claude.ai the page keeps a full copy of every saved day inside its own HTML file (JSON block #ebk-data).
@@ -922,7 +901,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='b7facc8d1f96';
+const BUILD='59dea4ea4b2b';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

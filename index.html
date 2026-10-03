@@ -93,6 +93,11 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .btn.primary:hover{filter:brightness(1.08)}
 .btn[disabled]{opacity:.5;cursor:default}
 .saverow{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:8px}
+/* Bottom actions in the square style of the Einkauf button */
+.sq{font:inherit;font-size:16px;font-weight:500;height:46px;padding:0 22px;border:1px solid var(--line-strong);border-radius:0;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sq.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;padding:0 26px}
+.sq:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sq[disabled]{opacity:.5;cursor:default}
 #saveMsg{font-size:14.5px}
 #saveMsg:empty{display:none}
 #saveMsg.err{color:var(--fg)}
@@ -517,8 +522,9 @@ function render(){
     eb.innerHTML=s?'<button class="btn" type="button" id="discardBtn">Verwerfen</button>':'';
     // Verwerfen sits exactly where Bearbeiten was: drop the changes, back to the saved state
     const dc=document.getElementById('discardBtn');if(dc)dc.addEventListener('click',()=>{delete drafts[cur];editing.delete(cur);picking.clear();render()});
-    sr.innerHTML=`<span id="saveMsg" aria-live="polite"></span><button class="btn primary" type="button" id="saveBtn">Speichern</button>`;
+    sr.innerHTML=`<span id="saveMsg" aria-live="polite"></span>${s?'<button class="sq" type="button" id="resetBtn">Zurücksetzen</button>':''}<button class="sq primary" type="button" id="saveBtn">Speichern</button>`;
     document.getElementById('saveBtn').addEventListener('click',saveDay);
+    const rb=document.getElementById('resetBtn');if(rb)rb.addEventListener('click',resetDay);
   } else {
     mb.innerHTML=`<div class="dayhead"><b>${numify(label)}</b><span>${numify(savedText(s))}</span></div>`;
     eb.innerHTML='<button class="btn" type="button" id="editBtn">Bearbeiten</button>';
@@ -728,6 +734,19 @@ async function saveDay(){
   }
 }
 
+// ---------- Zurücksetzen ----------
+// Deletes the saved record of the day (as if never saved), after an Apple-style confirmation
+async function resetDay(){
+  if(!store[cur])return;
+  if(!await confirmAlert('Soll der gespeicherte Stand dieses Tages gelöscht werden?','Zurücksetzen'))return;
+  const msg=document.getElementById('saveMsg');
+  try{
+    if(db)await db.doc('days/'+cur).delete();
+    delete store[cur];if(!db){persistLocal();fileSync()}
+    delete drafts[cur];editing.delete(cur);picking.clear();render();
+  }catch(e){if(msg){msg.className='err';msg.textContent='Nicht zurückgesetzt. Prüf die Verbindung und versuch es nochmal.'}}
+}
+
 // ---------- Einkauf ----------
 function unitOut(q,u){if(u==='Stk')return fmt(Math.ceil(q-1e-9))+' Stk';
   if(u==='g'&&q>=1000)return fmt(q/1000,2)+' kg';if(u==='ml'&&q>=1000)return fmt(q/1000,2)+' l';return fmt(Math.round(q))+' '+u}
@@ -901,7 +920,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='59dea4ea4b2b';
+const BUILD='5720b59d3647';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

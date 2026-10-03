@@ -310,7 +310,7 @@ const F = {
   teriyaki:['Teriyaki-Sauce','ml',1.0,0.02,{d:60,g:6}],
   bun:['Burger-Buns','Stk',175,6,{d:2,g:4}],
   eisberg:['Eisbergsalat','g',0.14,0.01,{d:40,g:1}],
-  tomate:['Tomaten','Stk',20,0.9,{d:1,g:1}],
+  tomate:['Große Tomate','Stk',20,0.9,{d:1,g:1}],
   // One handful = 5–6 cherry tomatoes (~90 g)
   htomate:['Handvoll Tomaten','Stk',18,0.8,{d:1,g:1}],
   passata:['Passierte Tomaten','g',0.35,0.015,{d:200,g:6}],
@@ -937,7 +937,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='dc4ccebe7d03';
+const BUILD='a90638024c8a';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

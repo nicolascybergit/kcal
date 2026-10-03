@@ -131,7 +131,9 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .q input{width:52px;font:inherit;font-family:var(--mono);font-size:12.5px;text-align:right;padding:2px 5px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
 .q input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 .q span{color:var(--muted);font-size:12px;min-width:20px}
-.blocks.edit{grid-template-columns:repeat(var(--n),minmax(262px,280px)) var(--last,80px) var(--trash,0px);transition:grid-template-columns .25s ease}
+.blocks.edit{grid-template-columns:repeat(var(--n),minmax(262px,280px)) var(--last,80px) var(--trash,0px)}
+.trashcol .trash{animation:trash-in .25s ease}
+@keyframes trash-in{from{opacity:0;transform:translateX(20px)}}
 .addcol{display:grid}
 .add{all:unset;display:grid;place-items:center;min-height:120px;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .add:hover{color:var(--fg)}
@@ -551,7 +553,8 @@ function armTrash(wrap){
   let shown=false,anchor=0,tx=null;
   const atEnd=()=>wrap.scrollLeft+wrap.clientWidth>=wrap.scrollWidth-2;
   const show=()=>{if(shown)return;shown=true;wrap.style.setProperty('--trash','80px');
-    setTimeout(()=>{wrap.scrollTo({left:wrap.scrollWidth,behavior:'smooth'});setTimeout(()=>{anchor=wrap.scrollWidth-wrap.clientWidth},350)},260)};
+    const t=wrap.querySelector('.trash');t.style.animation='none';void t.offsetWidth;t.style.animation='';
+    requestAnimationFrame(()=>{wrap.scrollTo({left:wrap.scrollWidth,behavior:'smooth'});setTimeout(()=>{anchor=wrap.scrollWidth-wrap.clientWidth},400)})};
   const hide=()=>{if(!shown)return;shown=false;anchor=0;wrap.style.setProperty('--trash','0px')};
   wrap.addEventListener('wheel',e=>{const dx=e.deltaX||(e.shiftKey?e.deltaY:0);if(dx>0&&atEnd())show()},{passive:true});
   wrap.addEventListener('touchstart',e=>{tx=atEnd()?e.touches[0].clientX:null},{passive:true});
@@ -662,7 +665,7 @@ function renderFrozen(){
   const meals={};(store[cur].meals||[]).forEach(m=>meals[m.row]=m);
   ROWS.forEach(r=>{
     const m=meals[r.id];
-    const sec=document.createElement('section');sec.className='row frozen'+(m?' has-sel':'');
+    const sec=document.createElement('section');sec.className='row frozen';
     sec.innerHTML=`<header class="row-head"><h2>${r.name}</h2>${r.sub?`<span class="sub">${r.sub}</span>`:''}</header>`+
       (m?`<div class="blocks"><article class="block"><div class="b-top"><div class="b-head"><span class="b-name">${esc(m.name)}</span></div></div>
         <div class="b-meta"><span><b class="num">${fmt(m.kcal)}</b> kcal, <b class="num">${fmt(m.p)}</b> g Protein</span></div>
@@ -893,7 +896,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='5669a653778b';
+const BUILD='410dba98edd8';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

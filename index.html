@@ -87,7 +87,11 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;white-space:now
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
 .btn.primary:hover{filter:brightness(1.08);color:var(--surface)}
 .btn[disabled]{opacity:.5;cursor:default}
-.saverow{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:4px}
+.saverow{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:8px}
+.savebtn{font:inherit;font-size:17px;font-weight:600;height:52px;padding:0 30px;border:1px solid var(--accent);border-radius:999px;background:var(--accent);color:var(--surface);cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.savebtn:hover{filter:brightness(1.08)}
+.savebtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.savebtn[disabled]{opacity:.5;cursor:default}
 #saveMsg{font-size:13px}
 #saveMsg:empty{display:none}
 #saveMsg.err{color:var(--err)}
@@ -153,11 +157,14 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .vorrat{color:var(--muted);font-size:12px;padding:6px 12px 10px;border-top:1px solid var(--line);margin-top:auto}
 
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line-strong);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
-.bar-in{max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px 22px;align-items:center}
+.bar-in{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:8px}
+.bar-info{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 22px}
 .bar .big{font-size:18px;font-weight:600}
-.meter{flex:1 1 160px;height:6px;background:var(--line);position:relative;min-width:120px}
-.meter i{position:absolute;left:0;top:0;bottom:0;background:var(--accent)}
-.meter b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--fg);left:calc(100%/1.15)}
+/* Meter: 3/4 width, centred, fully rounded; the 4.000 mark is a small rounded capsule */
+.meter{width:75%;height:10px;border-radius:999px;background:var(--line);position:relative}
+.meter i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--accent)}
+.meter b{position:absolute;top:-4px;bottom:-4px;width:6px;margin-left:-3px;border-radius:999px;background:var(--fg);border:2px solid var(--surface);box-sizing:border-box;left:calc(100%/1.15)}
+@media (max-width:600px){.meter{width:100%}}
 .status.ok{color:var(--ok)} .status.low{color:var(--low)}
 .bar .lbl{color:var(--muted);font-size:12.5px}
 @media (prefers-reduced-motion:no-preference){.meter i{transition:width .25s}}
@@ -204,11 +211,13 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 
 <div class="bar" aria-live="polite">
   <div class="bar-in">
-    <div><span class="lbl" id="tLbl">Tag</span> <span class="big num" id="tKcal">0</span> <span class="lbl">/ 4.000 kcal</span></div>
     <div class="meter" aria-hidden="true"><i id="tMeter"></i><b></b></div>
-    <div><span class="num" id="tProt">0</span> <span class="lbl">g Protein</span></div>
-    <div><span class="lbl">Fleisch/Fisch</span> <span class="num" id="tMeat">0</span> <span class="lbl">g roh,</span> <span class="num" id="tMeatC">0</span> <span class="lbl">g gekocht</span></div>
-    <div class="status" id="tStatus"></div>
+    <div class="bar-info">
+      <div><span class="lbl" id="tLbl">Tag</span> <span class="big num" id="tKcal">0</span> <span class="lbl">/ 4.000 kcal</span></div>
+      <div><span class="num" id="tProt">0</span> <span class="lbl">g Protein</span></div>
+      <div><span class="lbl">Fleisch/Fisch</span> <span class="num" id="tMeat">0</span> <span class="lbl">g roh,</span> <span class="num" id="tMeatC">0</span> <span class="lbl">g gekocht</span></div>
+      <div class="status" id="tStatus"></div>
+    </div>
   </div>
 </div>
 
@@ -392,8 +401,9 @@ let editing=new Set();  // Tage mit gespeichertem Stand, die gerade bearbeitet w
 let cur=TODAY;
 let db=null, dl=null, useLocal=false;
 const LS_DRAFT='ebk-drafts-v2', LS_DAYS='ebk-days-v2';
-try{drafts=JSON.parse(localStorage.getItem(LS_DRAFT)||'{}')||{}}catch(e){drafts={}}
-const saveDrafts=()=>{try{localStorage.setItem(LS_DRAFT,JSON.stringify(drafts))}catch(e){}};
+// Unsaved changes live only in memory: a refresh resets them (old stored drafts are removed)
+try{localStorage.removeItem(LS_DRAFT)}catch(e){}
+const saveDrafts=()=>{};
 
 const isEditing=date=>!store[date]||editing.has(date);
 
@@ -481,10 +491,8 @@ function render(){
   const label=(cur===TODAY?'Heute, ':'')+dayLabel(cur);
   if(ed){
     mb.innerHTML=`<div class="dayhead"><b>${label}</b><span>${s?'Wird bearbeitet, '+savedText(s).replace('Gespeichert','gespeichert')+' bleibt bis zum Speichern':'Noch nicht gespeichert'}</span></div>`;
-    sr.innerHTML=`<button class="btn" type="button" id="resetBtn">Zurücksetzen</button>${s?'<button class="btn" type="button" id="cancelBtn">Verwerfen</button>':''}<span id="saveMsg" aria-live="polite"></span><button class="btn primary" type="button" id="saveBtn">Speichern</button>`;
+    sr.innerHTML=`<span id="saveMsg" aria-live="polite"></span><button class="savebtn" type="button" id="saveBtn">Speichern</button>`;
     document.getElementById('saveBtn').addEventListener('click',saveDay);
-    document.getElementById('resetBtn').addEventListener('click',resetDay);
-    const c=document.getElementById('cancelBtn');if(c)c.addEventListener('click',()=>{delete drafts[cur];saveDrafts();editing.delete(cur);render()});
   } else {
     mb.innerHTML=`<div class="dayhead"><b>${label}</b><span>${savedText(s)}</span></div><button class="btn" type="button" id="editBtn">Bearbeiten</button>`;
     sr.innerHTML='';
@@ -520,7 +528,10 @@ function blockEl(r,d,wrap,b){
     ${itemsTable(m.items,true,b.id)}
     ${m.items.some(it=>it.v)?'<div class="vorrat" data-v></div>':''}`;
   paintVorrat(el,b,m);
-  el.querySelector('.b-head').addEventListener('click',()=>{d.sel[r.id]=(d.sel[r.id]===b.id)?null:b.id;d.touched=true;saveDrafts();markSel(wrap,r,d);totals()});
+  el.querySelector('.b-head').addEventListener('click',()=>{d.sel[r.id]=(d.sel[r.id]===b.id)?null:b.id;d.touched=true;
+    // A dish that is no longer selected forgets its pantry choice (back to all ticked)
+    r.blocks.forEach(x=>{if(x.id!==d.sel[r.id]&&d.off[x.id]){delete d.off[x.id];paintBlock(x)}});
+    saveDrafts();markSel(wrap,r,d);totals()});
   el.querySelector('.rst').addEventListener('click',e=>{
     const btn=e.currentTarget;btn.classList.remove('spin');void btn.offsetWidth;btn.classList.add('spin');
     delete d.q[b.id];delete d.off[b.id];d.touched=true;saveDrafts();
@@ -646,23 +657,6 @@ async function saveDay(){
     btn.disabled=false;msg.className='err';
     msg.textContent=e&&e.code==='quota_exceeded'?'Speicher voll, nichts gespeichert.':'Nicht gespeichert. Prüf die Verbindung und drück nochmal Speichern.';
   }
-}
-
-// ---------- Zurücksetzen ----------
-// Removes the saved record of the day entirely (as if never saved) and starts a fresh default draft; a saved day needs a second click
-async function resetDay(){
-  const btn=document.getElementById('resetBtn');const msg=document.getElementById('saveMsg');
-  if(store[cur]&&!btn.dataset.armed){btn.dataset.armed='1';btn.textContent='Wirklich zurücksetzen?';
-    setTimeout(()=>{if(btn.isConnected){delete btn.dataset.armed;btn.textContent='Zurücksetzen'}},4000);return}
-  btn.disabled=true;
-  try{
-    if(store[cur]){
-      if(db)await db.doc('days/'+cur).delete();
-      delete store[cur];
-      if(!db){persistLocal();fileSync()}
-    }
-    delete drafts[cur];saveDrafts();editing.delete(cur);picking.clear();render();
-  }catch(e){btn.disabled=false;msg.className='err';msg.textContent='Nicht zurückgesetzt. Prüf die Verbindung und versuch es nochmal.'}
 }
 
 // ---------- Einkauf ----------
@@ -846,7 +840,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='f102a7b42711';
+const BUILD='653a55422373';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

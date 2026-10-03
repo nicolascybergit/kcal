@@ -22,12 +22,13 @@
   --ok:#5fd095; --warn:#f0b35a; --err:#ff8a7a; --low:#dd978e; color-scheme:dark}
 
 [hidden]{display:none!important}
+html{background:var(--bg)}
 body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.45}
 .wrap{max-width:1500px;margin:0 auto;padding:18px 16px 130px}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
-.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;text-wrap:balance;flex:1 1 auto}
+.top{display:flex;align-items:center;gap:10px}
+h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;white-space:nowrap;flex:1 1 auto;min-width:0}
 .tools{display:flex;align-items:center;gap:8px}
 /* Header: plain icons for refresh/export, large pill for Einkauf (its cart matches the icon size) */
 .ibtn{all:unset;display:grid;place-items:center;width:44px;height:44px;color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -37,6 +38,7 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;text-wrap:balan
 .shopbtn:hover{border-color:var(--line-strong)}
 .shopbtn svg{width:27px;height:27px;flex:none}
 #refreshBtn .rot{transform-box:view-box;transform-origin:12px 12px}
+@media (max-width:440px){h1{font-size:22px}.tools{gap:2px}.ibtn{width:40px}.shopbtn{font-size:16px;height:48px;padding:0 16px 0 14px;gap:8px;margin-left:4px}}
 #refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1) infinite}
 .tbtn{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);cursor:pointer}
 .tbtn:hover{border-color:var(--accent);color:var(--accent)}
@@ -47,10 +49,14 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;text-wrap:balan
 :root{padding-top:0}
 .head{position:sticky;top:0;z-index:5;background:var(--surface);margin:-18px -16px 0;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0}
 .days{margin:12px -16px 0}
-.days-scroll{position:relative;display:flex;overflow-x:auto;scrollbar-width:none}
+.days-scroll{position:relative;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;overscroll-behavior-x:contain}
+.day-pad{flex:0 0 calc(50% - 62px);display:flex;justify-content:flex-end;overflow:hidden}
+.day-pad.right{background:var(--bg)}
+.day-pad.left+.day{margin-left:-1px}
+.day-pad .day.fill{flex:none}
 .days-scroll::-webkit-scrollbar{display:none}
 .day.fill{cursor:default;pointer-events:none}
-.day{all:unset;position:relative;cursor:pointer;flex:none;min-width:124px;box-sizing:border-box;padding:6px 12px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
+.day{all:unset;position:relative;cursor:pointer;flex:none;width:124px;scroll-snap-align:center;box-sizing:border-box;padding:6px 12px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
 .day+.day{margin-left:-1px}
 .day:hover{border-color:var(--line-strong);z-index:1}
 .day:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
@@ -427,13 +433,15 @@ function currentMeals(){
 
 // ---------- Tagesleiste ----------
 const daysEl=document.getElementById('days');
-// Strip always fills the full width: blank filler cells on both sides; a click glides the chosen day to the centre
+// Strip: half-width pads let the first day and today sit centred at the two scroll ends (native bounce beyond, snap to the nearest day).
+// Left pad shows empty cells, right of today is plain grey. A click glides the chosen day to the centre.
 let glideNext=false;
 function renderDays(){
   const prev=daysEl.scrollLeft;daysEl.innerHTML='';
   const nFill=Math.ceil((daysEl.clientWidth||window.innerWidth)/2/124)+1;
-  const filler=()=>{const f=document.createElement('div');f.className='day fill';f.setAttribute('aria-hidden','true');return f};
-  for(let i=0;i<nFill;i++)daysEl.appendChild(filler());
+  const left=document.createElement('div');left.className='day-pad left';left.setAttribute('aria-hidden','true');
+  for(let i=0;i<nFill;i++){const f=document.createElement('div');f.className='day fill';left.appendChild(f)}
+  daysEl.appendChild(left);
   dayList().forEach(iso=>{
     const b=document.createElement('button');b.type='button';b.className='day'+(store[iso]?' saved':'')+(iso===cur?' cur':'');
     b.setAttribute('aria-pressed',iso===cur?'true':'false');
@@ -442,7 +450,7 @@ function renderDays(){
     b.addEventListener('click',()=>{cur=iso;glideNext=true;render()});
     daysEl.appendChild(b);
   });
-  for(let i=0;i<nFill;i++)daysEl.appendChild(filler());
+  const right=document.createElement('div');right.className='day-pad right';right.setAttribute('aria-hidden','true');daysEl.appendChild(right);
   const c=daysEl.querySelector('.cur');if(!c)return;const target=c.offsetLeft-(daysEl.clientWidth-c.offsetWidth)/2;
   if(glideNext){glideNext=false;daysEl.scrollLeft=prev;daysEl.scrollTo({left:target,behavior:'smooth'})}else daysEl.scrollLeft=target;
 }
@@ -484,6 +492,7 @@ function render(){
   rowsEl.innerHTML='';
   if(ed)renderEdit();else renderFrozen();
   totals();
+  const maxY=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);if(window.scrollY>maxY)window.scrollTo(0,maxY);
 }
 
 const picking=new Set();  // meal rows whose custom-dish picker is open (UI only)

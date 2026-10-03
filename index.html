@@ -41,7 +41,7 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .shopbtn:hover{border-color:var(--line-strong)}
 .shopbtn svg{width:27px;height:27px;flex:none}
 #refreshBtn .rot{transform-box:view-box;transform-origin:12px 12px}
-@media (max-width:440px){h1.logo{font-size:28px}.tools{gap:2px}.ibtn{width:40px}.shopbtn{font-size:16px;height:48px;padding:0 16px 0 14px;gap:8px;margin-left:4px}.btn.big{height:48px;font-size:16px;padding:0 18px}}
+@media (max-width:440px){h1.logo{font-size:28px}.tools{gap:2px}.ibtn{width:40px}.shopbtn{font-size:16px;height:48px;padding:0 16px 0 14px;gap:8px;margin-left:4px}}
 #refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1) infinite}
 .tbtn{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer}
 .tbtn:hover{border-color:var(--line-strong)}
@@ -87,7 +87,9 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .btn:hover{border-color:var(--line-strong)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;padding:0 26px}
 .btn.primary:hover{filter:brightness(1.08)}
-.btn.big{height:52px;font-size:17px;padding:0 26px}
+.btn.big{height:52px;font-size:17px;padding:0 24px}
+/* must come after .btn.big: on small phones Einkauf shrinks, so the close button shrinks with it */
+@media (max-width:440px){.btn.big{height:48px;font-size:16px;padding:0 16px}}
 .btn[disabled]{opacity:.5;cursor:default}
 .saverow{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:8px}
 #saveMsg{font-size:13px}
@@ -1054,7 +1056,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='8b67cf7b166d';
+const BUILD='977f0978b21a';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

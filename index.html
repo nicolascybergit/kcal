@@ -23,7 +23,7 @@
 
 [hidden]{display:none!important}
 html{background:var(--bg)}
-body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.45}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45}
 .wrap{max-width:1500px;margin:0 auto;padding:18px 16px 230px}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
@@ -43,7 +43,7 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 #refreshBtn .rot{transform-box:view-box;transform-origin:12px 12px}
 @media (max-width:440px){h1.logo{font-size:28px}.tools{gap:2px}.ibtn{width:40px}.shopbtn{font-size:16px;height:48px;width:128px;gap:8px;margin-left:4px}}
 #refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1) infinite}
-.tbtn{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer}
+.tbtn{font:inherit;font-size:14.5px;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer}
 .tbtn:hover{border-color:var(--line-strong)}
 .tbtn:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .tbtn svg{width:16px;height:16px}
@@ -61,9 +61,9 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .day.fill{cursor:default;pointer-events:none}
 .day{all:unset;position:relative;isolation:isolate;cursor:pointer;flex:none;width:124px;scroll-snap-align:center;box-sizing:border-box;padding:11px 16px 15px;border-right:1px solid color-mix(in srgb,var(--line) 55%,transparent);background:var(--surface);display:flex;flex-direction:column;gap:1px}
 .day:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.day .d1{font-size:13px;color:var(--muted)}
+.day .d1{font-size:14.5px;color:var(--muted)}
 .day .d2{font-family:var(--mono);font-weight:500;font-size:21px;line-height:1.2;letter-spacing:-.03em;margin:1px 0}
-.day .d3{font-size:13px;color:var(--muted)}
+.day .d3{font-size:14.5px;color:var(--muted)}
 .day.saved .d3{color:var(--fg)}
 .day .d3.ok{color:var(--ok)}
 .day .d3.low{color:var(--low)}
@@ -71,7 +71,7 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .day.cur::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--accent)}
 .day.cur .d2{font-weight:600}
 
-#dbNote{color:var(--muted);font-size:12px;margin:0 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#dbNote{color:var(--muted);font-size:13.5px;margin:0 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .login{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%}
 .login span{flex:1 1 100%}
 .login input{font:inherit;font-size:14px;height:46px;box-sizing:border-box;padding:0 16px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);flex:1 1 160px;min-width:0}
@@ -80,7 +80,7 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .modebar{display:flex;align-items:center;gap:10px;margin:18px 0 14px;min-height:46px}
 .dayhead{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 .dayhead b{font-size:17px;font-weight:600;color:var(--fg)}
-.dayhead>span{font-size:12px;color:var(--muted)}
+.dayhead>span{font-size:13.5px;color:var(--muted)}
 .modebar .dayhead b{font-size:22px;letter-spacing:-.01em}
 /* Pill buttons: .btn 46px (actions), .btn.big 52px like Einkauf (sheet close sits exactly where Einkauf is) */
 .btn{font:inherit;font-size:16px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 22px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 3px rgba(0,0,0,.06)}
@@ -92,7 +92,7 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 @media (max-width:440px){.btn.big{height:48px;font-size:16px;width:128px}}
 .btn[disabled]{opacity:.5;cursor:default}
 .saverow{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:8px}
-#saveMsg{font-size:13px}
+#saveMsg{font-size:14.5px}
 #saveMsg:empty{display:none}
 #saveMsg.err{color:var(--err)}
 
@@ -101,9 +101,9 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .row.has-sel::before{background:var(--accent)}
 .row-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;padding:10px 12px;border-bottom:1px solid var(--line)}
 .row-head h2{font-size:17px;font-weight:600;margin:0}
-.row-head .sub{color:var(--muted);font-size:12px}
-.row-head .target{margin-left:auto;color:var(--muted);font-size:12px}
-.blocks{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(262px,280px);overflow-x:auto}
+.row-head .sub{color:var(--muted);font-size:13.5px}
+.row-head .target{margin-left:auto;color:var(--muted);font-size:13.5px}
+.blocks{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(286px,304px);overflow-x:auto}
 .block{border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
 .block:last-child{border-right:0}
 .block.on{background:var(--sel);box-shadow:inset 0 3px 0 var(--accent)}
@@ -123,20 +123,20 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 .rst .rot{transform-box:view-box;transform-origin:12px 12px}
 .rst.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1)}
 @keyframes rst-spin{to{transform:rotate(360deg)}}
-.b-meta{padding:0 12px 8px 37px;color:var(--muted);font-size:12px;display:flex;flex-direction:column}
+.b-meta{padding:0 12px 8px 37px;color:var(--muted);font-size:13.5px;display:flex;flex-direction:column}
 .frozen .b-meta{padding-left:12px}
 .b-meta b{color:var(--fg);font-weight:500}
-table.items{width:100%;border-collapse:collapse;font-size:13px}
+table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .items td{border-top:1px solid var(--line);padding:5px 6px;vertical-align:top}
 .items td:first-child{padding-left:12px}
 .items td:last-child{padding-right:12px;text-align:right;white-space:nowrap}
-.items .hint{display:block;color:var(--muted);font-size:12px;white-space:pre-line}
+.items .hint{display:block;color:var(--muted);font-size:13.5px;white-space:pre-line}
 .q{display:flex;align-items:center;gap:3px;white-space:nowrap}
-.q input{width:52px;font:inherit;font-family:var(--mono);font-size:12.5px;text-align:right;padding:2px 5px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
+.q input{width:52px;font:inherit;font-family:var(--mono);font-size:13.5px;text-align:right;padding:2px 5px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
 .q input:focus{outline:2px solid var(--accent);outline-offset:-1px}
 @media (pointer:coarse){.q input{font-size:16px;width:60px}.login input{font-size:16px}body:has(.q input:focus,.login input:focus) .bar{display:none}}
-.q span{color:var(--muted);font-size:12px;min-width:20px}
-.blocks.edit{grid-template-columns:repeat(var(--n),minmax(262px,280px)) var(--last,80px) var(--trash,0px)}
+.q span{color:var(--muted);font-size:13.5px;min-width:20px}
+.blocks.edit{grid-template-columns:repeat(var(--n),minmax(286px,304px)) var(--last,80px) var(--trash,0px)}
 .trashcol .trash{animation:trash-in .25s ease}
 @keyframes trash-in{from{opacity:0;transform:translateX(20px)}}
 .addcol{display:grid}
@@ -178,7 +178,7 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .block:not(.on) .vrow{cursor:default;pointer-events:none}
 .vorrat .vrow:not(.on) .box{border-color:var(--line-strong);background:none}
 .vorrat .vrow:not(.on) .box::after{content:none}
-.vorrat{color:var(--muted);font-size:12px;padding:6px 12px 10px;border-top:1px solid var(--line);margin-top:auto}
+.vorrat{color:var(--muted);font-size:13.5px;padding:6px 12px 10px;border-top:1px solid var(--line);margin-top:auto}
 
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line-strong);padding:18px 16px calc(10px + env(safe-area-inset-bottom,0px))}
 .bar-in{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:16px}
@@ -191,7 +191,7 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .meter i.low{background:var(--low)}
 .meter b{position:absolute;top:-8px;bottom:-8px;width:12px;margin-left:-6px;border-radius:999px;background:var(--fg);border:3px solid var(--surface);box-sizing:border-box;left:calc(100%/1.15)}
 .status.ok{color:var(--ok)} .status.low{color:var(--low)}
-.bar .lbl{color:var(--muted);font-size:12px}
+.bar .lbl{color:var(--muted);font-size:13.5px}
 @media (prefers-reduced-motion:no-preference){.meter i{transition:width .25s}}
 
 .sheet-bg{position:fixed;top:0;left:0;right:0;overflow:hidden;overscroll-behavior:none;height:100vh;height:100dvh;z-index:10;background:rgba(0,0,0,.35);display:flex;justify-content:flex-end}
@@ -199,7 +199,7 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .sheet-head{display:flex;align-items:center;gap:10px;margin-right:-18px}
 /* content inset 34px = distance of card text (e.g. "Shake") to the screen edge; the close button sits where Einkauf is */
 .sheet h2{font-size:22px;letter-spacing:-.01em;margin:0;flex:1}
-.sheet .sub{color:var(--muted);font-size:12px;margin:0}
+.sheet .sub{color:var(--muted);font-size:13.5px;margin:0}
 .sheet .dayhead{flex:none}
 .sheet .dayhead b{font-size:22px;letter-spacing:-.01em}
 .shop-list{list-style:none;margin:0;padding:0}
@@ -207,9 +207,9 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .shop-list li+li:not(.gap){border-top:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
 .shop-list li.gap{margin-top:18px}
 .shop-list li span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
-.sheet textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);padding:10px;box-sizing:border-box}
+.sheet textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);padding:10px;box-sizing:border-box}
 .sheet-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.msg{font-size:12.5px;color:var(--ok)}
+.msg{font-size:13.5px;color:var(--ok)}
 /* Verlauf: stat tiles, three single-series bar charts on one axis each, table view */
 .charts{display:flex;flex-direction:column;gap:14px}
 /* Donut: share of recorded days at 3.850 kcal or more; green only when high */
@@ -220,35 +220,37 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .donut .arc.ok{stroke:var(--ok)} .donut .arc.low{stroke:var(--low)}
 .donut .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .donut .mid b{font-family:var(--mono);font-size:clamp(28px,9vw,40px);font-weight:600;letter-spacing:-.04em;line-height:1}
-.donut .mid span{font-size:12px;color:var(--muted);margin-top:4px}
+.donut .mid span{font-size:13.5px;color:var(--muted);margin-top:4px}
 .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .tile span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 12px}
-.tile span{display:block;font-size:12px;color:var(--muted)}
+.tile span{display:block;font-size:13.5px;color:var(--muted)}
 .tile b{display:block;font-family:var(--mono);font-size:20px;font-weight:600;letter-spacing:-.02em;margin-top:2px}
 .tile b.ok{color:var(--ok)} .tile b.low{color:var(--low)}
-.seg{display:flex;padding:4px;border-radius:999px;background:color-mix(in srgb,var(--fg) 7%,transparent)}
-.seg button{all:unset;flex:1;text-align:center;height:36px;line-height:36px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.seg button.on{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12)}
-.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.chart{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px 12px 8px}
-.chart h3{font-size:17px;font-weight:600;margin:0 4px}
-.chart p{font-size:12px;color:var(--muted);margin:2px 4px 8px}
-.chart svg{display:block;width:100%;height:260px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:12px 8px 6px;margin:0 -18px}
+/* Metric bubbles: scroll and snap like the day strip, the selected one sits centred */
+.bubbles{position:relative;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;padding:2px 0 6px}
+.bubbles::-webkit-scrollbar{display:none}
+.bubbles .bpad{flex:0 0 calc(50% - 64px)}
+.bubbles button{all:unset;flex:none;width:120px;height:42px;line-height:42px;text-align:center;border-radius:999px;border:1px solid var(--line);font-size:16px;font-weight:500;color:var(--fg);scroll-snap-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent;box-sizing:border-box}
+.bubbles button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.bubbles button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chart svg{display:block;width:100%;height:360px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
 .chart svg:active{cursor:grabbing}
 .chart .grid{stroke:var(--line);stroke-width:1}
 .chart .goal{stroke:var(--fg);stroke-width:1.5;stroke-dasharray:4 4;opacity:.5}
-.chart .axis{font-family:var(--mono);font-size:10px;fill:var(--muted)}
+.chart .axis{font-family:var(--mono);font-size:13px;fill:var(--muted)}
+.chart .glabel{font-family:var(--mono);font-size:13px;fill:var(--fg);opacity:.7}
 .chart .line{fill:none;stroke:var(--muted);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 .chart .pt{fill:var(--muted);stroke:var(--surface);stroke-width:2}
 .chart .pt.ok{fill:var(--ok)} .chart .pt.low{fill:var(--low)}
 .chart .pt.on{stroke:var(--fg)}
-.ctable{width:100%;border-collapse:collapse;font-size:13px}
+.ctable{width:100%;border-collapse:collapse;font-size:14.5px}
 .ctable th{font-weight:500;color:var(--muted);text-align:right;padding:4px 0}
 .ctable th:first-child,.ctable td:first-child{text-align:left}
 .ctable td{text-align:right;padding:4px 0;font-family:var(--mono);border-top:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
 .ctable td:first-child{font-family:var(--sans)}
-.ctip{position:fixed;z-index:12;pointer-events:none;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:6px 9px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);white-space:nowrap}
+.ctip{position:fixed;z-index:12;pointer-events:none;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:6px 9px;font-size:13.5px;box-shadow:0 4px 16px rgba(0,0,0,.12);white-space:nowrap}
 .ctip b{font-family:var(--mono);font-weight:600}
 .msg.err{color:var(--err)}
 </style>
@@ -305,9 +307,10 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
     <div class="charts">
       <div class="tiles" id="chartTiles"></div>
       <div class="donut" id="donut"></div>
-      <div class="seg" id="chartSeg" role="tablist"><button type="button" data-m="kcal" class="on">Kalorien</button><button type="button" data-m="p">Protein</button><button type="button" data-m="meat">Fleisch</button></div>
-      <div class="chart"><h3 id="lcTitle"></h3><p id="lcSub"></p><svg id="lineChart" role="img"></svg></div>
-      <div id="chartTable"></div>
+      <div class="chart">
+        <div class="bubbles" id="chartSeg" role="tablist"><span class="bpad"></span><button type="button" data-m="kcal" class="on">Kalorien</button><button type="button" data-m="p">Protein</button><button type="button" data-m="meat">Fleisch</button><span class="bpad"></span></div>
+        <svg id="lineChart" role="img"></svg>
+      </div>
     </div>
     <div class="ctip" id="ctip" hidden></div>
   </div>
@@ -673,7 +676,7 @@ function blockEl(r,d,wrap,b){
 // Tapping an ingredient adds/removes it; the dish grows above the list, no auto-scroll. The cross deletes the dish.
 function customEl(r,d,wrap){
   const b=customBlock(d,r.id);const open=picking.has(r.id)||b.items.length>0;
-  wrap.style.setProperty('--last',open?'minmax(262px,280px)':'80px');
+  wrap.style.setProperty('--last',open?'minmax(286px,304px)':'80px');
   const el=document.createElement('article');el.id='blk-'+b.id;
   if(!open){
     el.className='block addcol';
@@ -855,16 +858,19 @@ function niceStep(range,target){const raw=range/target,m=Math.pow(10,Math.floor(
 function lcReset(){const n=LC.days.length,M=METRICS[LC.m];
   const vals=LC.days.map(iso=>recTotal(iso)?M.get(recTotal(iso)):null).filter(v=>v!=null);
   LC.x0=Math.max(0,n-30)-0.6;LC.x1=n-1+0.6;LC.y0=0;LC.y1=Math.max(M.goal||0,...vals,M.goal?0:100)*1.15}
+const LCG={H:360,L:54,R:12,T:16,B:64};
 function lcDraw(){
-  const svg=document.getElementById('lineChart');const W=svg.clientWidth||360,H=260,L=44,R=10,T=12,B=26,pw=W-L-R,ph=H-T-B,M=METRICS[LC.m];
+  const svg=document.getElementById('lineChart');const {H,L,R,T,B}=LCG,W=svg.clientWidth||360,pw=W-L-R,ph=H-T-B,M=METRICS[LC.m];
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   const X=i=>L+(i-LC.x0)/(LC.x1-LC.x0)*pw,Y=v=>T+ph-(v-LC.y0)/(LC.y1-LC.y0)*ph;
   let g=`<defs><clipPath id="lcClip"><rect x="${L}" y="${T-6}" width="${pw}" height="${ph+12}"/></clipPath></defs>`;
-  const ys=niceStep(LC.y1-LC.y0,4);for(let v=Math.ceil(LC.y0/ys)*ys;v<=LC.y1;v+=ys)g+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="axis" x="${L-6}" y="${Y(v)+3}" text-anchor="end">${fmt(v)}</text>`;
-  const pxPerDay=pw/(LC.x1-LC.x0),xs=Math.max(1,Math.ceil(58/pxPerDay));
-  for(let i=Math.max(0,Math.ceil(LC.x0));i<=Math.min(LC.days.length-1,Math.floor(LC.x1));i++)if((LC.days.length-1-i)%xs===0)g+=`<text class="axis" x="${X(i)}" y="${H-7}" text-anchor="middle">${dayLabel(LC.days[i]).slice(3,9)}</text>`;
+  const ys=niceStep(LC.y1-LC.y0,4);for(let v=Math.ceil(LC.y0/ys)*ys;v<=LC.y1;v+=ys)g+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="axis" x="${L-6}" y="${Y(v)+3}" text-anchor="end">${fmt(v)}</text>`.replace(`y="${Y(v)+3}"`,`y="${Y(v)+4}"`);
+  // dates written vertically along the x axis
+  const pxPerDay=pw/(LC.x1-LC.x0),xs=Math.max(1,Math.ceil(22/pxPerDay));
+  for(let i=Math.max(0,Math.ceil(LC.x0));i<=Math.min(LC.days.length-1,Math.floor(LC.x1));i++)if((LC.days.length-1-i)%xs===0){const x=X(i),y=H-B+10;
+    g+=`<text class="axis" x="${x}" y="${y}" text-anchor="end" dominant-baseline="middle" transform="rotate(-90 ${x} ${y})">${dayLabel(LC.days[i]).slice(3,9)}</text>`}
   g+=`<g clip-path="url(#lcClip)">`;
-  if(M.goal)g+=`<line class="goal" x1="${L}" x2="${W-R}" y1="${Y(M.goal)}" y2="${Y(M.goal)}"/>`;
+  if(M.goal)g+=`<line class="goal" x1="${L}" x2="${W-R}" y1="${Y(M.goal)}" y2="${Y(M.goal)}"/><text class="glabel" x="${W-R-4}" y="${Y(M.goal)-7}" text-anchor="end">Ziel ${fmt(M.goal)}</text>`;
   let seg=[];const segs=[];LC.days.forEach((iso,i)=>{const t=recTotal(iso);if(t){seg.push([X(i),Y(M.get(t))])}else if(seg.length){segs.push(seg);seg=[]}});if(seg.length)segs.push(seg);
   segs.forEach(sg=>{if(sg.length>1)g+=`<polyline class="line" points="${sg.map(p=>p.join(',')).join(' ')}"/>`});
   LC.days.forEach((iso,i)=>{const t=recTotal(iso);if(!t)return;const v=M.get(t);g+=`<circle class="pt ${M.level?M.level(v):''}" data-i="${i}" cx="${X(i)}" cy="${Y(v)}" r="5"/>`});
@@ -878,7 +884,7 @@ function lcTip(i,el){const tip=document.getElementById('ctip'),M=METRICS[LC.m],t
 function lcBind(){
   const svg=document.getElementById('lineChart');if(svg.dataset.bound)return;svg.dataset.bound='1';
   const P=new Map();let start=null,moved=false,lastTap=0;
-  const geo=()=>{const W=svg.clientWidth||360;return {pw:W-54,ph:222,L:44,T:12}};
+  const geo=()=>{const W=svg.clientWidth||360;return {pw:W-LCG.L-LCG.R,ph:LCG.H-LCG.T-LCG.B,L:LCG.L,T:LCG.T}};
   const clampX=()=>{const n=LC.days.length,span=Math.min(Math.max(LC.x1-LC.x0,4),Math.max(n+1.2,4));let a=LC.x0,b=a+span;
     if(a<-0.6){a=-0.6;b=a+span}if(b>n-1+0.6){b=n-1+0.6;a=b-span}LC.x0=a;LC.x1=b};
   const clampY=()=>{const span=Math.max(LC.y1-LC.y0,10);if(LC.y0<0){LC.y0=0}LC.y1=LC.y0+span};
@@ -906,10 +912,10 @@ function lcBind(){
     clampX();clampY();lcDraw()},{passive:false});
   function nearestPt(e){let best=null,bd=24;svg.querySelectorAll('.pt').forEach(c=>{const b=c.getBoundingClientRect(),d=Math.abs(b.left+b.width/2-e.clientX);if(d<bd){bd=d;best=c}});return best}
   document.getElementById('chartSeg').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;LC.m=b.dataset.m;
-    document.querySelectorAll('#chartSeg button').forEach(x=>x.classList.toggle('on',x===b));document.getElementById('ctip').hidden=true;lcHead();lcReset();lcDraw()});
+    document.querySelectorAll('#chartSeg button').forEach(x=>x.classList.toggle('on',x===b));centerBubble(true);document.getElementById('ctip').hidden=true;lcReset();lcDraw()});
   window.addEventListener('resize',()=>{if(!document.getElementById('chartSheet').hidden)lcDraw()});
 }
-function lcHead(){const M=METRICS[LC.m];document.getElementById('lcTitle').textContent=M.t;document.getElementById('lcSub').innerHTML=numify(M.p)}
+function centerBubble(smooth){const box=document.getElementById('chartSeg'),b=box.querySelector('button.on');if(!b)return;const left=b.offsetLeft-(box.clientWidth-b.offsetWidth)/2;if(smooth)box.scrollTo({left,behavior:'smooth'});else box.scrollLeft=left}
 function renderCharts(){
   const days=dayList(),rec=days.filter(recTotal);LC.days=days;
   document.getElementById('chartSub').innerHTML=numify(`${dayLabel(days[0])} bis ${dayLabel(days[days.length-1])}`);
@@ -926,9 +932,7 @@ function renderCharts(){
     `<div class="tile"><span>Schnitt Protein</span><b>${ap!=null?fmt(ap)+' g':'–'}</b></div>`+
     `<div class="tile"><span>Im Ziel</span><b>${hit}/${rec.length}</b></div>`;
   // Table
-  document.getElementById('chartTable').innerHTML=`<table class="ctable"><thead><tr><th>Tag</th><th>kcal</th><th>Protein</th><th>Fleisch</th></tr></thead><tbody>${rec.slice().reverse().map(iso=>{const t=recTotal(iso);
-    return `<tr><td>${numify(dayLabel(iso))}</td><td>${fmt(t.kcal)}</td><td>${fmt(t.p)} g</td><td>${fmt(t.meatc!=null?t.meatc:t.meat)} g</td></tr>`}).join('')||'<tr><td colspan="4">Noch kein Tag erfasst</td></tr>'}</tbody></table>`;
-  lcBind();lcHead();lcReset();lcDraw();
+  lcBind();centerBubble(false);lcReset();lcDraw();
   document.querySelector('#chartSheet .sheet').onscroll=()=>{document.getElementById('ctip').hidden=true};
 }
 
@@ -1055,7 +1059,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='44227d3a5f45';
+const BUILD='3094f49549fe';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

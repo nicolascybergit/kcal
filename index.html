@@ -41,7 +41,7 @@ h1.logo .lw{font-family:"Space Grotesk",var(--sans);font-weight:700;letter-spaci
 #openExport.open .ico-up{display:none}
 #openExport.open .ico-x{display:block}
 /* Export open: the sticky header keeps only refresh, logo and the close icon */
-body.exporting .days{display:none}
+body.exporting .days,body.exporting .bar{display:none}
 #refreshBtn .rot{transform-box:view-box;transform-origin:12px 12px}
 @media (max-width:440px){h1.logo{font-size:27px}}
 #refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1) infinite}
@@ -915,7 +915,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='018fdcd6e052';
+const BUILD='98bde90879f9';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

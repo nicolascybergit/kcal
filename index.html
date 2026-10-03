@@ -731,7 +731,7 @@ async function initFile(){
 
 // ---------- Cloud (Supabase) ----------
 // Filled in once the Supabase project exists; empty = local mode. The anon key is public by design, rows are protected by row level security.
-const CLOUD={url:'',key:''};
+const CLOUD={url:'https://kemcgsstlqlpxnbpyknv.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtlbWNnc3N0bHFscHhuYnB5a252Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5NzcyOTEsImV4cCI6MjEwNjU1MzI5MX0.6PqQeH5lFI4qmxfn-BcKeFbgVHpjWOJw4dZHj2azJ7s'};
 const LS_MIGRATED='ebk-migrated';
 let sb=null;
 function loadScript(src){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;el.onload=res;el.onerror=rej;document.head.appendChild(el)})}

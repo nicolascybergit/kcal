@@ -49,7 +49,8 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0;white-space:now
 :root{padding-top:0}
 .head{position:sticky;top:0;z-index:5;background:var(--surface);margin:-18px -16px 0;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0}
 .days{margin:12px -16px 0}
-.days-scroll{position:relative;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;overscroll-behavior-x:contain}
+.days-scroll{position:relative;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;background:linear-gradient(90deg,var(--surface) 50%,var(--bg) 50%)}
+/* the container background shows during overscroll: grey continues endlessly right of today */
 .day-pad{flex:0 0 calc(50% - 62px);display:flex;justify-content:flex-end;overflow:hidden}
 .day-pad.right{background:var(--bg)}
 .day-pad.left+.day{margin-left:-1px}
@@ -845,7 +846,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='954a465bcb52';
+const BUILD='f102a7b42711';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

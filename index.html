@@ -795,8 +795,8 @@ function renderShop(){
   keys.forEach(k=>{const g=opt(k).g||9;const li=document.createElement('li');if(lastG!==null&&g!==lastG){li.className='gap';lines.push('')}
     lastG=g;const s=unitOut(buy[k],F[k][1]);li.innerHTML=`<span>${esc(F[k][0])}</span><span>${s}</span>`;ul.appendChild(li);lines.push(`${F[k][0]} ${s}`)});
   if(!keys.length)ul.innerHTML='<li><span>Für diesen Tag ist noch nichts ausgewählt.</span><span></span></li>';
-  document.getElementById('shopDay').textContent=(cur===TODAY?'Heute, ':'')+dayLabel(cur);
-  document.getElementById('shopSub').textContent=isEditing(cur)?'Aktuelle Auswahl, noch nicht gespeichert':savedText(store[cur]);
+  document.getElementById('shopDay').innerHTML=numify((cur===TODAY?'Heute, ':'')+dayLabel(cur));
+  document.getElementById('shopSub').innerHTML=numify(isEditing(cur)?'Aktuelle Auswahl, noch nicht gespeichert':savedText(store[cur]));
   const pv=Object.keys(pan).filter(k=>F[k]).map(k=>`${F[k][0]} ${unitOut(pan[k],F[k][1])}`);
   document.getElementById('shopVorrat').textContent=pv.length?'Aus dem Vorrat: '+pv.join(', '):'';
   shopText=lines.join('\n');
@@ -823,9 +823,9 @@ function buildCsv(){
 }
 function renderExport(){
   const days=dayList(),n=days.filter(x=>store[x]).length;
-  document.getElementById('expSub').textContent=`${days.length} ${days.length===1?'Tag':'Tage'} von ${dayLabel(days[0])} bis ${dayLabel(days[days.length-1])}, davon ${n} gespeichert`;
+  document.getElementById('expSub').innerHTML=numify(`${days.length} ${days.length===1?'Tag':'Tage'} von ${dayLabel(days[0])} bis ${dayLabel(days[days.length-1])}, davon ${n} gespeichert`);
   const last=Object.values(store).filter(x=>x&&x.savedAt).sort((a,b)=>a.savedAt<b.savedAt?1:-1)[0];
-  document.getElementById('expLast').textContent=last?'Zuletzt '+savedText(last).replace('Gespeichert','gespeichert')+', Eintrag für '+dayLabel(last.date):'Noch nichts gespeichert';
+  document.getElementById('expLast').innerHTML=last?numify('Zuletzt '+savedText(last).replace('Gespeichert','gespeichert')+', Eintrag für '+dayLabel(last.date)):'Noch nichts gespeichert';
   document.getElementById('csvBox').value=buildCsv().replace('﻿','');
   document.getElementById('expMsg').textContent='';
 }
@@ -1054,7 +1054,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='ea9ba3fe3c0c';
+const BUILD='8b67cf7b166d';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

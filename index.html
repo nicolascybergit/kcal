@@ -27,10 +27,9 @@ body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px
 .wrap{max-width:1500px;margin:0 auto;padding:18px 16px 230px}
 .num{font-variant-numeric:tabular-nums}
 
-.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
-.top #openExport{justify-self:start}
-.top #openShop{justify-self:end}
-h1{font-size:21px;font-weight:600;margin:0;text-align:center;white-space:nowrap}
+.top{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.top .tools{display:flex;gap:6px}
+h1{font-size:21px;font-weight:600;margin:0;white-space:nowrap}
 .tools{display:flex;align-items:center;gap:8px}
 /* Header: plain icons for refresh/export, large pill for Einkauf (its cart matches the icon size) */
 #refreshBtn.spin .rot{animation:rst-spin .75s cubic-bezier(.6,0,.4,1) infinite}
@@ -45,13 +44,14 @@ h1{font-size:21px;font-weight:600;margin:0;text-align:center;white-space:nowrap}
 .head{position:sticky;top:0;z-index:5;background:var(--surface);margin:-18px -16px 0;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 0}
 /* Day strip in the earlier card look: grey band, framed cells that touch, current day framed in blue with a bottom bar */
 .days{margin:10px -16px 0;padding:8px 0;background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.days-scroll{position:relative;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;background:var(--bg)}
+.days-scroll{position:relative;display:flex;gap:6px;overflow-x:auto;scroll-padding-left:16px;scrollbar-width:none;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;background:var(--bg)}
 /* the container background shows during overscroll: grey continues endlessly right of today */
-.day-pad{flex:0 0 calc(50% - 46px)}
+.day-pad.left{flex:0 0 10px}
+.day-pad.right{flex:0 0 calc(100% - 92px - 28px)}
 .day-pad.right{background:var(--bg)}
 .days-scroll::-webkit-scrollbar{display:none}
 .day.fill{cursor:default;pointer-events:none}
-.day{all:unset;position:relative;isolation:isolate;cursor:pointer;flex:none;width:92px;scroll-snap-align:center;box-sizing:border-box;padding:6px 9px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
+.day{all:unset;position:relative;isolation:isolate;cursor:pointer;flex:none;width:92px;scroll-snap-align:start;box-sizing:border-box;padding:6px 9px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
 .day:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .day .d1{font-size:12.5px;color:var(--muted)}
 .day .d2{font-weight:600;font-size:15px;line-height:1.3}
@@ -71,7 +71,7 @@ h1{font-size:21px;font-weight:600;margin:0;text-align:center;white-space:nowrap}
 .dayhead{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 .dayhead b{font-size:17px;font-weight:600;color:var(--fg)}
 .dayhead>span{font-size:13.5px;color:var(--muted)}
-.modebar .dayhead b{font-size:22px;letter-spacing:-.01em}
+.modebar .dayhead b{font-size:18px}
 /* Pill buttons: .btn 46px */
 .btn{font:inherit;font-size:14px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;height:auto;padding:7px 14px;border:1px solid var(--line-strong);border-radius:0;background:var(--surface);color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .btn:hover{border-color:var(--fg)}
@@ -201,7 +201,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .shop-list li.gap{margin-top:18px}
 .shop-list li span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
 .view textarea{width:100%;min-height:220px;font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:0;background:var(--surface);color:var(--fg);padding:10px;box-sizing:border-box}
-.pop-bg{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.12);display:flex;align-items:flex-start;justify-content:flex-end;padding:calc(70px + env(safe-area-inset-top,0px)) 16px 24px}
+.pop-bg{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.12);display:flex;align-items:flex-start;justify-content:flex-start;padding:120px 32px 24px}
 .pop{box-sizing:border-box;position:relative;width:min(360px,100%);max-height:min(70vh,560px);overflow-y:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);border-radius:0;box-shadow:0 10px 30px rgba(0,0,0,.14);padding:14px 14px 12px;display:flex;flex-direction:column;gap:14px;animation:alert-in .18s ease-out}
 .pop .dayhead b{font-size:17px}
 .pop .dayhead{padding-right:34px}
@@ -218,9 +218,11 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 <div class="wrap">
   <header class="head">
   <div class="top">
-    <button class="tbtn" id="openExport" type="button" aria-label="Alle Tage als CSV herunterladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/></svg>Export</button>
     <h1>4000 kcal</h1>
-    <button class="tbtn" id="openShop" type="button" aria-label="Einkaufsliste für diesen Tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Einkauf</button>
+    <div class="tools">
+      <button class="tbtn" id="openExport" type="button" aria-label="Alle Tage als CSV herunterladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/></svg>Export</button>
+      <button class="tbtn" id="openShop" type="button" aria-label="Einkaufsliste für diesen Tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Einkauf</button>
+    </div>
   </div>
   <nav class="days" aria-label="Tage"><div class="days-scroll" id="days"></div></nav>
   </header>
@@ -473,7 +475,7 @@ function renderDays(){
     daysEl.appendChild(b);
   });
   const right=document.createElement('div');right.className='day-pad right';right.setAttribute('aria-hidden','true');daysEl.appendChild(right);
-  const c=daysEl.querySelector('.cur');if(!c)return;const target=c.offsetLeft-(daysEl.clientWidth-c.offsetWidth)/2;
+  const c=daysEl.querySelector('.cur');if(!c)return;const target=c.offsetLeft-16;
   if(glideNext){glideNext=false;daysEl.scrollLeft=prev;daysEl.scrollTo({left:target,behavior:'smooth'})}else daysEl.scrollLeft=target;
 }
 let resizeT;window.addEventListener('resize',()=>{clearTimeout(resizeT);resizeT=setTimeout(renderDays,150)});
@@ -739,7 +741,7 @@ async function resetDay(){
 function unitOut(q,u){if(u==='Stk')return fmt(Math.ceil(q-1e-9))+' Stk';
   if(u==='g'&&q>=1000)return fmt(q/1000,2)+' kg';if(u==='ml'&&q>=1000)return fmt(q/1000,2)+' l';return fmt(Math.round(q))+' '+u}
 let shopText='';
-function openShop(){renderShop();const p=document.getElementById('shopPop');p.hidden=false;p.querySelector('.pop').scrollTop=0}
+function openShop(){renderShop();const p=document.getElementById('shopPop');p.style.paddingTop=Math.round(document.querySelector('.top').getBoundingClientRect().bottom+8)+'px';p.hidden=false;p.querySelector('.pop').scrollTop=0}
 function closeShop(){document.getElementById('shopPop').hidden=true}
 document.getElementById('shopPop').addEventListener('click',e=>{if(e.target.id==='shopPop')closeShop()});
 document.getElementById('openShop').addEventListener('click',openShop);
@@ -909,7 +911,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='1c1ffbd3db13';
+const BUILD='6d63e1f66b4c';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

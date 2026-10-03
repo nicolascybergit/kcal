@@ -166,9 +166,10 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .pick-list button{all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:12px;width:100%;padding:3px 0}
 .pick-list button:focus-visible{outline:2px solid var(--accent)}
 .pick-list button.on{color:var(--accent);font-weight:600}
-.shop-list.pick-list li.man{margin-top:14px;padding-top:10px;border-top:1px solid var(--line)}
-.block.pick.manual .pick-list li:not(.man){display:none}
-.block.pick.manual .pick-list li.man{margin-top:0;padding-top:0;border-top:0}
+.shop-list.pick-list.man-list{padding-top:0}
+.shop-list.pick-list li.man{margin-top:2px;padding-top:10px;border-top:1px solid var(--line)}
+.block.pick.manual .shop-list.pick-list.man-list{padding:10px 12px;border-bottom:1px solid var(--line)}
+.block.pick.manual .shop-list.pick-list li.man{margin-top:0;padding-top:0;border-top:0}
 .vorrat .vrow{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 0;cursor:pointer}
 .vorrat .vrow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .vorrat .vrow .box{margin-top:0}
@@ -310,6 +311,8 @@ const F = {
   bun:['Burger-Buns','Stk',175,6,{d:2,g:4}],
   eisberg:['Eisbergsalat','g',0.14,0.01,{d:40,g:1}],
   tomate:['Tomaten','Stk',20,0.9,{d:1,g:1}],
+  // One handful = 5–6 cherry tomatoes (~90 g)
+  htomate:['Handvoll Tomaten','Stk',18,0.8,{d:1,g:1}],
   passata:['Passierte Tomaten','g',0.35,0.015,{d:200,g:6}],
   kidney:['Kidneybohnen','g',1.1,0.08,{d:250,g:6}],
   pizza:['Gustavo Gusto Schinken-Champignon','Stk',920,42,{d:1,g:7}],
@@ -349,9 +352,9 @@ const ROWS = [
  ]},
  {id:'fr',name:'Frühstück',sub:'',target:'Etwa 900 kcal',blocks:[
   {id:'f1',name:'Overnight Oats',t:'3 min am Vorabend',items:[['hafer',100],['milch',350],['banane',1],['pb',30],['honig',15]]},
-  {id:'f2',name:'Omelette mit Brot',t:'10 min',items:[['ei',4],['kschinken',60],['gouda',40],['brot',100],['butter',10]]},
+  {id:'f2',name:'Omelette mit Brot',t:'10 min',items:[['ei',4],['kschinken',60],['gouda',40],['brot',100],['htomate',1],['butter',10]]},
   {id:'f3',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',items:[['brot',150],['rschinken',60],['marmelade',40],['milch',300],['butter',15]]},
-  {id:'f4',name:'Bagels mit Rührei',t:'8 min',items:[['bagel',2],['ei',3],['frischk',30],['butter',10]]},
+  {id:'f4',name:'Bagels mit Rührei',t:'8 min',items:[['bagel',2],['ei',3],['frischk',30],['htomate',1],['butter',10]]},
   {id:'f5',name:'Müsli-Schüssel',t:'2 min',items:[['granola',100],['milch',300],['banane',1],['nuesse',20]]},
  ]},
  {id:'sn1',name:'Snack 1',sub:'Zum Mitnehmen',target:'Etwa 450 kcal',blocks:[
@@ -371,7 +374,7 @@ const ROWS = [
   {id:'m5',name:'Nudelauflauf mit Hack',t:'40 min, 10 min aktiv',items:[['pasta',120],['hack',200],['passata',150],['gouda',50]]},
   {id:'m6',name:'Chili con Carne mit Reis',t:'30 min',items:[['hack',200],['kidney',250],['passata',200],['reis',100]]},
   {id:'m7',name:'Gustavo Gusto Pizza + Skyr',t:'15 min Ofen',items:[['pizza',1],['skyr',200],['honig',15]]},
-  {id:'m8',name:'Hähnchen-Nudeln',t:'15 min',items:[['hbrust',400],['pasta',125],['pesto',50],['oel',10]]},
+  {id:'m8',name:'Hähnchen-Nudeln',t:'15 min',items:[['hbrust',400],['pasta',125],['pesto',50],['htomate',1],['oel',10]]},
   {id:'m9',name:'Bratwurst mit Kidneybohnen und Reis',t:'25 min, inklusive 20 g Reis, der im Topf kleben bleibt',items:[['bratwurst',250],['kidney',250],['reis',150]]},
  ]},
  {id:'sn2',name:'Snack 2',sub:'',target:'Etwa 450 kcal',blocks:[
@@ -383,7 +386,7 @@ const ROWS = [
   {id:'b6',name:'Mixtrail',t:'0 min',items:[['mixtrail',150]]},
  ]},
  {id:'ab',name:'Abendessen',sub:'',target:'Etwa 900–1.000 kcal',blocks:[
-  {id:'e1',name:'Gambas-Pasta',t:'15 min',items:[['gambas',300],['pasta',140],['parmesan',20],['kiwi',1],['oel',15]]},
+  {id:'e1',name:'Gambas-Pasta',t:'15 min',items:[['gambas',300],['pasta',140],['parmesan',20],['htomate',1],['kiwi',1],['oel',15]]},
   {id:'e2',name:'Spaghetti Bolognese',t:'25 min',items:[['hack',180],['pasta',100],['passata',200],['parmesan',15],['kiwi',1]]},
   {id:'e3',name:'Gyros-Teller mit Reis',t:'20 min',items:[['gyros',200],['reis',120],['tzatziki',100],['kiwi',1],['oel',10]]},
   {id:'e4',name:'Vegane Tofu-Semmeln',t:'10 min',items:[['semmel',3],['tofu',250],['kraut',150],['kiwi',1],['suesssenf',40]]},
@@ -634,9 +637,12 @@ function customEl(r,d,wrap){
   el.className='block pick'+(d.sel[r.id]===b.id?' on':'')+(isManual(b.items)?' manual':'');
   const have=new Set(b.items.map(x=>x[0]));let last=null;
   el.innerHTML=`<div class="pick-in"><div class="dish"></div>
-    <ul class="shop-list pick-list">${PICK_ORDER.map(k=>{const g=opt(k).g||9;const gap=last!==null&&g!==last;last=g;const on=have.has(k);
-      return `<li${gap?' class="gap"':''}><button type="button" data-f="${k}" aria-pressed="${on}"${on?' class="on"':''}><span>${esc(F[k][0])}</span><span>${fmt(defQty(k))} ${F[k][1]}</span></button></li>`}).join('')}
-      <li class="man"><button type="button" data-man aria-pressed="${isManual(b.items)}"${isManual(b.items)?' class="on"':''}><span>Kalorien und Protein</span></button></li></ul></div>`;
+    <ul class="shop-list pick-list" data-foods>${PICK_ORDER.map(k=>{const g=opt(k).g||9;const gap=last!==null&&g!==last;last=g;const on=have.has(k);
+      return `<li${gap?' class="gap"':''}><button type="button" data-f="${k}" aria-pressed="${on}"${on?' class="on"':''}><span>${esc(F[k][0])}</span><span>${fmt(defQty(k))} ${F[k][1]}</span></button></li>`}).join('')}</ul>
+    <ul class="shop-list pick-list man-list"><li class="man"><button type="button" data-man aria-pressed="${isManual(b.items)}"${isManual(b.items)?' class="on"':''}><span>Kalorien und Protein</span></button></li></ul></div>`;
+  // While active, "Kalorien und Protein" sits fixed right under the dish, above the food list
+  const placeMan=on=>{const inner=el.querySelector('.pick-in');inner.insertBefore(el.querySelector('.man-list'),on?el.querySelector('[data-foods]'):null)};
+  placeMan(isManual(b.items));
   paintDish(r,d,wrap,el);
   el.querySelectorAll('[data-f]').forEach(btn=>btn.addEventListener('click',()=>{
     const f=btn.dataset.f;const i=b.items.findIndex(x=>x[0]===f);
@@ -645,11 +651,11 @@ function customEl(r,d,wrap){
     if(b.items.length&&d.sel[r.id]!==b.id){d.sel[r.id]=b.id;r.blocks.forEach(x=>{if(d.off[x.id]){delete d.off[x.id];paintBlock(x)}});markSel(wrap,r,d)}
     else if(!b.items.length&&d.sel[r.id]===b.id){d.sel[r.id]=null;markSel(wrap,r,d)}
     d.touched=true;saveDrafts();paintDish(r,d,wrap,el);totals();}));
-  // Manual entry: replaces all foods with two fields (kcal, then protein); tapping again goes back to the food list
+  // Manual entry: adds two fields (kcal, then protein) on top of the dish; foods stay and can still be added. Tapping again removes only the fields
   el.querySelector('[data-man]').addEventListener('click',e=>{const btn=e.currentTarget;const on=!isManual(b.items);
-    b.items.splice(0,b.items.length,...(on?MANUAL.map(k=>[k,0]):[]));
-    el.classList.toggle('manual',on);btn.classList.toggle('on',on);btn.setAttribute('aria-pressed',on);
-    el.querySelectorAll('[data-f]').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-pressed',false)});
+    const foods=b.items.filter(x=>!opt(x[0]).x);
+    b.items.splice(0,b.items.length,...(on?MANUAL.map(k=>[k,0]):[]),...foods);
+    el.classList.toggle('manual',on);btn.classList.toggle('on',on);btn.setAttribute('aria-pressed',on);placeMan(on);
     if(on&&d.sel[r.id]!==b.id){d.sel[r.id]=b.id;r.blocks.forEach(x=>{if(d.off[x.id]){delete d.off[x.id];paintBlock(x)}});markSel(wrap,r,d)}
     else if(!on&&d.sel[r.id]===b.id){d.sel[r.id]=null;markSel(wrap,r,d)}
     d.touched=true;saveDrafts();paintDish(r,d,wrap,el);totals();
@@ -931,7 +937,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='484c7d30023e';
+const BUILD='efa4a4dc7f8c';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

@@ -118,6 +118,9 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 .pick-list button{all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:12px;width:100%;padding:3px 0}
 .pick-list button:focus-visible{outline:2px solid var(--accent)}
 .pick-list button.on{color:var(--accent);font-weight:600}
+.vorrat .vrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 0;cursor:pointer}
+.vorrat .vrow.off{text-decoration:line-through}
+.vorrat .vrow input{margin:0;width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex:none}
 .vorrat{color:var(--muted);font-size:12px;padding:6px 12px 10px;border-top:1px solid var(--line);margin-top:auto}
 
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line-strong);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
@@ -191,7 +194,7 @@ table.items{width:100%;border-collapse:collapse;font-size:13px}
 <div class="sheet-bg" id="expSheet" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="expTitle">
     <div class="sheet-head"><h2 id="expTitle">Export</h2><button class="btn" type="button" data-close>Schließen</button></div>
-    <p class="sub" id="expSub"></p>
+    <div class="dayhead"><b id="expSub"></b><span id="expLast"></span></div>
     <div class="sheet-actions">
       <button class="btn primary" type="button" id="saveCsv">CSV herunterladen</button>
       <button class="btn" type="button" id="copyCsv">CSV kopieren</button>
@@ -272,6 +275,7 @@ const F = {
   pommes:['Pommes','g',1.4,0.025,{d:250,g:7}],
   bratwurst:['Bratwurst','g',3.0,0.14,{d:250,g:2,m:1,c:0.85,cl:'gebraten'}],
   mixtrail:['Seeberger Mixtrail','g',4.73,0.11,{d:150,g:8}],
+  tomsauce:['Tomatensauce','g',0.39,0.018,{d:100,g:6}],
 };
 
 // ---------- Gerichte (Standardwerte) ----------
@@ -363,16 +367,16 @@ const saveDrafts=()=>{try{localStorage.setItem(LS_DRAFT,JSON.stringify(drafts))}
 const isEditing=date=>!store[date]||editing.has(date);
 
 function draftFor(date){
-  if(drafts[date]){drafts[date].custom=drafts[date].custom||{};return drafts[date]}
-  const d={sel:{},q:{},custom:{},touched:false};
+  if(drafts[date]){drafts[date].custom=drafts[date].custom||{};drafts[date].off=drafts[date].off||{};return drafts[date]}
+  const d={sel:{},q:{},custom:{},off:{},touched:false};
   const doc=store[date];
   if(doc){
     ROWS.forEach(r=>d.sel[r.id]=null);
     (doc.meals||[]).forEach(m=>{
       if(isCustom(m.block)){const it=m.items.filter(x=>F[x.f]).map(x=>[x.f,x.q]);if(it.length){d.custom[m.row]=it;d.sel[m.row]=m.block}return}
       const b=BLOCK[m.block];if(!b)return;d.sel[m.row]=m.block;
-      const o={};m.items.forEach(it=>{if(b.items[it.i]&&b.items[it.i][0]===it.f&&it.q!==b.items[it.i][1])o[it.i]=it.q});
-      if(Object.keys(o).length)d.q[m.block]=o;});
+      const o={},off={};m.items.forEach(it=>{if(b.items[it.i]&&b.items[it.i][0]===it.f){if(it.q!==b.items[it.i][1])o[it.i]=it.q;if(it.v&&it.use===0)off[it.i]=true}});
+      if(Object.keys(o).length)d.q[m.block]=o;if(Object.keys(off).length)d.off[m.block]=off;});
   } else ROWS.forEach(r=>d.sel[r.id]=r.blocks[0].id);
   drafts[date]=d;return d;
 }
@@ -384,8 +388,11 @@ const blockOf=(d,id)=>isCustom(id)?customBlock(d,id.slice(2)):BLOCK[id];
 const defQty=k=>opt(k).d||(F[k][1]==='Stk'?1:100);
 const PICK_ORDER=Object.keys(F).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
 const qty=(d,b,i)=>{if(b.custom)return b.items[i][1];const o=d.q[b.id];return (o&&o[i]!=null)?o[i]:b.items[i][1]};
+// Pantry items carry use 1/0; a deselected one stays in the record but counts 0 kcal/protein
 function mealFromDraft(d,b){
-  const items=b.items.map(([f],i)=>Object.assign({i},itemCalc(f,qty(d,b,i))));
+  const off=(!b.custom&&d.off&&d.off[b.id])||{};
+  const items=b.items.map(([f],i)=>{const it=Object.assign({i},itemCalc(f,qty(d,b,i)));
+    if(it.v){it.use=off[i]?0:1;if(!it.use)Object.assign(it,{kcal:0,p:0,m:0,mc:0})}return it});
   return {row:b.row,block:b.id,name:b.name,t:b.t,items,...sums(items)};
 }
 function sums(items){let kcal=0,p=0,meat=0,meatc=0;items.forEach(it=>{kcal+=it.kcal;p+=it.p;meat+=it.m;meatc+=it.mc||0});return {kcal:Math.round(kcal),p:Math.round(p),meat:Math.round(meat),meatc:Math.round(meatc)}}
@@ -423,7 +430,7 @@ function itemsTable(items,editable,bid,all){
     <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${it.u==='Stk'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${it.u}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${it.u}</span>`}</td>
     <td class="num" data-ik="${it.i}">${fmt(Math.round(it.kcal))}</td></tr>`).join('')}</tbody></table>`;
 }
-function vorratText(items){const v=items.filter(it=>it.v);return v.length?'Inklusive Vorrat: '+v.map(it=>`${fmt(it.q)} ${it.u} ${it.n} (+${fmt(Math.round(it.kcal))} kcal)`).join(', '):''}
+function vorratText(items){const v=items.filter(it=>it.v&&it.use!==0);return v.length?'Inklusive Vorrat: '+v.map(it=>`${fmt(it.q)} ${it.u} ${it.n} (+${fmt(Math.round(it.kcal))} kcal)`).join(', '):''}
 
 function render(){
   renderDays(false);
@@ -470,11 +477,13 @@ function blockEl(r,d,wrap,b){
   el.innerHTML=`<div class="b-top"><button class="b-head" type="button" role="radio" aria-checked="${on}"><span class="box"></span><span class="b-name">${esc(b.name)}</span></button>${side}</div>
     <div class="b-meta"><span><b class="num" data-k>${fmt(m.kcal)}</b> kcal, <b class="num" data-p>${fmt(m.p)}</b> g Protein</span>${b.t?`<span>${esc(cap(b.t))}</span>`:''}</div>
     ${itemsTable(m.items,true,b.id)}
-    ${vorratText(m.items)?`<div class="vorrat" data-v>${esc(vorratText(m.items))}</div>`:''}`;
+    ${m.items.some(it=>it.v)?'<div class="vorrat" data-v></div>':''}`;
+  paintVorrat(el,b,m);
+  el.addEventListener('pointerdown',()=>setActive(b.id));el.addEventListener('focusin',()=>setActive(b.id));
   el.querySelector('.b-head').addEventListener('click',()=>{d.sel[r.id]=(d.sel[r.id]===b.id)?null:b.id;d.touched=true;saveDrafts();markSel(wrap,r,d);totals()});
   el.querySelector('.rst').addEventListener('click',e=>{
     const btn=e.currentTarget;btn.classList.remove('spin');void btn.offsetWidth;btn.classList.add('spin');
-    delete d.q[b.id];d.touched=true;saveDrafts();
+    delete d.q[b.id];delete d.off[b.id];d.touched=true;saveDrafts();
     el.querySelectorAll('input').forEach(inp=>inp.value=b.items[+inp.dataset.i][1]);paintBlock(b);totals();});
   el.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
     const v=parseFloat(String(inp.value).replace(',','.'));if(isNaN(v)||v<0)return;
@@ -529,12 +538,27 @@ function paintDish(r,d,wrap,el){
 }
 function swapCustom(r,d,wrap){const el=customEl(r,d,wrap);document.getElementById('blk-x-'+r.id).replaceWith(el);
   el.scrollIntoView({block:'nearest',inline:'nearest'})}
+// Pantry line: plain summary everywhere, checkboxes only in the block currently being worked in
+let activeBlk=null;
+function setActive(id){if(activeBlk===id)return;const prev=activeBlk;activeBlk=id;
+  [prev,id].forEach(x=>{if(!x||isCustom(x))return;const b=BLOCK[x];const el=document.getElementById('blk-'+x);if(b&&el)paintVorrat(el,b,mealFromDraft(draftFor(cur),b))})}
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.block'))setActive(null)});
+function paintVorrat(el,b,m){
+  const v=el.querySelector('[data-v]');if(!v)return;
+  if(activeBlk!==b.id){const t=vorratText(m.items);v.hidden=!t;v.textContent=t;return}
+  v.hidden=false;
+  v.innerHTML=m.items.filter(it=>it.v).map(it=>{const raw=itemCalc(it.f,it.q);
+    return `<label class="vrow${it.use?'':' off'}"><span>Vorrat: ${fmt(it.q)} ${it.u} ${esc(it.n)} (+${fmt(Math.round(raw.kcal))} kcal)</span><input type="checkbox" data-vi="${it.i}"${it.use?' checked':''} aria-label="${esc(it.n)} mitzählen"></label>`}).join('');
+  v.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{const d=draftFor(cur);const o=(d.off[b.id]=d.off[b.id]||{});
+    if(inp.checked)delete o[inp.dataset.vi];else o[inp.dataset.vi]=true;if(!Object.keys(o).length)delete d.off[b.id];
+    d.touched=true;saveDrafts();paintBlock(b);totals()}));
+}
 function paintBlock(b){
   const d=draftFor(cur);const el=document.getElementById('blk-'+b.id);if(!el)return;const m=mealFromDraft(d,b);
   el.querySelector('[data-k]').textContent=fmt(m.kcal);el.querySelector('[data-p]').textContent=fmt(m.p);
   m.items.forEach(it=>{const k=el.querySelector(`[data-ik="${it.i}"]`);if(k)k.textContent=fmt(Math.round(it.kcal));
     const h=el.querySelector(`[data-h="${it.i}"]`);if(h)h.textContent=hintFor(it.f,it.q)});
-  const v=el.querySelector('[data-v]');if(v)v.textContent=vorratText(m.items);
+  paintVorrat(el,b,m);
 }
 
 function renderFrozen(){
@@ -576,7 +600,7 @@ async function saveDay(){
   const tot=meals.length?meals.reduce((a,m)=>({kcal:a.kcal+m.kcal,p:a.p+m.p,meat:a.meat+m.meat,meatc:a.meatc+m.meatc}),{kcal:0,p:0,meat:0,meatc:0}):{kcal:null,p:null,meat:null,meatc:null};
   const doc={v:1,date:cur,savedAt:new Date().toISOString(),total:tot,
     meals:meals.map(m=>({row:m.row,block:m.block,name:m.name,kcal:m.kcal,p:m.p,meat:m.meat,meatc:m.meatc,
-      items:m.items.map(it=>({i:it.i,f:it.f,n:it.n,q:it.q,u:it.u,kcal:it.kcal,p:it.p,m:it.m,mc:it.mc,v:it.v}))}))};
+      items:m.items.map(it=>({i:it.i,f:it.f,n:it.n,q:it.q,u:it.u,kcal:it.kcal,p:it.p,m:it.m,mc:it.mc,v:it.v,...(it.v?{use:it.use===0?0:1}:{})}))}))};
   btn.disabled=true;msg.className='';msg.textContent='Speichert …';
   try{
     if(db)await db.doc('days/'+cur).set(doc);
@@ -613,7 +637,7 @@ function unitOut(q,u){if(u==='Stk')return fmt(Math.ceil(q-1e-9))+' Stk';
 let shopText='';
 function renderShop(){
   const buy={},pan={};
-  currentMeals().forEach(m=>m.items.forEach(it=>{const t=it.v?pan:buy;t[it.f]=(t[it.f]||0)+it.q}));
+  currentMeals().forEach(m=>m.items.forEach(it=>{if(it.v&&it.use===0)return;const t=it.v?pan:buy;t[it.f]=(t[it.f]||0)+it.q}));
   const keys=Object.keys(buy).filter(k=>F[k]).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
   const ul=document.getElementById('shopList');ul.innerHTML='';const lines=[];let lastG=null;
   keys.forEach(k=>{const g=opt(k).g||9;const li=document.createElement('li');if(lastG!==null&&g!==lastG){li.className='gap';lines.push('')}
@@ -627,7 +651,7 @@ function renderShop(){
 }
 
 // ---------- Export ----------
-const CSV_HEAD=['Datum','Wochentag','Mahlzeit','Gericht','Zutat','Menge','Einheit','kcal','Protein_g','Fleisch_Fisch_roh_g','Fleisch_Fisch_gekocht_g','Vorrat','Tag_kcal','Tag_Protein_g','Tag_Fleisch_Fisch_roh_g','Tag_Fleisch_Fisch_gekocht_g'];
+const CSV_HEAD=['Datum','Wochentag','Mahlzeit','Gericht','Zutat','Menge','Einheit','kcal','Protein_g','Fleisch_Fisch_roh_g','Fleisch_Fisch_gekocht_g','Vorrat','Vorrat_genutzt','Tag_kcal','Tag_Protein_g','Tag_Fleisch_Fisch_roh_g','Tag_Fleisch_Fisch_gekocht_g'];
 const dec=n=>String(n).replace('.',',');
 const cell=s=>{s=String(s);return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
 // Every day from START to today; a day without saved meals is one row with only date and weekday (NULL), never 0.
@@ -642,12 +666,14 @@ function buildCsv(){
     if(!ROWS.some(r=>meals[r.id]&&meals[r.id].items.length)){rows.push([date,wd,...CSV_HEAD.slice(2).map(()=>'')].map(cell).join(';'));return}
     let dm=0,dmc=0;ROWS.forEach(r=>{const m=meals[r.id];if(m)m.items.forEach(it=>{const x=meatCsv(it);dm+=x.m;dmc+=x.mc})});
     ROWS.forEach(r=>{const m=meals[r.id];if(!m)return;
-      m.items.forEach(it=>{const x=meatCsv(it);rows.push([date,wd,r.name,m.name,it.n,dec(it.q),it.u,dec(it.kcal),dec(it.p),x.m,x.mc,it.v?'ja':'nein',tk,tp,dm,dmc].map(cell).join(';'))})});});
+      m.items.forEach(it=>{const x=meatCsv(it);rows.push([date,wd,r.name,m.name,it.n,dec(it.q),it.u,dec(it.kcal),dec(it.p),x.m,x.mc,it.v?'ja':'nein',it.v?(it.use===0?'nein':'ja'):'',tk,tp,dm,dmc].map(cell).join(';'))})});});
   return '﻿'+rows.join('\r\n');
 }
 function renderExport(){
   const days=dayList(),n=days.filter(x=>store[x]).length;
   document.getElementById('expSub').textContent=`${days.length} ${days.length===1?'Tag':'Tage'} von ${dayLabel(days[0])} bis ${dayLabel(days[days.length-1])}, davon ${n} gespeichert`;
+  const last=Object.values(store).filter(x=>x&&x.savedAt).sort((a,b)=>a.savedAt<b.savedAt?1:-1)[0];
+  document.getElementById('expLast').textContent=last?'Zuletzt '+savedText(last).replace('Gespeichert','gespeichert')+', Eintrag für '+dayLabel(last.date):'Noch nichts gespeichert';
   document.getElementById('csvBox').value=buildCsv().replace('﻿','');
   document.getElementById('expMsg').textContent='';
 }

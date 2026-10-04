@@ -324,7 +324,7 @@ const F = {
   eisberg:['Eisbergsalat','g',0.14,0.01,{d:40,g:1}],
   tomate:['Große Tomate','Stk',20,0.9,{d:1,g:1}],
   // One handful = 5–6 cherry tomatoes (~90 g)
-  htomate:['Handvoll Tomaten','Stk',18,0.8,{d:1,g:1}],
+  htomate:['Handvoll Tomaten','Stk',18,0.8,{d:1,g:1,nu:1}],
   passata:['Passierte Tomaten','g',0.35,0.015,{d:200,g:6}],
   kidney:['Kidneybohnen','g',1.1,0.08,{d:250,g:6}],
   pizza:['Gustavo Gusto Schinken-Champignon','Stk',920,42,{d:1,g:7}],
@@ -474,6 +474,8 @@ const CUSTOM_NAME='Eigenes Gericht';
 const isCustom=id=>typeof id==='string'&&id.startsWith('x-');
 const customBlock=(d,row)=>({id:'x-'+row,row,name:CUSTOM_NAME,t:'',custom:true,items:(d.custom[row]=d.custom[row]||[])});
 const blockOf=(d,id)=>isCustom(id)?customBlock(d,id.slice(2)):BLOCK[id];
+// Display unit: items with nu:1 (handfuls) show the bare number, no unit
+const unitTxt=(f,u)=>F[f]&&opt(f).nu?'':u;
 const defQty=k=>opt(k).d||(F[k][1]==='Stk'?1:100);
 const PICK_ORDER=Object.keys(F).filter(k=>!opt(k).x).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
 const MANUAL=Object.keys(F).filter(k=>opt(k).x);
@@ -535,7 +537,7 @@ const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 
 function itemsTable(items,editable,bid,all){
   return `<table class="items"><tbody>${items.filter(it=>all||!it.v).map(it=>`<tr><td>${esc(it.n)}<span class="hint" data-h="${it.i}">${numify(hintFor(it.f,it.q))}</span></td>
-    <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${opt(it.f).x?1:it.u==='Stk'||it.u==='Rezept'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${it.u}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${it.u}</span>`}</td>
+    <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${opt(it.f).x?1:it.u==='Stk'||it.u==='Rezept'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${unitTxt(it.f,it.u)}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${unitTxt(it.f,it.u)}</span>`}</td>
     ${F[it.f]&&opt(it.f).x?'<td></td>':`<td class="num" data-ik="${it.i}">${fmt(Math.round(it.kcal))}</td>`}</tr>`).join('')}</tbody></table>`;
 }
 function vorratText(items){const v=items.filter(it=>it.v&&it.use!==0);return v.length?'Inklusive Vorrat: '+v.map(it=>`${fmt(it.q)} ${it.u} ${it.n} (+${fmt(Math.round(it.kcal))} kcal)`).join(', '):''}
@@ -670,7 +672,7 @@ function customEl(r,d,wrap){
   const have=new Set(b.items.map(x=>x[0]));let last=null;
   el.innerHTML=`<div class="pick-in"><div class="dish"></div>
     <ul class="shop-list pick-list" data-foods>${PICK_ORDER.map(k=>{const g=opt(k).g||9;const gap=last!==null&&g!==last;last=g;const on=have.has(k);
-      return `<li${gap?' class="gap"':''}><button type="button" data-f="${k}" aria-pressed="${on}"${on?' class="on"':''}><span>${esc(F[k][0])}</span><span>${fmt(defQty(k))} ${F[k][1]}</span></button></li>`}).join('')}</ul>
+      return `<li${gap?' class="gap"':''}><button type="button" data-f="${k}" aria-pressed="${on}"${on?' class="on"':''}><span>${esc(F[k][0])}</span><span>${fmt(defQty(k))} ${unitTxt(k,F[k][1])}</span></button></li>`}).join('')}</ul>
     <div class="man-wrap"><ul class="shop-list pick-list man-list"><li class="man"><button type="button" data-man aria-pressed="${isManual(b.items)}"${isManual(b.items)?' class="on"':''}><span>Kalorien und Protein</span></button></li></ul><div class="dish-more"></div></div></div>`;
   // While active, "Kalorien und Protein" sits fixed right under the two fields; added foods follow below it, then the food list
   const placeMan=on=>{const inner=el.querySelector('.pick-in');inner.insertBefore(el.querySelector('.man-wrap'),on?el.querySelector('[data-foods]'):null)};
@@ -799,7 +801,7 @@ async function resetDay(){
 }
 
 // ---------- Einkauf ----------
-function unitOut(q,u){if(u==='Stk')return fmt(Math.ceil(q-1e-9))+' Stk';if(u==='Rezept')return fmt(q)+' Rezept';
+function unitOut(q,u,f){if(f&&F[f]&&opt(f).nu)return fmt(Math.ceil(q-1e-9));if(u==='Stk')return fmt(Math.ceil(q-1e-9))+' Stk';if(u==='Rezept')return fmt(q)+' Rezept';
   if(u==='g'&&q>=1000)return fmt(q/1000,2)+' kg';if(u==='ml'&&q>=1000)return fmt(q/1000,2)+' l';return fmt(Math.round(q))+' '+u}
 let shopText='';
 function openShop(){renderShop();const p=document.getElementById('shopPop');p.style.paddingTop=Math.round(document.querySelector('.top').getBoundingClientRect().bottom+8)+'px';p.hidden=false;p.querySelector('.pop').scrollTop=0}
@@ -815,9 +817,9 @@ function renderShop(){
   const keys=Object.keys(buy).filter(k=>F[k]&&!opt(k).x).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
   const ul=document.getElementById('shopList');ul.innerHTML='';const lines=[];let lastG=null;
   keys.forEach(k=>{const g=opt(k).g||9;const li=document.createElement('li');if(lastG!==null&&g!==lastG){li.className='gap';lines.push('')}
-    lastG=g;const s=unitOut(buy[k],F[k][1]);li.innerHTML=`<span>${esc(F[k][0])}</span><span>${s}</span>`;ul.appendChild(li);lines.push(`${F[k][0]} ${s}`)});
+    lastG=g;const s=unitOut(buy[k],F[k][1],k);li.innerHTML=`<span>${esc(F[k][0])}</span><span>${s}</span>`;ul.appendChild(li);lines.push(`${F[k][0]} ${s}`)});
   if(!keys.length)ul.innerHTML='<li><span>Für diesen Tag ist noch nichts ausgewählt.</span><span></span></li>';
-  const pv=Object.keys(pan).filter(k=>F[k]).map(k=>`${F[k][0]} ${unitOut(pan[k],F[k][1])}`);
+  const pv=Object.keys(pan).filter(k=>F[k]).map(k=>`${F[k][0]} ${unitOut(pan[k],F[k][1],k)}`);
   document.getElementById('shopVorrat').textContent=pv.length?'Aus dem Vorrat: '+pv.join(', '):'';
   shopText=lines.join('\n');
 }
@@ -972,7 +974,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='de2e4c7a57de';
+const BUILD='439568b3e90f';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

@@ -53,8 +53,8 @@ h1{font-size:21px;font-weight:600;margin:0;white-space:nowrap}
 /* Totals over all saved days, fixed at the right end of the strip; the days scroll behind it */
 .days{position:relative}
 .day-stats{position:absolute;top:0;bottom:0;right:0;z-index:3;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;padding:0 16px 0 3px;background:var(--bg);font-size:13.5px;line-height:1.35;color:var(--muted);text-align:right;white-space:nowrap;pointer-events:none}
-.day-stats b{font-weight:400;color:var(--fg)}
-.day-stats .avg{font-size:17px;line-height:1;vertical-align:-1px}
+.day-stats b{font-weight:400;color:inherit}
+.day-stats .avg{font-size:21px;line-height:1;vertical-align:-2px}
 .day.fill{cursor:default;pointer-events:none}
 .day{all:unset;position:relative;isolation:isolate;cursor:pointer;flex:none;width:92px;scroll-snap-align:start;box-sizing:border-box;padding:6px 9px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
 .day:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
@@ -963,7 +963,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='efce988281ce';
+const BUILD='8537c01f43eb';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

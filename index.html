@@ -357,12 +357,12 @@ const F = {
 
 // ---------- Gerichte (Standardwerte) ----------
 const ROWS = [
- {id:'shake',name:'Shake',sub:'Nach dem Aufstehen',target:'Etwa 150–350 kcal',blocks:[
+ {id:'shake',name:'Shake',sub:'Nach dem Aufstehen',blocks:[
   {id:'s1',name:'Shake mit Mandelmilch',t:'1 min',items:[['mandel',330],['whey',30]]},
   {id:'s3',name:'Shake mit Vollmilch',t:'1 min',items:[['milch',330],['whey',30]]},
   {id:'s2',name:'Frühshake Plus',t:'2 min',items:[['mandel',330],['whey',30],['banane',1],['pb',15]]},
  ]},
- {id:'fr',name:'Frühstück',sub:'',target:'Etwa 900 kcal',blocks:[
+ {id:'fr',name:'Frühstück',sub:'',blocks:[
   {id:'f1',name:'Overnight Oats',t:'3 min am Vorabend',items:[['hafer',100],['milch',350],['banane',1],['pb',30],['honig',15]]},
   {id:'f2',name:'Omelette mit Brot',t:'10 min',items:[['ei',4],['kschinken',60],['speck',125],['gouda',40],['brot',100],['htomate',1],['butter',10]]},
   {id:'f3',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',items:[['brot',150],['rschinken',60],['marmelade',40],['milch',300],['butter',15]]},
@@ -371,7 +371,7 @@ const ROWS = [
   {id:'f6',name:'Spiegeleier mit Speck',t:'10 min',items:[['ei',4],['speck',125],['brot',100]]},
   {id:'f7',name:'Pfannkuchen mit Speck',t:'20 min',items:[['pfannk',1],['speck',125],['ahorn',40],['oel',10]]},
  ]},
- {id:'sn1',name:'Snack 1',sub:'Zum Mitnehmen',target:'Etwa 450 kcal',blocks:[
+ {id:'sn1',name:'Snack 1',sub:'Zum Mitnehmen',blocks:[
   {id:'a1',name:'Skyr-Granola-Becher',t:'2 min',items:[['skyr',250],['granola',50],['honig',15]]},
   {id:'a2',name:'Schinken-Käse-Sandwich',t:'3 min',items:[['brot',100],['kschinken',80],['gouda',30],['butter',10]]},
   {id:'a3',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200]]},
@@ -380,7 +380,7 @@ const ROWS = [
   {id:'a6',name:'Nüsse & Banane',t:'0 min',items:[['nuesse',50],['banane',1]]},
   {id:'a7',name:'Mixtrail',t:'0 min',items:[['mixtrail',150]]},
  ]},
- {id:'mi',name:'Mittag',sub:'',target:'Etwa 1.100–1.200 kcal',blocks:[
+ {id:'mi',name:'Mittag',sub:'',blocks:[
   {id:'m1',name:'Hähnchen Teriyaki mit Reis',t:'20 min',items:[['hbrust',220],['reis',180],['teriyaki',80],['oel',15]]},
   {id:'m2',name:'Hähnchenkeulen mit Ofenkartoffeln',t:'45 min Ofen, 5 min aktiv',items:[['keule',500],['okart',250]]},
   {id:'m3',name:'Steak mit Ofenkartoffeln',t:'25 min',items:[['steak',250],['okart',350],['kbutter',20],['oel',10]]},
@@ -391,7 +391,7 @@ const ROWS = [
   {id:'m8',name:'Hähnchen-Nudeln',t:'15 min',items:[['hbrust',400],['pasta',125],['pesto',50],['htomate',1],['oel',10]]},
   {id:'m9',name:'Bratwurst mit Kidneybohnen und Reis',t:'25 min, inklusive 20 g Reis, der im Topf kleben bleibt',items:[['bratwurst',250],['kidney',250],['reis',150]]},
  ]},
- {id:'sn2',name:'Snack 2',sub:'',target:'Etwa 450 kcal',blocks:[
+ {id:'sn2',name:'Snack 2',sub:'',blocks:[
   {id:'b1',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200]]},
   {id:'b2',name:'Milch-Shake',t:'2 min',items:[['milch',400],['whey',30],['banane',1]]},
   {id:'b3',name:'Reiswaffeln mit Erdnussbutter',t:'2 min',items:[['reiswaffel',4],['pb',40],['banane',1]]},
@@ -399,7 +399,7 @@ const ROWS = [
   {id:'b5',name:'Milchreis mit Banane',t:'0 min',items:[['milchreis',200],['banane',1],['nuesse',20]]},
   {id:'b6',name:'Mixtrail',t:'0 min',items:[['mixtrail',150]]},
  ]},
- {id:'ab',name:'Abendessen',sub:'',target:'Etwa 900–1.000 kcal',blocks:[
+ {id:'ab',name:'Abendessen',sub:'',blocks:[
   {id:'e1',name:'Gambas-Pasta',t:'15 min',items:[['gambas',300],['pasta',140],['parmesan',20],['htomate',1],['kiwi',1],['oel',15]]},
   {id:'e2',name:'Spaghetti Bolognese',t:'25 min',items:[['hack',180],['pasta',100],['passata',200],['parmesan',15],['kiwi',1]]},
   {id:'e3',name:'Gyros-Teller mit Reis',t:'20 min',items:[['gyros',200],['reis',120],['tzatziki',100],['kiwi',1],['oel',10]]},
@@ -487,6 +487,8 @@ function mealFromDraft(d,b){
   return {row:b.row,block:b.id,name:b.name,t:b.t,items,...sums(items)};
 }
 function sums(items){let kcal=0,p=0,meat=0,meatc=0;items.forEach(it=>{kcal+=it.kcal;p+=it.p;meat+=it.m;meatc+=it.mc||0});return {kcal:Math.round(kcal),p:Math.round(p),meat:Math.round(meat),meatc:Math.round(meatc)}}
+// Row target = min–max kcal of the default dishes only (ROWS defaults), never of custom dishes or edited amounts
+function targetText(r){const k=r.blocks.map(b=>sums(b.items.map(([f,q])=>itemCalc(f,q))).kcal);const lo=Math.min(...k),hi=Math.max(...k);return 'Etwa '+(lo===hi?fmt(lo):fmt(lo)+'–'+fmt(hi))+' kcal'}
 const draftMeals=d=>ROWS.map(r=>{const b=d.sel[r.id]&&blockOf(d,d.sel[r.id]);return b&&b.items.length?mealFromDraft(d,b):null}).filter(Boolean);
 function currentMeals(){
   if(isEditing(cur))return draftMeals(draftFor(cur));
@@ -577,7 +579,7 @@ function renderEdit(){
   const d=draftFor(cur);
   ROWS.forEach(r=>{
     const sec=document.createElement('section');sec.className='row';
-    sec.innerHTML=`<header class="row-head"><h2>${r.name}</h2>${r.sub?`<span class="sub">${r.sub}</span>`:''}<span class="target">${numify(r.target)}</span></header>`;
+    sec.innerHTML=`<header class="row-head"><h2>${r.name}</h2>${r.sub?`<span class="sub">${r.sub}</span>`:''}<span class="target">${numify(targetText(r))}</span></header>`;
     const wrap=document.createElement('div');wrap.className='blocks edit';wrap.setAttribute('role','radiogroup');wrap.setAttribute('aria-label',r.name);
     wrap.style.setProperty('--n',r.blocks.length);
     r.blocks.forEach(b=>wrap.appendChild(blockEl(r,d,wrap,b)));
@@ -970,7 +972,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='f8de5c8a22dc';
+const BUILD='de2e4c7a57de';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

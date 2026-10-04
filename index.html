@@ -50,6 +50,10 @@ h1{font-size:21px;font-weight:600;margin:0;white-space:nowrap}
 .day-pad.right{flex:0 0 calc(100% - 92px - 28px)}
 .day-pad.right{background:var(--bg)}
 .days-scroll::-webkit-scrollbar{display:none}
+/* Totals over all saved days, fixed at the right end of the strip; the days scroll behind it */
+.days{position:relative}
+.day-stats{position:absolute;top:0;bottom:0;right:0;z-index:3;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;padding:0 16px 0 8px;background:var(--bg);font-size:13.5px;line-height:1.35;color:var(--muted);text-align:right;white-space:nowrap;pointer-events:none}
+.day-stats b{font-weight:600;color:var(--fg)}
 .day.fill{cursor:default;pointer-events:none}
 .day{all:unset;position:relative;isolation:isolate;cursor:pointer;flex:none;width:92px;scroll-snap-align:start;box-sizing:border-box;padding:6px 9px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:1px}
 .day:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
@@ -231,7 +235,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
       <button class="tbtn" id="openShop" type="button" aria-label="Einkaufsliste für diesen Tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Einkauf</button>
     </div>
   </div>
-  <nav class="days" aria-label="Tage"><div class="days-scroll" id="days"></div></nav>
+  <nav class="days" aria-label="Tage"><div class="days-scroll" id="days"></div><div class="day-stats" id="dayStats" hidden></div></nav>
   </header>
 
   <p id="dbNote" hidden></p>
@@ -482,6 +486,13 @@ function currentMeals(){
 }
 
 // ---------- Tagesleiste ----------
+// Average kcal over all saved days with a value, days at or near the goal (same threshold as green), and their share
+function renderStats(){
+  const el=document.getElementById('dayStats');const k=Object.values(store).map(s=>s&&s.total&&s.total.kcal).filter(v=>v!=null);
+  el.hidden=!k.length;if(!k.length)return;
+  const avg=Math.round(k.reduce((a,b)=>a+b,0)/k.length);const hit=k.filter(v=>kcalLevel(v)==='ok').length;
+  el.innerHTML=`<span>⌀ <b class="num">${fmt(avg)}</b> kcal</span><span><span class="num">${hit}</span> ${hit===1?'Tag':'Tage'} im Ziel</span><span class="num">${Math.round(hit/k.length*100)} %</span>`;
+}
 const daysEl=document.getElementById('days');
 // Strip: half-width pads let the first day and today sit centred at the two scroll ends (native bounce beyond, snap to the nearest day).
 // Left pad shows empty cells, right of today is plain grey. A click glides the chosen day to the centre.
@@ -498,6 +509,7 @@ function renderDays(){
     daysEl.appendChild(b);
   });
   const right=document.createElement('div');right.className='day-pad right';right.setAttribute('aria-hidden','true');daysEl.appendChild(right);
+  renderStats();
   const c=daysEl.querySelector('.cur');if(!c)return;const target=c.offsetLeft-16;
   if(glideNext){glideNext=false;daysEl.scrollLeft=prev;daysEl.scrollTo({left:target,behavior:'smooth'})}else daysEl.scrollLeft=target;
 }
@@ -950,7 +962,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='6903f12ee626';
+const BUILD='18d0b0db1d3f';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

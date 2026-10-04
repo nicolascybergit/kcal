@@ -492,7 +492,7 @@ function renderStats(){
   const el=document.getElementById('dayStats');const k=Object.values(store).map(s=>s&&s.total&&s.total.kcal).filter(v=>v!=null);
   el.hidden=!k.length;if(!k.length)return;
   const avg=Math.round(k.reduce((a,b)=>a+b,0)/k.length);const hit=k.filter(v=>kcalLevel(v)==='ok').length;
-  el.innerHTML=`<span><svg class="avg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-label="Durchschnitt"><circle cx="8" cy="8" r="5"/><path d="M3.9 12.1L12.1 3.9"/></svg> <b class="num">${fmt(avg)}</b> kcal</span><span><span class="num">${hit}</span> d</span><span class="num">${Math.round(hit/k.length*100)} %</span>`;
+  el.innerHTML=`<span><svg class="avg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" aria-label="Durchschnitt"><circle cx="8" cy="8" r="5"/><path d="M2.5 12.6L13.5 3.4"/></svg> <b class="num">${fmt(avg)}</b> kcal</span><span><span class="num">${hit}</span> d</span><span class="num">${Math.round(hit/k.length*100)} %</span>`;
 }
 const daysEl=document.getElementById('days');
 // Strip: half-width pads let the first day and today sit centred at the two scroll ends (native bounce beyond, snap to the nearest day).
@@ -963,7 +963,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='023518eee78a';
+const BUILD='17a9f33d0c4b';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

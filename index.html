@@ -289,6 +289,8 @@ const F = {
   ei:['Eier','Stk',85,7.5,{d:3,g:3}],
   kschinken:['Kochschinken','g',1.1,0.2,{d:60,g:2,m:1}],
   rschinken:['Räucherschinken','g',2.4,0.25,{d:50,g:2,m:1}],
+  // Bacon pack 125 g: 301 kcal, 18 g protein per 100 g -> 376 kcal, 22.5 g protein per pack
+  speck:['Speck','g',3.01,0.18,{d:125,g:2,m:1}],
   gouda:['Gouda','g',3.6,0.25,{d:40,g:3}],
   brot:['Mischbrot','g',2.4,0.08,{d:100,g:4}],
   butter:['Butter','g',7.4,0,{d:10,v:1}],
@@ -300,6 +302,9 @@ const F = {
   skyr:['Skyr','g',0.63,0.11,{d:250,g:3}],
   // Own protein banana bread: 4 small bananas, 3 eggs, 375 g Aldi protein flour, almond milk, blueberries or choc chips; ~2,080 kcal, ~104 g protein, ~960 g baked
   bbrot:['Bananenbrot','g',2.15,0.11,{d:200,g:4}],
+  // Own pancake batter, 1 recipe: 3 eggs (255/22.5), 200 ml whole milk (128/6.8), 125 g flour (435/12.5), 1 tsp vanilla (12/0); ~830 kcal, ~42 g protein
+  pfannk:['Pfannkuchen','Rezept',830,42,{d:1,g:4}],
+  ahorn:['Maple Syrup','g',2.6,0,{d:40,g:6}],
   wrap:['Tortilla-Wraps','Stk',200,5.5,{d:2,g:4}],
   thun:['Thunfisch','g',1.1,0.25,{d:130,g:2,m:1}],
   mayo:['Mayo','g',6.8,0.01,{d:15,v:1}],
@@ -359,10 +364,12 @@ const ROWS = [
  ]},
  {id:'fr',name:'Frühstück',sub:'',target:'Etwa 900 kcal',blocks:[
   {id:'f1',name:'Overnight Oats',t:'3 min am Vorabend',items:[['hafer',100],['milch',350],['banane',1],['pb',30],['honig',15]]},
-  {id:'f2',name:'Omelette mit Brot',t:'10 min',items:[['ei',4],['kschinken',60],['gouda',40],['brot',100],['htomate',1],['butter',10]]},
+  {id:'f2',name:'Omelette mit Brot',t:'10 min',items:[['ei',4],['kschinken',60],['speck',125],['gouda',40],['brot',100],['htomate',1],['butter',10]]},
   {id:'f3',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',items:[['brot',150],['rschinken',60],['marmelade',40],['milch',300],['butter',15]]},
   {id:'f4',name:'Bagels mit Rührei',t:'8 min',items:[['bagel',2],['ei',3],['frischk',30],['htomate',1],['butter',10]]},
   {id:'f5',name:'Müsli-Schüssel',t:'2 min',items:[['granola',100],['milch',300],['banane',1],['nuesse',20]]},
+  {id:'f6',name:'Spiegeleier mit Speck',t:'10 min',items:[['ei',4],['speck',125],['brot',100]]},
+  {id:'f7',name:'Pfannkuchen mit Speck',t:'20 min',items:[['pfannk',1],['speck',125],['ahorn',40],['oel',10]]},
  ]},
  {id:'sn1',name:'Snack 1',sub:'Zum Mitnehmen',target:'Etwa 450 kcal',blocks:[
   {id:'a1',name:'Skyr-Granola-Becher',t:'2 min',items:[['skyr',250],['granola',50],['honig',15]]},
@@ -378,7 +385,7 @@ const ROWS = [
   {id:'m2',name:'Hähnchenkeulen mit Ofenkartoffeln',t:'45 min Ofen, 5 min aktiv',items:[['keule',500],['okart',250]]},
   {id:'m3',name:'Steak mit Ofenkartoffeln',t:'25 min',items:[['steak',250],['okart',350],['kbutter',20],['oel',10]]},
   {id:'m4',name:'2 Burger mit Doppelpatty',t:'15 min',items:[['hack',280],['bun',2],['eisberg',40],['tomate',1]]},
-  {id:'m5',name:'Nudelauflauf mit Hack',t:'40 min, 10 min aktiv',items:[['pasta',120],['hack',200],['passata',150],['gouda',50]]},
+  {id:'m5',name:'Nudelauflauf mit Hack',t:'40 min, 10 min aktiv',items:[['pasta',120],['hack',200],['speck',125],['passata',150],['gouda',50]]},
   {id:'m6',name:'Chili con Carne mit Reis',t:'30 min',items:[['hack',200],['kidney',250],['passata',200],['reis',100]]},
   {id:'m7',name:'Gustavo Gusto Pizza + Skyr',t:'15 min Ofen',items:[['pizza',1],['skyr',200],['honig',15]]},
   {id:'m8',name:'Hähnchen-Nudeln',t:'15 min',items:[['hbrust',400],['pasta',125],['pesto',50],['htomate',1],['oel',10]]},
@@ -526,7 +533,7 @@ const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 
 function itemsTable(items,editable,bid,all){
   return `<table class="items"><tbody>${items.filter(it=>all||!it.v).map(it=>`<tr><td>${esc(it.n)}<span class="hint" data-h="${it.i}">${numify(hintFor(it.f,it.q))}</span></td>
-    <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${opt(it.f).x?1:it.u==='Stk'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${it.u}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${it.u}</span>`}</td>
+    <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${opt(it.f).x?1:it.u==='Stk'||it.u==='Rezept'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${it.u}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${it.u}</span>`}</td>
     ${F[it.f]&&opt(it.f).x?'<td></td>':`<td class="num" data-ik="${it.i}">${fmt(Math.round(it.kcal))}</td>`}</tr>`).join('')}</tbody></table>`;
 }
 function vorratText(items){const v=items.filter(it=>it.v&&it.use!==0);return v.length?'Inklusive Vorrat: '+v.map(it=>`${fmt(it.q)} ${it.u} ${it.n} (+${fmt(Math.round(it.kcal))} kcal)`).join(', '):''}
@@ -790,7 +797,7 @@ async function resetDay(){
 }
 
 // ---------- Einkauf ----------
-function unitOut(q,u){if(u==='Stk')return fmt(Math.ceil(q-1e-9))+' Stk';
+function unitOut(q,u){if(u==='Stk')return fmt(Math.ceil(q-1e-9))+' Stk';if(u==='Rezept')return fmt(q)+' Rezept';
   if(u==='g'&&q>=1000)return fmt(q/1000,2)+' kg';if(u==='ml'&&q>=1000)return fmt(q/1000,2)+' l';return fmt(Math.round(q))+' '+u}
 let shopText='';
 function openShop(){renderShop();const p=document.getElementById('shopPop');p.style.paddingTop=Math.round(document.querySelector('.top').getBoundingClientRect().bottom+8)+'px';p.hidden=false;p.querySelector('.pop').scrollTop=0}
@@ -963,7 +970,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='17a9f33d0c4b';
+const BUILD='f8de5c8a22dc';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

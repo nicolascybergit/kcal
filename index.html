@@ -292,7 +292,7 @@ const F = {
   // Bacon pack 125 g: 301 kcal, 18 g protein per 100 g -> 376 kcal, 22.5 g protein per pack
   speck:['Speck','g',3.01,0.18,{d:125,g:2,m:1}],
   gouda:['Gouda','g',3.6,0.25,{d:40,g:3}],
-  brot:['Mischbrot','g',2.4,0.08,{d:100,g:4}],
+  brot:['Mischbrot','g',2.4,0.08,{d:100,g:4,hide:1}],
   butter:['Butter','g',7.4,0,{d:10,v:1}],
   marmelade:['Marmelade','g',2.5,0,{d:30,g:6}],
   bagel:['Bagels','Stk',260,9,{d:1,g:4}],
@@ -305,7 +305,8 @@ const F = {
   // Own pancake batter, 1 recipe: 3 eggs (255/22.5), 200 ml whole milk (128/6.8), 125 g flour (435/12.5), 1 tsp vanilla (12/0); ~830 kcal, ~42 g protein
   pfannk:['Pfannkuchen','Rezept',830,42,{d:1,g:4}],
   ahorn:['Maple Syrup','g',2.6,0,{d:40,g:6}],
-  wrap:['Tortilla-Wraps','Stk',200,5.5,{d:2,g:4}],
+  // Protein wrap 40 g: 127 kcal, 7.4 g protein (user value)
+  wrap:['Protein-Wraps','Stk',127,7.4,{d:3,g:4}],
   thun:['Thunfisch','g',1.1,0.25,{d:130,g:2,m:1}],
   mayo:['Mayo','g',6.8,0.01,{d:15,v:1}],
   reiswaffel:['Reiswaffeln','Stk',30,0.6,{d:4,g:5}],
@@ -315,7 +316,8 @@ const F = {
   pasta:['Nudeln','g',3.55,0.125,{d:125,g:5,c:2.3,cl:'gekocht'}],
   hbrust:['Hähnchenbrust','g',1.1,0.23,{d:200,g:2,m:1,c:0.75,cl:'gekocht'}],
   keule:['Hähnchenkeulen','g',1.55,0.12,{d:400,g:2,m:1,c:0.5,cl:'gekocht'}],
-  hack:['Rinderhack','g',2.5,0.18,{d:200,g:2,m:1,c:0.75,cl:'gebraten'}],
+  // Minced meat as bought: 243 kcal, 18 g protein per 100 g (user value)
+  hack:['Hackfleisch','g',2.43,0.18,{d:200,g:2,m:1,c:0.75,cl:'gebraten'}],
   steak:['Rumpsteak','g',1.7,0.21,{d:250,g:2,m:1,c:0.75,cl:'gebraten'}],
   okart:['Ofen-Kartoffelscheiben','g',1.45,0.022,{d:250,g:7}],
   kbutter:['Kräuterbutter','g',7.0,0.01,{d:20,g:3}],
@@ -333,7 +335,12 @@ const F = {
   parmesan:['Parmesan','g',4.0,0.33,{d:20,g:3}],
   gyros:['Hähnchen-Gyros','g',1.5,0.2,{d:200,g:2,m:1,c:0.75,cl:'gebraten'}],
   tzatziki:['Tzatziki','g',1.3,0.04,{d:100,g:3}],
-  semmel:['Semmeln','Stk',150,5,{d:2,g:4}],
+  // Rosenbrötchen hell (wheat roll with potato flakes), 112 g each; ~260 kcal, ~8.5 g protein per 100 g (estimate, label not checked yet)
+  semmel:['Semmelbrötchen','Stk',291,9.5,{d:1,g:4}],
+  salami:['Salami','g',3.8,0.22,{d:50,g:2,m:1}],
+  mozz:['Streumozzarella','g',2.9,0.21,{d:50,g:3}],
+  // Aldi salad yoghurt dressing: 145 kcal, 1.8 g protein per 100 ml; 1 heaped tbsp ~20 ml
+  dressing:['Joghurt-Dressing','EL',29,0.36,{d:3,g:6}],
   tofu:['Räuchertofu','g',1.5,0.16,{d:200,g:3}],
   kraut:['Sauerkraut','g',0.2,0.015,{d:150,g:6}],
   suesssenf:['Süßsenf','g',2.6,0.01,{d:30,v:1}],
@@ -364,49 +371,53 @@ const ROWS = [
  ]},
  {id:'fr',name:'Frühstück',sub:'',blocks:[
   {id:'f1',name:'Overnight Oats',t:'3 min am Vorabend',items:[['hafer',100],['milch',350],['banane',1],['pb',30],['honig',15]]},
-  {id:'f2',name:'Omelette mit Brot',t:'10 min',items:[['ei',4],['kschinken',60],['speck',125],['gouda',40],['brot',100],['htomate',1],['butter',10]]},
-  {id:'f3',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',items:[['brot',150],['rschinken',60],['marmelade',40],['milch',300],['butter',15]]},
+  {id:'f2',name:'Omelette mit Brot',t:'10 min',items:[['ei',4],['kschinken',60],['speck',125],['gouda',40],['semmel',1],['htomate',1],['butter',10]]},
+  {id:'f3',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',items:[['semmel',1],['rschinken',60],['marmelade',40],['milch',300],['butter',15]]},
   {id:'f4',name:'Bagels mit Rührei',t:'8 min',items:[['bagel',2],['ei',3],['frischk',30],['htomate',1],['butter',10]]},
   {id:'f5',name:'Müsli-Schüssel',t:'2 min',items:[['granola',100],['milch',300],['banane',1],['nuesse',20]]},
-  {id:'f6',name:'Spiegeleier mit Speck',t:'10 min',items:[['ei',4],['speck',125],['brot',100]]},
+  {id:'f6',name:'Spiegeleier mit Speck',t:'10 min',items:[['ei',4],['speck',125],['semmel',1],['htomate',1]]},
   {id:'f7',name:'Pfannkuchen mit Speck',t:'20 min',items:[['pfannk',1],['speck',125],['ahorn',40],['oel',10]]},
  ]},
  {id:'sn1',name:'Snack 1',sub:'Zum Mitnehmen',blocks:[
   {id:'a1',name:'Skyr-Granola-Becher',t:'2 min',items:[['skyr',250],['granola',50],['honig',15]]},
-  {id:'a2',name:'Schinken-Käse-Sandwich',t:'3 min',items:[['brot',100],['kschinken',80],['gouda',30],['butter',10]]},
-  {id:'a3',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200]]},
+  {id:'a2',name:'Schinken-Käse-Sandwich',t:'3 min',items:[['semmel',1],['kschinken',80],['gouda',30],['butter',10]]},
+  {id:'a3',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200],['skyr',100]]},
   {id:'a4',name:'Bagel Frischkäse-Schinken',t:'2 min',items:[['bagel',1],['frischk',30],['rschinken',40]]},
   {id:'a5',name:'Thunfisch-Wrap',t:'3 min',items:[['wrap',1],['thun',130],['mayo',15]]},
   {id:'a6',name:'Nüsse & Banane',t:'0 min',items:[['nuesse',50],['banane',1]]},
   {id:'a7',name:'Mixtrail',t:'0 min',items:[['mixtrail',150]]},
+  {id:'a8',name:'Semmelbrötchen mit Salami',t:'2 min',items:[['semmel',1],['salami',50]]},
+  {id:'a9',name:'Semmelbrötchen mit Räucherschinken',t:'2 min',items:[['semmel',1],['rschinken',50]]},
  ]},
  {id:'mi',name:'Mittag',sub:'',blocks:[
-  {id:'m1',name:'Hähnchen Teriyaki mit Reis',t:'20 min',items:[['hbrust',220],['reis',180],['teriyaki',80],['oel',15]]},
-  {id:'m2',name:'Hähnchenkeulen mit Ofenkartoffeln',t:'45 min Ofen, 5 min aktiv',items:[['keule',500],['okart',250]]},
-  {id:'m3',name:'Steak mit Ofenkartoffeln',t:'25 min',items:[['steak',250],['okart',350],['kbutter',20],['oel',10]]},
-  {id:'m4',name:'2 Burger mit Doppelpatty',t:'15 min',items:[['hack',280],['bun',2],['eisberg',40],['tomate',1]]},
-  {id:'m5',name:'Nudelauflauf mit Hack',t:'40 min, 10 min aktiv',items:[['pasta',120],['hack',200],['speck',125],['passata',150],['gouda',50]]},
-  {id:'m6',name:'Chili con Carne mit Reis',t:'30 min',items:[['hack',200],['kidney',250],['passata',200],['reis',100]]},
-  {id:'m7',name:'Gustavo Gusto Pizza + Skyr',t:'15 min Ofen',items:[['pizza',1],['skyr',200],['honig',15]]},
-  {id:'m8',name:'Hähnchen-Nudeln',t:'15 min',items:[['hbrust',400],['pasta',125],['pesto',50],['htomate',1],['oel',10]]},
   {id:'m9',name:'Bratwurst mit Kidneybohnen und Reis',t:'25 min, inklusive 20 g Reis, der im Topf kleben bleibt',items:[['bratwurst',250],['kidney',250],['reis',150]]},
+  {id:'m1',name:'Hähnchen Teriyaki mit Reis',t:'20 min',items:[['hbrust',220],['reis',180],['teriyaki',80],['oel',15]]},
+  {id:'m8',name:'Gyros-Hähnchen-Nudeln',t:'15 min',items:[['hbrust',400],['pasta',125],['pesto',50],['htomate',1],['oel',10]]},
+  {id:'m4',name:'2 Burger mit Doppelpatty',t:'15 min',items:[['hack',280],['bun',2],['eisberg',40],['tomate',1]]},
+  {id:'m5',name:'Nudelauflauf mit Hähnchen',t:'40 min, 10 min aktiv',items:[['pasta',120],['hbrust',200],['speck',125],['passata',150],['mozz',50]]},
+  {id:'m7',name:'Gustavo Gusto Pizza + Skyr',t:'15 min Ofen',items:[['pizza',1],['skyr',200],['honig',15]]},
+  {id:'m2',name:'Hähnchenkeulen mit Ofenkartoffeln',t:'45 min Ofen, 5 min aktiv',items:[['keule',500],['okart',250],['dressing',3]]},
+  {id:'m3',name:'Steak mit Ofenkartoffeln',t:'25 min',items:[['steak',250],['okart',350],['kbutter',20],['oel',10]]},
+  {id:'m6',name:'Chili con Carne mit Reis',t:'30 min',items:[['hack',200],['kidney',250],['passata',200],['reis',100]]},
  ]},
  {id:'sn2',name:'Snack 2',sub:'',blocks:[
-  {id:'b1',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200]]},
+  {id:'b1',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200],['skyr',100]]},
   {id:'b2',name:'Milch-Shake',t:'2 min',items:[['milch',400],['whey',30],['banane',1]]},
   {id:'b3',name:'Reiswaffeln mit Erdnussbutter',t:'2 min',items:[['reiswaffel',4],['pb',40],['banane',1]]},
-  {id:'b4',name:'Käsebrot',t:'2 min',items:[['brot',100],['gouda',50],['butter',10]]},
+  {id:'b4',name:'Käsebrot',t:'2 min',items:[['semmel',1],['gouda',50],['butter',10]]},
   {id:'b5',name:'Milchreis mit Banane',t:'0 min',items:[['milchreis',200],['banane',1],['nuesse',20]]},
   {id:'b6',name:'Mixtrail',t:'0 min',items:[['mixtrail',150]]},
+  {id:'b7',name:'Semmelbrötchen mit Salami',t:'2 min',items:[['semmel',1],['salami',50]]},
+  {id:'b8',name:'Semmelbrötchen mit Räucherschinken',t:'2 min',items:[['semmel',1],['rschinken',50]]},
  ]},
  {id:'ab',name:'Abendessen',sub:'',blocks:[
+  {id:'e6',name:'Hack-Wraps',t:'15 min',items:[['wrap',3],['hack',300],['tomate',1],['dressing',3],['kiwi',1],['oel',10]]},
+  {id:'e3',name:'Gyros-Hähnchen-Reis',t:'20 min',items:[['gyros',200],['reis',120],['tzatziki',100],['kiwi',1],['oel',10]]},
   {id:'e1',name:'Gambas-Pasta',t:'15 min',items:[['gambas',300],['pasta',140],['parmesan',20],['htomate',1],['kiwi',1],['oel',15]]},
+  {id:'e4',name:'Vegane Tofu-Semmeln',t:'10 min',items:[['semmel',2],['tofu',250],['kraut',150],['kiwi',1],['suesssenf',40]]},
   {id:'e2',name:'Spaghetti Bolognese',t:'25 min',items:[['hack',180],['pasta',100],['passata',200],['parmesan',15],['kiwi',1]]},
-  {id:'e3',name:'Gyros-Teller mit Reis',t:'20 min',items:[['gyros',200],['reis',120],['tzatziki',100],['kiwi',1],['oel',10]]},
-  {id:'e4',name:'Vegane Tofu-Semmeln',t:'10 min',items:[['semmel',3],['tofu',250],['kraut',150],['kiwi',1],['suesssenf',40]]},
-  {id:'e5',name:'Lachs mit Reis',t:'20 min',items:[['lachs',250],['reis',110],['kiwi',1],['butter',10]]},
-  {id:'e6',name:'Hähnchen-Wraps',t:'15 min',items:[['wrap',2],['hbrust',200],['gouda',40],['tomate',1],['kiwi',1],['oel',10]]},
   {id:'e7',name:'Hähnchen-Curry mit Reis',t:'25 min',items:[['hbrust',200],['kokos',200],['curry',20],['reis',100],['kiwi',1]]},
+  {id:'e5',name:'Lachs mit Reis',t:'20 min',items:[['lachs',250],['reis',110],['kiwi',1],['butter',10]]},
  ]},
 ];
 const BLOCK={}; const ROW={};
@@ -974,7 +985,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='439568b3e90f';
+const BUILD='cab96642cf7a';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

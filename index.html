@@ -373,7 +373,7 @@ const ROWS = [
  ]},
  {id:'fr',name:'Frühstück',sub:'',blocks:[
   {id:'f1',name:'Overnight Oats',t:'3 min am Vorabend',items:[['hafer',100],['milch',350],['banane',1],['pb',30],['honig',15]]},
-  {id:'f2',name:'Omelette mit Brot',t:'10 min',items:[['ei',4],['kschinken',60],['speck',125],['gouda',40],['semmel',1],['htomate',1],['butter',10]]},
+  {id:'f2',name:'Omelette mit Brötchen',t:'10 min',items:[['ei',4],['kschinken',60],['speck',125],['gouda',40],['semmel',1],['htomate',1],['butter',10]]},
   {id:'f3',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',items:[['semmel',1],['rschinken',60],['marmelade',40],['milch',300],['butter',15]]},
   {id:'f4',name:'Bagels mit Rührei',t:'8 min',items:[['bagel',2],['ei',3],['frischk',30],['htomate',1],['butter',10]]},
   {id:'f5',name:'Müsli-Schüssel',t:'2 min',items:[['granola',100],['milch',300],['banane',1],['nuesse',20]]},
@@ -514,11 +514,12 @@ function currentMeals(){
 // A product bought for a saved dish starts a Turnus: it stays open for `days` days after that day or until `uses` dishes used it, whichever comes first.
 // The next use after the end starts a new Turnus (new pack). While one is open, every other dish with that product gets the product row
 // marked (--join layer) and moves to the front of its meal row; on a new day the first one is preselected. More urgent products
-// (shorter shelf life) weigh more, dishes covering several open products add up. Edit the values here only.
+// (shorter shelf life) weigh more, dishes covering several open products add up; a dish already eaten in the same Turnus counts half
+// (another dish is preferred, a repeat stays possible). Edit the values here only.
 const TURNUS={
-  hack:{days:3,uses:3}, hbrust:{days:3,uses:2}, gyros:{days:3,uses:2}, salami:{days:7,uses:3},
-  tomate:{days:4,uses:4}, htomate:{days:4,uses:3}, skyr:{days:5,uses:3}, passata:{days:4,uses:2},
-  dressing:{days:14,uses:3}, wrap:{days:14,uses:2}, semmel:{days:2,uses:4},
+  hack:{days:3,uses:3}, hbrust:{days:3,uses:2}, gyros:{days:3,uses:2},
+  tomate:{days:4,uses:4}, htomate:{days:4,uses:3},
+  dressing:{days:14,uses:3},
 };
 const dayDiff=(a,b)=>Math.round((parseIso(b)-parseIso(a))/864e5);
 // Open Turnusse before `date`, from saved days only: {food:{start,left,blocks:Set}}
@@ -538,8 +539,8 @@ function joinPlan(date){
   const open=openJoins(date);const left={};Object.keys(open).forEach(f=>left[f]=open[f].left);
   const plan={};
   ROWS.forEach(r=>{
-    const keys=b=>[...new Set(b.items.filter(([f,q])=>q>0&&open[f]&&left[f]>0&&!open[f].blocks.has(b.id)).map(([f])=>f))];
-    const w=b=>keys(b).reduce((a,f)=>a+1/TURNUS[f].days,0);
+    const keys=b=>[...new Set(b.items.filter(([f,q])=>q>0&&open[f]&&left[f]>0).map(([f])=>f))];
+    const w=b=>keys(b).reduce((a,f)=>a+(open[f].blocks.has(b.id)?.5:1)/TURNUS[f].days,0);
     const order=r.blocks.map((b,i)=>({b,i,w:w(b)})).sort((x,y)=>y.w-x.w||x.i-y.i).map(x=>x.b);
     const marks={};order.forEach(b=>{const k=keys(b);if(k.length)marks[b.id]=new Set(k)});
     keys(order[0]).forEach(f=>left[f]--);
@@ -1025,7 +1026,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='e3f1e96a4e7c';
+const BUILD='7f8d3b98a83f';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

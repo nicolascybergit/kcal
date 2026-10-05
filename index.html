@@ -7,18 +7,18 @@
 /* Layout: plain document table — sticky day strip on top, one row per meal with option blocks as columns, sticky day total at the bottom */
 :root{
   --bg:#f5f6f7; --surface:#ffffff; --line:#d5d9de; --line-strong:#9aa2ab;
-  --fg:#15181c; --muted:#5d6670; --accent:#1d4ed8; --sel:#edf2ff; --hover:rgba(21,24,28,.07);
+  --fg:#15181c; --muted:#5d6670; --accent:#1d4ed8; --sel:#edf2ff; --join:rgba(29,78,216,.075); --hover:rgba(21,24,28,.07);
   --ok:#1b7a4a; --warn:#a15c00; --err:#b42318; --low:#a5564e;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#121417; --surface:#1a1d21; --line:#2e343b; --line-strong:#56606b;
-  --fg:#e7e9ec; --muted:#98a1ab; --accent:#4d8dff; --sel:#262a31; --hover:rgba(231,233,236,.08);
+  --fg:#e7e9ec; --muted:#98a1ab; --accent:#4d8dff; --sel:#262a31; --join:rgba(231,233,236,.05); --hover:rgba(231,233,236,.08);
   --ok:#5fd095; --warn:#f0b35a; --err:#ff8a7a; --low:#dd978e; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121417; --surface:#1a1d21; --line:#2e343b; --line-strong:#56606b;
-  --fg:#e7e9ec; --muted:#98a1ab; --accent:#4d8dff; --sel:#262a31; --hover:rgba(231,233,236,.08);
+  --fg:#e7e9ec; --muted:#98a1ab; --accent:#4d8dff; --sel:#262a31; --join:rgba(231,233,236,.05); --hover:rgba(231,233,236,.08);
   --ok:#5fd095; --warn:#f0b35a; --err:#ff8a7a; --low:#dd978e; color-scheme:dark}
 
 [hidden]{display:none!important}
@@ -129,6 +129,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .items td{border-top:1px solid var(--line);padding:5px 6px;vertical-align:top}
 .items td:first-child{padding-left:12px}
 .items td:last-child{padding-right:12px;text-align:right;white-space:nowrap}
+.items tr.join td{background-image:linear-gradient(var(--join),var(--join))}
 .items .hint{display:block;color:var(--muted);font-size:13.5px;white-space:pre-line}
 .q{display:flex;align-items:center;gap:3px;white-space:nowrap}
 .q input{width:52px;font:inherit;font-family:var(--mono);font-size:13.5px;text-align:right;padding:2px 4px;border:1px solid var(--line);border-radius:0;background:var(--surface);color:var(--fg)}
@@ -357,6 +358,7 @@ const F = {
   bratwurst:['Bratwurst','g',3.0,0.14,{d:250,g:2,m:1,c:0.85,cl:'gebraten'}],
   mixtrail:['Seeberger Mixtrail','g',4.73,0.11,{d:150,g:8}],
   tomsauce:['Tomatensauce','g',0.39,0.018,{d:100,g:6}],
+  // hide:1 = kept for old records, not offered in the pick list
   // Manual entry (x:1): no food, the amount is the value itself; never in the pick list or the shopping list
   okcal:['Kalorien','kcal',1,0,{x:1}],
   oprot:['Protein','g',0,1,{x:1}],
@@ -477,7 +479,7 @@ function draftFor(date){
       const b=BLOCK[m.block];if(!b)return;d.sel[m.row]=m.block;
       const o={},off={};m.items.forEach(it=>{if(b.items[it.i]&&b.items[it.i][0]===it.f){if(it.q!==b.items[it.i][1])o[it.i]=it.q;if(it.v&&it.use===0)off[it.i]=true}});
       if(Object.keys(o).length)d.q[m.block]=o;if(Object.keys(off).length)d.off[m.block]=off;});
-  } else ROWS.forEach(r=>d.sel[r.id]=r.blocks[0].id);
+  } else {const plan=joinPlan(date);ROWS.forEach(r=>d.sel[r.id]=plan[r.id].order[0].id)}
   drafts[date]=d;return d;
 }
 // Eigenes Gericht: one per meal row, block id 'x-<rowId>', amounts live directly in d.custom[rowId]
@@ -488,7 +490,7 @@ const blockOf=(d,id)=>isCustom(id)?customBlock(d,id.slice(2)):BLOCK[id];
 // Display unit: items with nu:1 (handfuls) show the bare number, no unit
 const unitTxt=(f,u)=>F[f]&&opt(f).nu?'':u;
 const defQty=k=>opt(k).d||(F[k][1]==='Stk'?1:100);
-const PICK_ORDER=Object.keys(F).filter(k=>!opt(k).x).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
+const PICK_ORDER=Object.keys(F).filter(k=>!opt(k).x&&!opt(k).hide).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
 const MANUAL=Object.keys(F).filter(k=>opt(k).x);
 const isManual=items=>items.some(x=>opt(x[0]).x);
 const qty=(d,b,i)=>{if(b.custom)return b.items[i][1];const o=d.q[b.id];return (o&&o[i]!=null)?o[i]:b.items[i][1]};
@@ -506,6 +508,44 @@ const draftMeals=d=>ROWS.map(r=>{const b=d.sel[r.id]&&blockOf(d,d.sel[r.id]);ret
 function currentMeals(){
   if(isEditing(cur))return draftMeals(draftFor(cur));
   return store[cur].meals||[];
+}
+
+// ---------- Join (angebrochene Packungen verwerten) ----------
+// A product bought for a saved dish starts a Turnus: it stays open for `days` days after that day or until `uses` dishes used it, whichever comes first.
+// The next use after the end starts a new Turnus (new pack). While one is open, every other dish with that product gets the product row
+// marked (--join layer) and moves to the front of its meal row; on a new day the first one is preselected. More urgent products
+// (shorter shelf life) weigh more, dishes covering several open products add up. Edit the values here only.
+const TURNUS={
+  hack:{days:3,uses:3}, hbrust:{days:3,uses:2}, gyros:{days:3,uses:2}, salami:{days:7,uses:3},
+  tomate:{days:4,uses:4}, htomate:{days:4,uses:3}, skyr:{days:5,uses:3}, passata:{days:4,uses:2},
+  dressing:{days:14,uses:3}, wrap:{days:14,uses:2}, semmel:{days:2,uses:4},
+};
+const dayDiff=(a,b)=>Math.round((parseIso(b)-parseIso(a))/864e5);
+// Open Turnusse before `date`, from saved days only: {food:{start,left,blocks:Set}}
+function openJoins(date){
+  const open={};
+  Object.keys(store).filter(x=>x<date).sort().forEach(x=>(store[x].meals||[]).forEach(m=>{
+    new Set(m.items.filter(it=>TURNUS[it.f]&&it.q>0&&it.use!==0).map(it=>it.f)).forEach(f=>{
+      let t=open[f];if(!t||t.left<=0||dayDiff(t.start,x)>TURNUS[f].days)t=open[f]={start:x,left:TURNUS[f].uses,blocks:new Set()};
+      t.left--;t.blocks.add(m.block)});
+  }));
+  Object.keys(open).forEach(f=>{const t=open[f];if(t.left<=0||dayDiff(t.start,date)>TURNUS[f].days)delete open[f]});
+  return open;
+}
+// Per meal row: blocks sorted by join weight (stable, ROWS order otherwise) and the marked products per block.
+// Rows are filled top-down; the preselected dish of a row uses up one remaining use, so later rows do not overbook a pack.
+function joinPlan(date){
+  const open=openJoins(date);const left={};Object.keys(open).forEach(f=>left[f]=open[f].left);
+  const plan={};
+  ROWS.forEach(r=>{
+    const keys=b=>[...new Set(b.items.filter(([f,q])=>q>0&&open[f]&&left[f]>0&&!open[f].blocks.has(b.id)).map(([f])=>f))];
+    const w=b=>keys(b).reduce((a,f)=>a+1/TURNUS[f].days,0);
+    const order=r.blocks.map((b,i)=>({b,i,w:w(b)})).sort((x,y)=>y.w-x.w||x.i-y.i).map(x=>x.b);
+    const marks={};order.forEach(b=>{const k=keys(b);if(k.length)marks[b.id]=new Set(k)});
+    keys(order[0]).forEach(f=>left[f]--);
+    plan[r.id]={order,marks};
+  });
+  return plan;
 }
 
 // ---------- Tagesleiste ----------
@@ -546,9 +586,9 @@ const PLUS_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 const RST_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="rot"><g transform="translate(12 12) scale(.88) translate(-12 -12)"><path d="M3.3 9.7A9 9 0 0 1 12 3a9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3.1V8h-4.9"/><path d="M20.7 14.3A9 9 0 0 1 12 21a9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M7.9 16H3v4.9"/></g></g></svg>';
 const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>';
 
-function itemsTable(items,editable,bid,all){
-  return `<table class="items"><tbody>${items.filter(it=>all||!it.v).map(it=>`<tr><td>${esc(it.n)}<span class="hint" data-h="${it.i}">${numify(hintFor(it.f,it.q))}</span></td>
-    <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${opt(it.f).x?1:it.u==='Stk'||it.u==='Rezept'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${unitTxt(it.f,it.u)}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${unitTxt(it.f,it.u)}</span>`}</td>
+function itemsTable(items,editable,bid,all,jm){
+  return `<table class="items"><tbody>${items.filter(it=>all||!it.v).map(it=>`<tr${jm&&jm.has(it.f)?' class="join"':''}><td>${esc(it.n)}<span class="hint" data-h="${it.i}">${numify(hintFor(it.f,it.q))}</span></td>
+    <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${opt(it.f).x?1:it.u==='Stk'||it.u==='Rezept'||it.u==='EL'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${unitTxt(it.f,it.u)}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${unitTxt(it.f,it.u)}</span>`}</td>
     ${F[it.f]&&opt(it.f).x?'<td></td>':`<td class="num" data-ik="${it.i}">${fmt(Math.round(it.kcal))}</td>`}</tr>`).join('')}</tbody></table>`;
 }
 function vorratText(items){const v=items.filter(it=>it.v&&it.use!==0);return v.length?'Inklusive Vorrat: '+v.map(it=>`${fmt(it.q)} ${it.u} ${it.n} (+${fmt(Math.round(it.kcal))} kcal)`).join(', '):''}
@@ -589,13 +629,13 @@ function render(){
 
 const picking=new Set();  // meal rows whose custom-dish picker is open (UI only)
 function renderEdit(){
-  const d=draftFor(cur);
+  const d=draftFor(cur);const plan=joinPlan(cur);
   ROWS.forEach(r=>{
     const sec=document.createElement('section');sec.className='row';
     sec.innerHTML=`<header class="row-head"><h2>${r.name}</h2>${r.sub?`<span class="sub">${r.sub}</span>`:''}<span class="target">${numify(targetText(r))}</span></header>`;
     const wrap=document.createElement('div');wrap.className='blocks edit';wrap.setAttribute('role','radiogroup');wrap.setAttribute('aria-label',r.name);
     wrap.style.setProperty('--n',r.blocks.length);
-    r.blocks.forEach(b=>wrap.appendChild(blockEl(r,d,wrap,b)));
+    plan[r.id].order.forEach(b=>wrap.appendChild(blockEl(r,d,wrap,b,plan[r.id].marks[b.id])));
     wrap.appendChild(customEl(r,d,wrap));
     wrap.appendChild(trashEl(r,d,wrap));armTrash(wrap,()=>!!d.sel[r.id]);
     sec.appendChild(wrap);rowsEl.appendChild(sec);markSel(wrap,r,d);
@@ -640,13 +680,13 @@ function markSel(wrap,r,d){wrap.querySelectorAll('.block').forEach(x=>{const o=x
   const h=x.querySelector('.b-head');if(h)h.setAttribute('aria-checked',o);x.querySelectorAll('.vrow').forEach(v=>v.tabIndex=o?0:-1)});
   const sec=wrap.closest('.row');if(sec)sec.classList.toggle('has-sel',!!d.sel[r.id]);
   if(!d.sel[r.id])wrap.dispatchEvent(new Event('trash-hide'))}
-function blockEl(r,d,wrap,b){
+function blockEl(r,d,wrap,b,jm){
   const m=mealFromDraft(d,b);const on=d.sel[r.id]===b.id;
   const el=document.createElement('article');el.className='block'+(on?' on':'');el.id='blk-'+b.id;
   const side=`<button class="rst" type="button" title="Auf Standardwerte zurücksetzen" aria-label="${esc(b.name)} auf Standardwerte zurücksetzen">${RST_SVG}</button>`;
   el.innerHTML=`<div class="b-top"><button class="b-head" type="button" role="radio" aria-checked="${on}"><span class="box"></span><span class="b-name">${esc(b.name)}</span></button>${side}</div>
     <div class="b-meta"><span><b class="num" data-k>${fmt(m.kcal)}</b> kcal, <b class="num" data-p>${fmt(m.p)}</b> g Protein</span>${b.t?`<span>${numify(cap(b.t))}</span>`:''}</div>
-    ${itemsTable(m.items,true,b.id)}
+    ${itemsTable(m.items,true,b.id,false,jm)}
     ${m.items.some(it=>it.v)?'<div class="vorrat" data-v></div>':''}`;
   paintVorrat(el,b,m);
   el.querySelector('.b-head').addEventListener('click',()=>{if(d.sel[r.id]===b.id)return;d.sel[r.id]=b.id;d.touched=true;
@@ -985,7 +1025,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='cab96642cf7a';
+const BUILD='e3f1e96a4e7c';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

@@ -316,11 +316,14 @@ const F = {
   reis:['Reis','g',3.5,0.07,{d:125,g:5,c:2.5,cl:'gekocht'}],
   pasta:['Nudeln','g',3.55,0.125,{d:125,g:5,c:2.3,cl:'gekocht'}],
   hbrust:['Hähnchenbrust','g',1.1,0.23,{d:200,g:2,m:1,c:0.75,cl:'gekocht'}],
-  keule:['Hähnchenkeulen','g',1.55,0.12,{d:400,g:2,m:1,c:0.5,cl:'gekocht'}],
+  // Chicken legs are entered as bought (with bone); nutrition comes from the edible part only:
+  // KEULE_EDIBLE = raw meat and skin per bought gram, values per edible gram (190 kcal, 17 g protein per 100 g)
+  keule:['Hähnchenkeulen','g',1.9*KEULE_EDIBLE,0.17*KEULE_EDIBLE,{d:600,g:2,m:1,c:0.5,cl:'gekocht'}],
   // Minced meat as bought: 243 kcal, 18 g protein per 100 g (user value)
   hack:['Hackfleisch','g',2.43,0.18,{d:200,g:2,m:1,c:0.75,cl:'gebraten'}],
   steak:['Rumpsteak','g',1.7,0.21,{d:250,g:2,m:1,c:0.75,cl:'gebraten'}],
-  okart:['Ofen-Kartoffelscheiben','g',1.45,0.022,{d:250,g:7}],
+  // Fried potatoes as bought: 92 kcal, 2 g protein per 100 g (user value), lose some weight in the pan
+  okart:['Bratkartoffeln','g',0.92,0.02,{d:400,g:7,c:0.85,cl:'gebraten'}],
   kbutter:['Kräuterbutter','g',7.0,0.01,{d:20,g:3}],
   teriyaki:['Teriyaki-Sauce','ml',1.0,0.02,{d:60,g:6}],
   bun:['Burger-Buns','Stk',175,6,{d:2,g:4}],
@@ -398,8 +401,8 @@ const ROWS = [
   {id:'m4',name:'2 Burger mit Doppelpatty',t:'15 min',items:[['hack',280],['bun',2],['eisberg',40],['tomate',1]]},
   {id:'m5',name:'Nudelauflauf mit Hähnchen',t:'40 min, 10 min aktiv',items:[['pasta',120],['hbrust',200],['speck',125],['passata',150],['mozz',50]]},
   {id:'m7',name:'Gustavo Gusto Pizza + Skyr',t:'15 min Ofen',items:[['pizza',1],['skyr',200],['honig',15]]},
-  {id:'m2',name:'Hähnchenkeulen mit Ofenkartoffeln',t:'45 min Ofen, 5 min aktiv',items:[['keule',500],['okart',250],['dressing',3]]},
-  {id:'m3',name:'Steak mit Ofenkartoffeln',t:'25 min',items:[['steak',250],['okart',350],['kbutter',20],['oel',10]]},
+  {id:'m2',name:'Hähnchenkeulen mit Bratkartoffeln',t:'45 min Ofen, 5 min aktiv',items:[['keule',600],['okart',400],['dressing',3]]},
+  {id:'m3',name:'Steak mit Bratkartoffeln',t:'25 min',items:[['steak',250],['okart',400],['kbutter',20],['oel',10]]},
   {id:'m6',name:'Chili con Carne mit Reis',t:'30 min',items:[['hack',200],['kidney',250],['passata',200],['reis',100]]},
  ]},
  {id:'sn2',name:'Snack 2',sub:'',blocks:[
@@ -1026,7 +1029,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='7f8d3b98a83f';
+const BUILD='38f6cdc37145';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

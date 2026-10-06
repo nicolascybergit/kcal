@@ -278,7 +278,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 <script>
 // ---------- Lebensmittel ----------
 // [Name, Einheit, kcal je Einheit, Protein je Einheit, Optionen]
-// Anzeige-Reihenfolge je Gericht: Fleisch/Fisch (m) und pr = Proteinbasis (Eier, Tofu) zuerst, dann b = Beilage (Nudeln, Reis, Brot …), dann der Rest
+// Anzeige-Reihenfolge je Gericht: frisches Fleisch/Fisch (m mit c) und pr = Proteinbasis (Eier, Tofu) zuerst, dann b = Beilage (Nudeln, Reis, Brot …), dann der Rest
 // d = Standardportion im eigenen Gericht, v = Vorrat (nicht einkaufen), m = zählt als Fleisch/Fisch, c = Faktor essbar gekocht je Einkaufsgewicht (Keulen inkl. Knochenabzug; ohne c = schon verzehrfertig, z. B. Schinken), cl = Label (gekocht, gebraten), h = Hinweis, g = Einkaufsgruppe
 // Gruppen: 1 Obst & Gemüse · 2 Fleisch & Fisch · 3 Kühlregal · 4 Brot · 5 Nudeln, Reis, Getreide · 6 Konserven & Saucen · 7 Tiefkühl & Fertig · 8 Nüsse & Sonstiges · 0 Vorrat
 // Edible share (raw meat and skin) of chicken legs as bought, the rest is bone
@@ -605,8 +605,8 @@ const PLUS_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 const RST_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="rot"><g transform="translate(12 12) scale(.88) translate(-12 -12)"><path d="M3.3 9.7A9 9 0 0 1 12 3a9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3.1V8h-4.9"/><path d="M20.7 14.3A9 9 0 0 1 12 21a9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M7.9 16H3v4.9"/></g></g></svg>';
 const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>';
 
-// Display order: protein first, then side, then the rest (stable); `i` keeps the stored position
-const rankOf=f=>{const o=F[f]?opt(f):{};return o.m||o.pr?0:o.b?1:2};
+// Display order: fresh meat/fish or protein base first (cured meat like bacon or salami counts as the rest), then side, then the rest (stable); `i` keeps the stored position
+const rankOf=f=>{const o=F[f]?opt(f):{};return o.m&&o.c||o.pr?0:o.b?1:2};
 const byRank=items=>items.map((it,k)=>({it,k})).sort((x,y)=>rankOf(x.it.f)-rankOf(y.it.f)||x.k-y.k).map(x=>x.it);
 function itemsTable(items,editable,bid,all,jm){
   return `<table class="items"><tbody>${byRank(items.filter(it=>all||!it.v)).map(it=>`<tr${jm&&jm.has(it.f)?' class="join"':''}><td>${jm&&jm.has(it.f)?`<span class="jn">${esc(it.n)}</span>`:esc(it.n)}<span class="hint" data-h="${it.i}">${numify(hintFor(it.f,it.q))}</span></td>
@@ -1047,7 +1047,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='cdb090a862d8';
+const BUILD='a8deb7813022';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
@@ -1063,9 +1063,10 @@ function applyStore(next){
   const wasEditing=isEditing(cur);
   store=next;
   // Ein unberührter Entwurf für einen gespeicherten Tag wird verworfen, damit der gespeicherte Stand gilt
-  Object.keys(store).forEach(dt=>{if(drafts[dt]&&!drafts[dt].touched&&!editing.has(dt)){delete drafts[dt]}
-    else if(drafts[dt]&&drafts[dt].touched&&!editing.has(dt)&&dt===cur){editing.add(dt)}});
-  if(isEditing(cur)&&wasEditing){renderDays();totals()}else render();
+  Object.keys(store).forEach(dt=>{if(drafts[dt]&&drafts[dt].touched&&!editing.has(dt)&&dt===cur){editing.add(dt)}});
+  // Untouched drafts are rebuilt from the new store: saved days show their record, open days get fresh joins (they depend on earlier days)
+  Object.keys(drafts).forEach(dt=>{if(!drafts[dt].touched&&!editing.has(dt))delete drafts[dt]});
+  if(isEditing(cur)&&wasEditing&&drafts[cur]){renderDays();totals()}else render();
 }
 (async()=>{
   const c=window.claude;

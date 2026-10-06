@@ -279,6 +279,8 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 // [Name, Einheit, kcal je Einheit, Protein je Einheit, Optionen]
 // d = Standardportion im eigenen Gericht, v = Vorrat (nicht einkaufen), m = zählt als Fleisch/Fisch, c = Faktor essbar gekocht je Einkaufsgewicht (Keulen inkl. Knochenabzug; ohne c = schon verzehrfertig, z. B. Schinken), cl = Label (gekocht, gebraten), h = Hinweis, g = Einkaufsgruppe
 // Gruppen: 1 Obst & Gemüse · 2 Fleisch & Fisch · 3 Kühlregal · 4 Brot · 5 Nudeln, Reis, Getreide · 6 Konserven & Saucen · 7 Tiefkühl & Fertig · 8 Nüsse & Sonstiges · 0 Vorrat
+// Edible share (raw meat and skin) of chicken legs as bought, the rest is bone
+const KEULE_EDIBLE = 0.72;
 const F = {
   mandel:['Mandelmilch','ml',0.13,0.004,{d:330,g:3}],
   whey:['Body Attack Whey','g',3.8,0.833,{d:30,g:8}],
@@ -1029,7 +1031,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='38f6cdc37145';
+const BUILD='7e780171c117';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

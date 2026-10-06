@@ -278,6 +278,7 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 <script>
 // ---------- Lebensmittel ----------
 // [Name, Einheit, kcal je Einheit, Protein je Einheit, Optionen]
+// Anzeige-Reihenfolge je Gericht: Fleisch/Fisch (m) und pr = Proteinbasis (Eier, Tofu) zuerst, dann b = Beilage (Nudeln, Reis, Brot …), dann der Rest
 // d = Standardportion im eigenen Gericht, v = Vorrat (nicht einkaufen), m = zählt als Fleisch/Fisch, c = Faktor essbar gekocht je Einkaufsgewicht (Keulen inkl. Knochenabzug; ohne c = schon verzehrfertig, z. B. Schinken), cl = Label (gekocht, gebraten), h = Hinweis, g = Einkaufsgruppe
 // Gruppen: 1 Obst & Gemüse · 2 Fleisch & Fisch · 3 Kühlregal · 4 Brot · 5 Nudeln, Reis, Getreide · 6 Konserven & Saucen · 7 Tiefkühl & Fertig · 8 Nüsse & Sonstiges · 0 Vorrat
 // Edible share (raw meat and skin) of chicken legs as bought, the rest is bone
@@ -290,16 +291,16 @@ const F = {
   banane:['Bananen','Stk',105,1.3,{d:1,g:1}],
   pb:['Erdnussbutter','g',6.0,0.25,{d:30,g:6}],
   honig:['Honig','g',3.05,0,{d:15,v:1}],
-  ei:['Eier','Stk',85,7.5,{d:3,g:3}],
+  ei:['Eier','Stk',85,7.5,{d:3,g:3,pr:1}],
   kschinken:['Kochschinken','g',1.1,0.2,{d:60,g:2,m:1}],
   rschinken:['Räucherschinken','g',2.4,0.25,{d:50,g:2,m:1}],
   // Bacon pack 125 g: 301 kcal, 18 g protein per 100 g -> 376 kcal, 22.5 g protein per pack
   speck:['Speck','g',3.01,0.18,{d:125,g:2,m:1}],
   gouda:['Gouda','g',3.6,0.25,{d:40,g:3}],
-  brot:['Mischbrot','g',2.4,0.08,{d:100,g:4,hide:1}],
+  brot:['Mischbrot','g',2.4,0.08,{d:100,g:4,hide:1,b:1}],
   butter:['Butter','g',7.4,0,{d:10,v:1}],
   marmelade:['Marmelade','g',2.5,0,{d:30,g:6}],
-  bagel:['Bagels','Stk',260,9,{d:1,g:4}],
+  bagel:['Bagels','Stk',260,9,{d:1,g:4,b:1}],
   frischk:['Frischkäse','g',2.5,0.05,{d:30,g:3}],
   granola:['Granola','g',4.5,0.09,{d:60,g:5}],
   nuesse:['Nussmix','g',6.2,0.18,{d:30,g:8}],
@@ -307,17 +308,17 @@ const F = {
   // Own protein banana bread: 4 small bananas, 3 eggs, 375 g Aldi protein flour, almond milk, blueberries or choc chips; ~2,080 kcal, ~104 g protein, ~960 g baked
   bbrot:['Bananenbrot','g',2.15,0.11,{d:200,g:4}],
   // Own pancake batter, 1 recipe: 3 eggs (255/22.5), 200 ml whole milk (128/6.8), 125 g flour (435/12.5), 1 tsp vanilla (12/0); ~830 kcal, ~42 g protein
-  pfannk:['Pfannkuchen','Rezept',830,42,{d:1,g:4}],
+  pfannk:['Pfannkuchen','Rezept',830,42,{d:1,g:4,b:1}],
   ahorn:['Maple Syrup','g',2.6,0,{d:40,g:6}],
   // Protein wrap 40 g: 127 kcal, 7.4 g protein (user value)
-  wrap:['Protein-Wraps','Stk',127,7.4,{d:3,g:4}],
+  wrap:['Protein-Wraps','Stk',127,7.4,{d:3,g:4,b:1}],
   thun:['Thunfisch','g',1.1,0.25,{d:130,g:2,m:1}],
   mayo:['Mayo','g',6.8,0.01,{d:15,v:1}],
   reiswaffel:['Reiswaffeln','Stk',30,0.6,{d:4,g:5}],
   milchreis:['Milchreis','g',1.1,0.033,{d:200,g:3}],
   oel:['Öl','ml',8.2,0,{d:10,v:1}],
-  reis:['Reis','g',3.5,0.07,{d:125,g:5,c:2.5,cl:'gekocht'}],
-  pasta:['Nudeln','g',3.55,0.125,{d:125,g:5,c:2.3,cl:'gekocht'}],
+  reis:['Reis','g',3.5,0.07,{d:125,g:5,c:2.5,cl:'gekocht',b:1}],
+  pasta:['Nudeln','g',3.55,0.125,{d:125,g:5,c:2.3,cl:'gekocht',b:1}],
   hbrust:['Hähnchenbrust','g',1.1,0.23,{d:200,g:2,m:1,c:0.75,cl:'gekocht'}],
   // Chicken legs are entered as bought (with bone); nutrition comes from the edible part only:
   // KEULE_EDIBLE = raw meat and skin per bought gram, values per edible gram (190 kcal, 17 g protein per 100 g)
@@ -326,15 +327,19 @@ const F = {
   hack:['Hackfleisch','g',2.43,0.18,{d:200,g:2,m:1,c:0.75,cl:'gebraten'}],
   steak:['Rumpsteak','g',1.7,0.21,{d:250,g:2,m:1,c:0.75,cl:'gebraten'}],
   // Fried potatoes as bought: 92 kcal, 2 g protein per 100 g (user value), lose some weight in the pan
-  okart:['Bratkartoffeln','g',0.92,0.02,{d:400,g:7,c:0.85,cl:'gebraten'}],
+  okart:['Bratkartoffeln','g',0.92,0.02,{d:400,g:7,c:0.85,cl:'gebraten',b:1}],
   kbutter:['Kräuterbutter','g',7.0,0.01,{d:20,g:3}],
   teriyaki:['Teriyaki-Sauce','ml',1.0,0.02,{d:60,g:6}],
-  bun:['Burger-Buns','Stk',175,6,{d:2,g:4}],
+  bun:['Burger-Buns','Stk',175,6,{d:2,g:4,b:1}],
   eisberg:['Eisbergsalat','g',0.14,0.01,{d:40,g:1}],
   tomate:['Große Tomate','Stk',20,0.9,{d:1,g:1}],
   // One handful = 5–6 cherry tomatoes (~90 g)
   htomate:['Handvoll Tomaten','Stk',18,0.8,{d:1,g:1,nu:1}],
   passata:['Passierte Tomaten','g',0.35,0.015,{d:200,g:6}],
+  // Vegetables per piece (estimate): pepper ~150 g, zucchini ~250 g, broccoli head ~350 g usable
+  paprika:['Paprika','Stk',47,1.5,{d:1,g:1}],
+  zucchini:['Zucchini','Stk',43,3,{d:1,g:1}],
+  brokkoli:['Brokkoli','Stk',120,10,{d:1,g:1}],
   kidney:['Kidneybohnen','g',1.1,0.08,{d:250,g:6}],
   pizza:['Gustavo Gusto Schinken-Champignon','Stk',920,42,{d:1,g:7}],
   pesto:['Pesto','g',4.5,0.05,{d:40,g:6}],
@@ -343,24 +348,24 @@ const F = {
   gyros:['Hähnchen-Gyros','g',1.5,0.2,{d:200,g:2,m:1,c:0.75,cl:'gebraten'}],
   tzatziki:['Tzatziki','g',1.3,0.04,{d:100,g:3}],
   // Rosenbrötchen hell (wheat roll with potato flakes), 112 g each; ~260 kcal, ~8.5 g protein per 100 g (estimate, label not checked yet)
-  semmel:['Semmelbrötchen','Stk',291,9.5,{d:1,g:4}],
+  semmel:['Semmelbrötchen','Stk',291,9.5,{d:1,g:4,b:1}],
   salami:['Salami','g',3.8,0.22,{d:50,g:2,m:1}],
   mozz:['Streumozzarella','g',2.9,0.21,{d:50,g:3}],
   // Aldi salad yoghurt dressing: 145 kcal, 1.8 g protein per 100 ml; 1 heaped tbsp ~20 ml
   dressing:['Joghurt-Dressing','EL',29,0.36,{d:3,g:6}],
-  tofu:['Räuchertofu','g',1.5,0.16,{d:200,g:3}],
+  tofu:['Räuchertofu','g',1.5,0.16,{d:200,g:3,pr:1}],
   kraut:['Sauerkraut','g',0.2,0.015,{d:150,g:6}],
   suesssenf:['Süßsenf','g',2.6,0.01,{d:30,v:1}],
   lachs:['Lachsfilet','g',2.0,0.2,{d:200,g:2,m:1,c:0.8,cl:'gekocht'}],
   kiwi:['Kiwi','Stk',45,0.8,{d:1,g:1}],
   kokos:['Kokosmilch','ml',1.8,0.018,{d:200,g:6}],
   curry:['Currypaste','g',1.5,0.02,{d:20,g:6}],
-  kartoffel:['Kartoffeln','g',0.75,0.02,{d:300,g:1}],
+  kartoffel:['Kartoffeln','g',0.75,0.02,{d:300,g:1,b:1}],
   apfel:['Äpfel','Stk',80,0.4,{d:1,g:1}],
   pute:['Putenbrust','g',1.05,0.24,{d:200,g:2,m:1,c:0.75,cl:'gekocht'}],
   schnitzel:['Schweineschnitzel','g',1.1,0.22,{d:200,g:2,m:1,c:0.75,cl:'gebraten'}],
   quark:['Magerquark','g',0.67,0.12,{d:250,g:3}],
-  pommes:['Pommes','g',1.4,0.025,{d:250,g:7}],
+  pommes:['Pommes','g',1.4,0.025,{d:250,g:7,b:1}],
   bratwurst:['Bratwurst','g',3.0,0.14,{d:250,g:2,m:1,c:0.85,cl:'gebraten'}],
   mixtrail:['Seeberger Mixtrail','g',4.73,0.11,{d:150,g:8}],
   tomsauce:['Tomatensauce','g',0.39,0.018,{d:100,g:6}],
@@ -402,7 +407,7 @@ const ROWS = [
   {id:'m1',name:'Hähnchen Teriyaki mit Reis',t:'20 min',items:[['hbrust',220],['reis',180],['teriyaki',80],['oel',15]]},
   {id:'m8',name:'Gyros-Hähnchen-Nudeln',t:'15 min',items:[['hbrust',400],['pasta',125],['pesto',50],['htomate',1],['oel',10]]},
   {id:'m4',name:'2 Burger mit Doppelpatty',t:'15 min',items:[['hack',280],['bun',2],['eisberg',40],['tomate',1]]},
-  {id:'m5',name:'Nudelauflauf mit Hähnchen',t:'40 min, 10 min aktiv',items:[['pasta',120],['hbrust',200],['speck',125],['passata',150],['mozz',50]]},
+  {id:'m5',name:'Chicken-Nudelauflauf',t:'40 min, 10 min aktiv',items:[['pasta',225],['hbrust',200],['speck',125],['paprika',1],['zucchini',0.5],['brokkoli',0.5],['mozz',50]]},
   {id:'m7',name:'Gustavo Gusto Pizza + Skyr',t:'15 min Ofen',items:[['pizza',1],['skyr',200],['honig',15]]},
   {id:'m2',name:'Hähnchenkeulen mit Bratkartoffeln',t:'45 min Ofen, 5 min aktiv',items:[['keule',600],['okart',400],['dressing',3]]},
   {id:'m3',name:'Steak mit Bratkartoffeln',t:'25 min',items:[['steak',250],['okart',400],['kbutter',20],['oel',10]]},
@@ -523,7 +528,7 @@ function currentMeals(){
 // (shorter shelf life) weigh more, dishes covering several open products add up; a dish already eaten in the same Turnus counts half
 // (another dish is preferred, a repeat stays possible). Edit the values here only.
 const TURNUS={
-  hack:{days:3,uses:3}, hbrust:{days:3,uses:2}, gyros:{days:3,uses:2},
+  hack:{days:3,uses:3}, hbrust:{days:3,uses:2}, gyros:{days:3,uses:2}, speck:{days:7,uses:2},
   tomate:{days:4,uses:4}, htomate:{days:4,uses:3},
   dressing:{days:14,uses:3},
 };
@@ -600,8 +605,11 @@ const PLUS_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 const RST_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="rot"><g transform="translate(12 12) scale(.88) translate(-12 -12)"><path d="M3.3 9.7A9 9 0 0 1 12 3a9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3.1V8h-4.9"/><path d="M20.7 14.3A9 9 0 0 1 12 21a9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M7.9 16H3v4.9"/></g></g></svg>';
 const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>';
 
+// Display order: protein first, then side, then the rest (stable); `i` keeps the stored position
+const rankOf=f=>{const o=F[f]?opt(f):{};return o.m||o.pr?0:o.b?1:2};
+const byRank=items=>items.map((it,k)=>({it,k})).sort((x,y)=>rankOf(x.it.f)-rankOf(y.it.f)||x.k-y.k).map(x=>x.it);
 function itemsTable(items,editable,bid,all,jm){
-  return `<table class="items"><tbody>${items.filter(it=>all||!it.v).map(it=>`<tr${jm&&jm.has(it.f)?' class="join"':''}><td>${jm&&jm.has(it.f)?`<span class="jn">${esc(it.n)}</span>`:esc(it.n)}<span class="hint" data-h="${it.i}">${numify(hintFor(it.f,it.q))}</span></td>
+  return `<table class="items"><tbody>${byRank(items.filter(it=>all||!it.v)).map(it=>`<tr${jm&&jm.has(it.f)?' class="join"':''}><td>${jm&&jm.has(it.f)?`<span class="jn">${esc(it.n)}</span>`:esc(it.n)}<span class="hint" data-h="${it.i}">${numify(hintFor(it.f,it.q))}</span></td>
     <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${opt(it.f).x?1:it.u==='Stk'||it.u==='Rezept'||it.u==='EL'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${unitTxt(it.f,it.u)}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${unitTxt(it.f,it.u)}</span>`}</td>
     ${F[it.f]&&opt(it.f).x?'<td></td>':`<td class="num" data-ik="${it.i}">${fmt(Math.round(it.kcal))}</td>`}</tr>`).join('')}</tbody></table>`;
 }
@@ -1039,7 +1047,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='0e00eacae2be';
+const BUILD='cdb090a862d8';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

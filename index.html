@@ -353,7 +353,7 @@ const F = {
   mozz:['Streumozzarella','g',2.9,0.21,{d:50,g:3}],
   // Aldi salad yoghurt dressing: 145 kcal, 1.8 g protein per 100 ml; 1 heaped tbsp ~20 ml
   dressing:['Joghurt-Dressing','EL',29,0.36,{d:3,g:6}],
-  tofu:['Räuchertofu','g',1.5,0.16,{d:200,g:3,pr:1}],
+  tofu:['Räuchertofu','g',1.5,0.158,{d:380,g:3,pr:1}],
   kraut:['Sauerkraut','g',0.2,0.015,{d:150,g:6}],
   suesssenf:['Süßsenf','g',2.6,0.01,{d:30,v:1}],
   lachs:['Lachsfilet','g',2.0,0.2,{d:200,g:2,m:1,c:0.8,cl:'gekocht'}],
@@ -366,7 +366,7 @@ const F = {
   schnitzel:['Schweineschnitzel','g',1.1,0.22,{d:200,g:2,m:1,c:0.75,cl:'gebraten'}],
   quark:['Magerquark','g',0.67,0.12,{d:250,g:3}],
   pommes:['Pommes','g',1.4,0.025,{d:250,g:7,b:1}],
-  bratwurst:['Bratwurst','g',3.0,0.14,{d:250,g:2,m:1,c:0.85,cl:'gebraten'}],
+  bratwurst:['Bratwurst','g',2.08,0.15,{d:200,g:2,m:1,c:0.85,cl:'gebraten'}],
   mixtrail:['Seeberger Mixtrail','g',4.73,0.11,{d:150,g:8}],
   tomsauce:['Tomatensauce','g',0.39,0.018,{d:100,g:6}],
   // hide:1 = kept for old records, not offered in the pick list
@@ -403,7 +403,7 @@ const ROWS = [
   {id:'a9',name:'Semmelbrötchen mit Räucherschinken',t:'2 min',items:[['semmel',1],['rschinken',50]]},
  ]},
  {id:'mi',name:'Mittag',sub:'',blocks:[
-  {id:'m9',name:'Bratwurst mit Kidneybohnen und Reis',t:'25 min, inklusive 20 g Reis, der im Topf kleben bleibt',items:[['bratwurst',250],['kidney',250],['reis',150]]},
+  {id:'m9',name:'Bratwurst mit Kidneybohnen und Reis',t:'25 min, inklusive 20 g Reis, der im Topf kleben bleibt',items:[['bratwurst',200],['kidney',250],['reis',150]]},
   {id:'m1',name:'Hähnchen Teriyaki mit Reis',t:'20 min',items:[['hbrust',220],['reis',180],['teriyaki',80],['oel',15]]},
   {id:'m8',name:'Gyros-Hähnchen-Nudeln',t:'15 min',items:[['hbrust',400],['pasta',125],['pesto',50],['htomate',1],['oel',10]]},
   {id:'m4',name:'2 Burger mit Doppelpatty',t:'15 min',items:[['hack',280],['bun',2],['eisberg',40],['tomate',1]]},
@@ -427,7 +427,7 @@ const ROWS = [
   {id:'e6',name:'Hack-Wraps',t:'15 min',items:[['wrap',3],['hack',300],['tomate',1],['dressing',3],['kiwi',1],['oel',10]]},
   {id:'e3',name:'Gyros-Hähnchen-Reis',t:'20 min',items:[['gyros',200],['reis',120],['tzatziki',100],['kiwi',1],['oel',10]]},
   {id:'e1',name:'Gambas-Pasta',t:'15 min',items:[['gambas',300],['pasta',140],['parmesan',20],['htomate',1],['kiwi',1],['oel',15]]},
-  {id:'e4',name:'Vegane Tofu-Semmeln',t:'10 min',items:[['semmel',2],['tofu',250],['kraut',150],['kiwi',1],['suesssenf',40]]},
+  {id:'e4',name:'Vegane Tofu-Semmeln',t:'10 min',items:[['semmel',2],['tofu',380],['kraut',150],['kiwi',1],['suesssenf',40]]},
   {id:'e2',name:'Spaghetti Bolognese',t:'25 min',items:[['hack',180],['pasta',100],['passata',200],['parmesan',15],['kiwi',1]]},
   {id:'e7',name:'Hähnchen-Curry mit Reis',t:'25 min',items:[['hbrust',200],['kokos',200],['curry',20],['reis',100],['kiwi',1]]},
   {id:'e5',name:'Lachs mit Reis',t:'20 min',items:[['lachs',250],['reis',110],['kiwi',1],['butter',10]]},
@@ -528,7 +528,7 @@ function currentMeals(){
 // (shorter shelf life) weigh more, dishes covering several open products add up; a dish already eaten in the same Turnus counts half
 // (another dish is preferred, a repeat stays possible). Edit the values here only.
 const TURNUS={
-  hack:{days:3,uses:3}, hbrust:{days:3,uses:2}, gyros:{days:3,uses:2}, speck:{days:7,uses:2},
+  hack:{days:3,uses:3}, bratwurst:{days:7,uses:2}, hbrust:{days:3,uses:2}, gyros:{days:3,uses:2}, speck:{days:7,uses:2},
   tomate:{days:4,uses:4}, htomate:{days:4,uses:3},
   dressing:{days:14,uses:3},
 };
@@ -1047,7 +1047,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='a8deb7813022';
+const BUILD='17f40e738e0c';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

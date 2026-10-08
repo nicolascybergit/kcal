@@ -488,7 +488,9 @@ function draftFor(date){
     (doc.meals||[]).forEach(m=>{
       if(isCustom(m.block)){const it=m.items.filter(x=>F[x.f]).map(x=>[x.f,x.q]);if(it.length){d.custom[m.row]=it;d.sel[m.row]=m.block}return}
       const b=BLOCK[m.block];if(!b)return;d.sel[m.row]=m.block;
-      const o={},off={};m.items.forEach(it=>{if(b.items[it.i]&&b.items[it.i][0]===it.f){if(it.q!==b.items[it.i][1])o[it.i]=it.q;if(it.v&&it.use===0)off[it.i]=true}});
+      // Saved items map to the recipe by position, or by food when the recipe changed since (added or reordered items)
+      const o={},off={};m.items.forEach(it=>{const i=b.items[it.i]&&b.items[it.i][0]===it.f?it.i:b.items.findIndex(x=>x[0]===it.f);if(i<0)return;
+        if(it.q!==b.items[i][1])o[i]=it.q;if(it.v&&it.use===0)off[i]=true});
       if(Object.keys(o).length)d.q[m.block]=o;if(Object.keys(off).length)d.off[m.block]=off;});
   } else {const plan=joinPlan(date);ROWS.forEach(r=>d.sel[r.id]=plan[r.id].order[0].id)}
   drafts[date]=d;return d;
@@ -932,8 +934,11 @@ document.getElementById('copyShop').addEventListener('click',()=>copyText(shopTe
 // ---------- Sheets ----------
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('alertBg').hidden)closeShop()});
 // Refresh: spin, then reload (fresh data, newest app version, unsaved changes reset)
+// A unique ?v= skips the 10-minute GitHub Pages cache, so a reload never shows an outdated app; the parameter is removed again on load
+const freshReload=()=>location.replace(location.pathname+'?v='+Date.now()+location.hash);
+if(/[?&]v=\d/.test(location.search))history.replaceState(null,'',location.pathname+location.hash);
 function doRefresh(e){const b=e.currentTarget;b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');
-  setTimeout(()=>location.reload(),750)}
+  setTimeout(freshReload,750)}
 document.getElementById('openExport').addEventListener('click',exportCsv);
 
 // ---------- Datei-Speicher (lokale HTML) ----------
@@ -1047,11 +1052,11 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='1c825b542f8b';
+const BUILD='893fecf0d6d0';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
-    if(m&&m[1]!==BUILD&&sessionStorage.getItem('ebk-reloaded')!==m[1]){sessionStorage.setItem('ebk-reloaded',m[1]);location.reload()}}catch(e){}
+    if(m&&m[1]!==BUILD&&sessionStorage.getItem('ebk-reloaded')!==m[1]){sessionStorage.setItem('ebk-reloaded',m[1]);freshReload()}}catch(e){}
 }
 checkUpdate();document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});
 

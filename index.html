@@ -141,10 +141,12 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .fridge .tag{display:inline-flex;align-items:center;gap:4px;background:var(--join);border:1px solid var(--join-line);padding:0 2px 0 4px;line-height:1.45}
 .fridge .tag button{all:unset;cursor:pointer;display:grid;place-items:center;width:16px;height:16px;color:var(--fg)}
 .fridge .tag button svg{width:10px;height:10px}
-.fridge .tag-add{position:relative;display:grid;place-items:center;width:24px;height:22px;color:var(--muted);cursor:pointer}
-.fridge .tag-add:hover{color:var(--fg)}
+.fridge .tag-wrap{position:relative}
+.fridge .tag-add{all:unset;display:grid;place-items:center;width:24px;height:22px;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fridge .tag-add:hover,.fridge .tag-add[aria-expanded="true"]{color:var(--fg)}
 .fridge .tag-add svg{width:16px;height:16px}
-.fridge .tag-add select{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:16px}
+.fridge .tag-menu{position:absolute;top:calc(100% + 6px);left:0;z-index:8;width:240px;max-height:300px;overflow-y:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.14);animation:alert-in .18s ease-out}
+@media (max-width:420px){.fridge .tag-menu{left:auto;right:-8px}}
 /* Durchfall ticks: plain list under the meals, box and name exactly where a dish head sits */
 .dur{display:flex;flex-direction:column;padding:0 0 0 6px;margin:4px 0 6px}
 .dur .b-head{flex:none}
@@ -718,11 +720,16 @@ function fridgeEl(d){
   const open=openJoins(cur,d.fr);const keys=Object.keys(open).sort((a,b)=>F[a][0].localeCompare(F[b][0],'de'));
   const el=document.createElement('div');el.className='fridge';
   el.innerHTML=keys.map(f=>`<span class="tag">${esc(F[f][0])}<button type="button" data-rm="${f}" title="Entfernen" aria-label="${esc(F[f][0])} entfernen">${X_SVG}</button></span>`).join('')+
-    `<label class="tag-add" title="Produkt hinzufügen">${PLUS_SVG}<select aria-label="Produkt hinzufügen"><option value="" selected disabled>Produkt hinzufügen</option>${PICK_ORDER.filter(k=>!opt(k).v&&!open[k]).map(k=>`<option value="${k}">${esc(F[k][0])}</option>`).join('')}</select></label>`;
+    `<span class="tag-wrap"><button class="tag-add" type="button" title="Produkt hinzufügen" aria-label="Produkt hinzufügen" aria-expanded="false">${PLUS_SVG}</button>
+    <div class="tag-menu" hidden><ul class="shop-list pick-list">${PICK_ORDER.filter(k=>!opt(k).v&&!open[k]).map(k=>`<li><button type="button" data-add="${k}"><span>${esc(F[k][0])}</span></button></li>`).join('')}</ul></div></span>`;
   el.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{const f=b.dataset.rm;const i=d.fr.add.indexOf(f);
     if(i>=0)d.fr.add.splice(i,1);if(openJoins(cur,d.fr)[f]&&!d.fr.off.includes(f))d.fr.off.push(f);fridgeChanged(d)}));
-  el.querySelector('select').addEventListener('change',e=>{const f=e.target.value;if(!f)return;const i=d.fr.off.indexOf(f);
-    if(i>=0)d.fr.off.splice(i,1);if(!openJoins(cur,d.fr)[f])d.fr.add.push(f);fridgeChanged(d)});
+  // Own product menu in the app's list look (no native picker); a tap outside closes it
+  const plus=el.querySelector('.tag-add'),menu=el.querySelector('.tag-menu');
+  const close=e=>{if(e&&menu.parentNode.contains(e.target))return;menu.hidden=true;plus.setAttribute('aria-expanded','false');document.removeEventListener('click',close,true)};
+  plus.addEventListener('click',()=>{if(!menu.hidden){close();return}menu.hidden=false;plus.setAttribute('aria-expanded','true');menu.scrollTop=0;document.addEventListener('click',close,true)});
+  el.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{const f=b.dataset.add;close();const i=d.fr.off.indexOf(f);
+    if(i>=0)d.fr.off.splice(i,1);if(!openJoins(cur,d.fr)[f])d.fr.add.push(f);fridgeChanged(d)}));
   return el;
 }
 // A new day whose dishes are still the automatic choice gets them chosen again from the edited fridge
@@ -1143,7 +1150,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='0b85f9213e11';
+const BUILD='ea2f5ebfc0f3';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

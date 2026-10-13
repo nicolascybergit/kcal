@@ -526,7 +526,7 @@ function draftFor(date){
       const o={},off={};m.items.forEach(it=>{const i=b.items[it.i]&&eff(it.i)===it.f?it.i:b.items.findIndex((x,j)=>eff(j)===it.f);if(i<0)return;
         if(it.q!==b.items[i][1])o[i]=it.q;if(it.v&&it.use===0)off[i]=true});
       if(Object.keys(o).length)d.q[m.block]=o;if(Object.keys(off).length)d.off[m.block]=off;});
-  } else {const plan=joinPlan(date);ROWS.forEach(r=>d.sel[r.id]=plan[r.id].order[0].id);d.autoSel=JSON.stringify(d.sel)}
+  } else {const plan=joinPlan(date);ROWS.forEach(r=>d.sel[r.id]=plan[r.id].pick.id);d.autoSel=JSON.stringify(d.sel)}
   drafts[date]=d;return d;
 }
 // Eigenes Gericht: one per meal row, block id 'x-<rowId>', amounts live directly in d.custom[rowId]
@@ -596,10 +596,14 @@ function joinPlan(date,fr){
   ROWS.forEach(r=>{
     const keys=b=>[...new Set(b.items.filter(([f,q])=>q>0&&open[f]&&left[f]>0).map(([f])=>f))];
     const w=b=>keys(b).reduce((a,f)=>a+(open[f].blocks.has(dishKey(b.id))?.5:1)/turnusOf(f).days,0);
-    const order=r.blocks.map((b,i)=>({b,i,w:w(b)})).sort((x,y)=>y.w-x.w||x.i-y.i).map(x=>x.b);
+    // Dinner shows the same order as lunch (dinner copies of the same dishes) and preselects the first other dish, preferring one with an open product
+    const same=r.id==='ab'&&plan.mi;
+    const order=same?plan.mi.order.map(b=>BLOCK[MAINS[b.k].ids[1]]):r.blocks.map((b,i)=>({b,i,w:w(b)})).sort((x,y)=>y.w-x.w||x.i-y.i).map(x=>x.b);
     const marks={};order.forEach(b=>{const k=keys(b);if(k.length)marks[b.id]=new Set(k)});
-    keys(order[0]).forEach(f=>left[f]--);
-    plan[r.id]={order,marks};
+    let pick=order[0];
+    if(same){const other=order.filter(b=>b.k!==plan.mi.pick.k);pick=other.find(b=>marks[b.id])||other[0]||order[0]}
+    keys(pick).forEach(f=>left[f]--);
+    plan[r.id]={order,marks,pick};
   });
   return plan;
 }
@@ -734,7 +738,7 @@ function fridgeEl(d){
 }
 // A new day whose dishes are still the automatic choice gets them chosen again from the edited fridge
 function fridgeChanged(d){
-  if(!store[cur]&&JSON.stringify(d.sel)===d.autoSel){const plan=joinPlan(cur,d.fr);ROWS.forEach(r=>d.sel[r.id]=plan[r.id].order[0].id);d.autoSel=JSON.stringify(d.sel)}
+  if(!store[cur]&&JSON.stringify(d.sel)===d.autoSel){const plan=joinPlan(cur,d.fr);ROWS.forEach(r=>d.sel[r.id]=plan[r.id].pick.id);d.autoSel=JSON.stringify(d.sel)}
   d.touched=true;render();
 }
 // Durchfall: three ticks under the meals, same box, font and position as a dish head. Stored as doc.dur (morgens, nachmittags, abends).
@@ -1150,7 +1154,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='ea2f5ebfc0f3';
+const BUILD='433a6dacf793';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

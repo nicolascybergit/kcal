@@ -131,6 +131,23 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 .items td:last-child{padding-right:12px;text-align:right;white-space:nowrap}
 /* Join product: small box tight around the name only (width fitted to the longest line by fitJoin) */
 .items .jn{display:inline-block;vertical-align:top;background:var(--join);border:1px solid var(--join-line);padding:0 4px;margin:-1px 0 -1px -5px}
+/* Side switch (rice/pasta): same box as the join box, neutral unless the side is an open join, swap icon after the name */
+.items .sw{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;vertical-align:top;border:1px solid var(--line-strong);background:var(--surface);padding:0 4px;margin:-1px 0 -1px -5px;-webkit-tap-highlight-color:transparent}
+.items .sw.join{background:var(--join);border-color:var(--join-line)}
+.items .sw svg{width:12px;height:12px;color:var(--muted)}
+.items .sw:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+/* Fridge tags: products with an open Turnus, join box look, cross to remove, plus at the end to add */
+.fridge{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 14px;font-size:14.5px}
+.fridge .tag{display:inline-flex;align-items:center;gap:4px;background:var(--join);border:1px solid var(--join-line);padding:0 2px 0 4px;line-height:1.45}
+.fridge .tag button{all:unset;cursor:pointer;display:grid;place-items:center;width:16px;height:16px;color:var(--fg)}
+.fridge .tag button svg{width:10px;height:10px}
+.fridge .tag-add{position:relative;display:grid;place-items:center;width:24px;height:22px;color:var(--muted);cursor:pointer}
+.fridge .tag-add:hover{color:var(--fg)}
+.fridge .tag-add svg{width:16px;height:16px}
+.fridge .tag-add select{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:16px}
+/* Durchfall ticks: plain list under the meals, box and name exactly where a dish head sits */
+.dur{display:flex;flex-direction:column;padding:0 0 0 6px;margin:4px 0 6px}
+.dur .b-head{flex:none}
 .items .hint{display:block;color:var(--muted);font-size:13.5px;white-space:pre-line}
 .q{display:flex;align-items:center;gap:3px;white-space:nowrap}
 .q input{width:52px;font:inherit;font-family:var(--mono);font-size:13.5px;text-align:right;padding:2px 4px;border:1px solid var(--line);border-radius:0;background:var(--surface);color:var(--fg)}
@@ -376,6 +393,29 @@ const F = {
 };
 
 // ---------- Gerichte (Standardwerte) ----------
+// Main dishes exist once and appear in both Mittag and Abendessen (own block id per row, k = shared dish key); dinner adds the daily kiwi.
+// sn = dish name per swapped side when the plain word swap does not fit; nosw = side stays fixed
+const MAINS={
+  bw:{ids:['m9','e8'],name:'Bratwurst mit Kidneybohnen und Reis',t:'25 min, inklusive 20 g Reis, der im Topf kleben bleibt',items:[['bratwurst',200],['kidney',200],['speck',62.5],['reis',150]]},
+  ter:{ids:['m1','e9'],name:'Hähnchen Teriyaki mit Reis',t:'20 min',items:[['hbrust',220],['reis',180],['teriyaki',80],['oel',15]]},
+  gyr:{ids:['m8','e3'],name:'Gyros-Hähnchen-Reis',t:'20 min',items:[['gyros',200],['reis',120],['tzatziki',100],['htomate',1],['oel',10]]},
+  bur:{ids:['m4','e10'],name:'2 Burger mit Doppelpatty',t:'15 min',items:[['hack',280],['bun',2],['eisberg',40],['tomate',1]]},
+  auf:{ids:['m5','e11'],name:'Chicken-Nudelauflauf',t:'40 min, 10 min aktiv',nosw:1,items:[['pasta',225],['hbrust',200],['speck',125],['paprika',1],['zucchini',0.5],['brokkoli',0.5],['mozz',50]]},
+  piz:{ids:['m7','e12'],name:'Gustavo Gusto Pizza + Skyr',t:'15 min Ofen',items:[['pizza',1],['skyr',200],['honig',15]]},
+  keu:{ids:['m2','e13'],name:'Hähnchenkeulen mit Bratkartoffeln',t:'45 min Ofen, 5 min aktiv',items:[['keule',600],['okart',400],['dressing',3]]},
+  stk:{ids:['m3','e14'],name:'Steak mit Bratkartoffeln',t:'25 min',items:[['steak',250],['okart',400],['oel',10]]},
+  chi:{ids:['m6','e15'],name:'Chili con Carne mit Reis',t:'30 min',items:[['hack',200],['kidney',200],['passata',200],['reis',100]]},
+  hw:{ids:['m10','e6'],name:'Hack-Wraps',t:'15 min',items:[['wrap',3],['hack',300],['tomate',1],['dressing',3],['oel',10]]},
+  gam:{ids:['m11','e1'],name:'Gambas-Pasta',t:'15 min',sn:{reis:'Gambas mit Reis'},items:[['gambas',300],['pasta',140],['parmesan',20],['htomate',1],['oel',15]]},
+  tof:{ids:['m12','e4'],name:'Vegane Tofu-Semmeln',t:'10 min',items:[['semmel',2],['tofu',380],['kraut',50],['suesssenf',40]]},
+  bol:{ids:['m13','e2'],name:'Spaghetti Bolognese',t:'25 min',nosw:1,items:[['hack',180],['pasta',100],['passata',200],['parmesan',15]]},
+  cur:{ids:['m14','e7'],name:'Hähnchen-Curry mit Reis',t:'25 min',items:[['hbrust',200],['kokos',200],['curry',20],['reis',100]]},
+  lac:{ids:['m15','e5'],name:'Lachs mit Reis',t:'20 min',items:[['lachs',250],['reis',110],['oel',10]]},
+};
+const mains=(order,dinner)=>order.map(k=>{const m=MAINS[k];
+  return {id:m.ids[dinner?1:0],k,name:m.name,t:m.t,sn:m.sn,nosw:m.nosw,items:dinner?[...m.items,['kiwi',1]]:m.items.slice()}});
+// Bread at breakfast and as a snack is the same dish, without pantry
+const BREAD=[['semmel',1],['rschinken',60],['marmelade',40],['milch',300]];
 const ROWS = [
  {id:'shake',name:'Shake',sub:'Nach dem Aufstehen',blocks:[
   {id:'s1',name:'Shake mit Mandelmilch',t:'1 min',items:[['mandel',330],['whey',30]]},
@@ -384,57 +424,46 @@ const ROWS = [
  ]},
  {id:'fr',name:'Frühstück',sub:'',blocks:[
   {id:'f1',name:'Overnight Oats',t:'3 min am Vorabend',items:[['hafer',100],['milch',350],['banane',1],['pb',30],['honig',15]]},
-  {id:'f2',name:'Omelette mit Brötchen',t:'10 min',items:[['ei',4],['kschinken',60],['speck',125],['gouda',40],['semmel',1],['htomate',1],['butter',10]]},
-  {id:'f3',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',items:[['semmel',1],['rschinken',60],['marmelade',40],['milch',300],['butter',15]]},
-  {id:'f4',name:'Bagels mit Rührei',t:'8 min',items:[['bagel',2],['ei',3],['frischk',30],['htomate',1],['butter',10]]},
+  {id:'f2',name:'Omelette mit Brötchen',t:'10 min',items:[['ei',4],['kschinken',60],['speck',125],['gouda',40],['semmel',1],['htomate',1],['oel',10]]},
+  {id:'f3',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',k:'bread',items:BREAD},
+  {id:'f4',name:'Bagels mit Rührei',t:'8 min',items:[['bagel',2],['ei',3],['frischk',30],['htomate',1],['oel',10]]},
   {id:'f5',name:'Müsli-Schüssel',t:'2 min',items:[['granola',100],['milch',300],['banane',1],['nuesse',20]]},
-  {id:'f6',name:'Spiegeleier mit Speck',t:'10 min',items:[['ei',4],['speck',125],['semmel',1],['htomate',1]]},
-  {id:'f7',name:'Pfannkuchen mit Speck',t:'20 min',items:[['pfannk',1],['speck',125],['ahorn',40],['oel',10]]},
+  {id:'f6',name:'Spiegeleier mit Speck',t:'10 min',items:[['ei',4],['speck',125],['semmel',1],['htomate',1],['oel',10]]},
+  {id:'f7',name:'Pfannkuchen mit Speck',t:'20 min',items:[['pfannk',1],['speck',125],['ahorn',40],['butter',10]]},
  ]},
  {id:'sn1',name:'Snack 1',sub:'Zum Mitnehmen',blocks:[
   {id:'a1',name:'Skyr-Granola-Becher',t:'2 min',items:[['skyr',250],['granola',50],['honig',15]]},
-  {id:'a2',name:'Schinken-Käse-Sandwich',t:'3 min',items:[['semmel',1],['kschinken',80],['gouda',30],['butter',10]]},
+  {id:'a2',name:'Schinken-Käse-Sandwich',t:'3 min',items:[['semmel',1],['kschinken',80],['gouda',30]]},
   {id:'a3',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200],['skyr',100]]},
   {id:'a4',name:'Bagel Frischkäse-Schinken',t:'2 min',items:[['bagel',1],['frischk',30],['rschinken',40]]},
   {id:'a5',name:'Thunfisch-Wrap',t:'3 min',items:[['wrap',1],['thun',130],['mayo',15]]},
   {id:'a6',name:'Nüsse & Banane',t:'0 min',items:[['nuesse',50],['banane',1]]},
   {id:'a7',name:'Mixtrail',t:'0 min',items:[['mixtrail',150]]},
   {id:'a8',name:'Semmelbrötchen mit Salami',t:'2 min',items:[['semmel',1],['salami',50]]},
-  {id:'a9',name:'Semmelbrötchen mit Räucherschinken',t:'2 min',items:[['semmel',1],['rschinken',50]]},
+  {id:'a9',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',k:'bread',items:BREAD},
  ]},
- {id:'mi',name:'Mittag',sub:'',blocks:[
-  {id:'m9',name:'Bratwurst mit Kidneybohnen und Reis',t:'25 min, inklusive 20 g Reis, der im Topf kleben bleibt',items:[['bratwurst',200],['kidney',200],['speck',62.5],['reis',150]]},
-  {id:'m1',name:'Hähnchen Teriyaki mit Reis',t:'20 min',items:[['hbrust',220],['reis',180],['teriyaki',80],['oel',15]]},
-  {id:'m8',name:'Gyros-Hähnchen-Nudeln',t:'15 min',items:[['hbrust',400],['pasta',125],['pesto',50],['htomate',1],['oel',10]]},
-  {id:'m4',name:'2 Burger mit Doppelpatty',t:'15 min',items:[['hack',280],['bun',2],['eisberg',40],['tomate',1]]},
-  {id:'m5',name:'Chicken-Nudelauflauf',t:'40 min, 10 min aktiv',items:[['pasta',225],['hbrust',200],['speck',125],['paprika',1],['zucchini',0.5],['brokkoli',0.5],['mozz',50]]},
-  {id:'m7',name:'Gustavo Gusto Pizza + Skyr',t:'15 min Ofen',items:[['pizza',1],['skyr',200],['honig',15]]},
-  {id:'m2',name:'Hähnchenkeulen mit Bratkartoffeln',t:'45 min Ofen, 5 min aktiv',items:[['keule',600],['okart',400],['dressing',3]]},
-  {id:'m3',name:'Steak mit Bratkartoffeln',t:'25 min',items:[['steak',250],['okart',400],['kbutter',20],['oel',10]]},
-  {id:'m6',name:'Chili con Carne mit Reis',t:'30 min',items:[['hack',200],['kidney',200],['passata',200],['reis',100]]},
- ]},
+ {id:'mi',name:'Mittag',sub:'',blocks:mains(['bw','ter','gyr','bur','auf','piz','keu','stk','chi','hw','gam','tof','bol','cur','lac'],false)},
  {id:'sn2',name:'Snack 2',sub:'',blocks:[
   {id:'b1',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200],['skyr',100]]},
   {id:'b2',name:'Milch-Shake',t:'2 min',items:[['milch',400],['whey',30],['banane',1]]},
   {id:'b3',name:'Reiswaffeln mit Erdnussbutter',t:'2 min',items:[['reiswaffel',4],['pb',40],['banane',1]]},
-  {id:'b4',name:'Käsebrot',t:'2 min',items:[['semmel',1],['gouda',50],['butter',10]]},
-  {id:'b5',name:'Milchreis mit Banane',t:'0 min',items:[['milchreis',200],['banane',1],['nuesse',20]]},
   {id:'b6',name:'Mixtrail',t:'0 min',items:[['mixtrail',150]]},
   {id:'b7',name:'Semmelbrötchen mit Salami',t:'2 min',items:[['semmel',1],['salami',50]]},
-  {id:'b8',name:'Semmelbrötchen mit Räucherschinken',t:'2 min',items:[['semmel',1],['rschinken',50]]},
+  {id:'b8',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',k:'bread',items:BREAD},
  ]},
- {id:'ab',name:'Abendessen',sub:'',blocks:[
-  {id:'e6',name:'Hack-Wraps',t:'15 min',items:[['wrap',3],['hack',300],['tomate',1],['dressing',3],['kiwi',1],['oel',10]]},
-  {id:'e3',name:'Gyros-Hähnchen-Reis',t:'20 min',items:[['gyros',200],['reis',120],['tzatziki',100],['kiwi',1],['oel',10]]},
-  {id:'e1',name:'Gambas-Pasta',t:'15 min',items:[['gambas',300],['pasta',140],['parmesan',20],['htomate',1],['kiwi',1],['oel',15]]},
-  {id:'e4',name:'Vegane Tofu-Semmeln',t:'10 min',items:[['semmel',2],['tofu',380],['kraut',50],['kiwi',1],['suesssenf',40]]},
-  {id:'e2',name:'Spaghetti Bolognese',t:'25 min',items:[['hack',180],['pasta',100],['passata',200],['parmesan',15],['kiwi',1]]},
-  {id:'e7',name:'Hähnchen-Curry mit Reis',t:'25 min',items:[['hbrust',200],['kokos',200],['curry',20],['reis',100],['kiwi',1]]},
-  {id:'e5',name:'Lachs mit Reis',t:'20 min',items:[['lachs',250],['reis',110],['kiwi',1],['butter',10]]},
- ]},
+ {id:'ab',name:'Abendessen',sub:'',blocks:mains(['hw','gyr','gam','tof','bol','cur','lac','bw','ter','bur','auf','piz','keu','stk','chi'],true)},
 ];
 const BLOCK={}; const ROW={};
 ROWS.forEach(r=>{ROW[r.id]=r; r.blocks.forEach(b=>{b.row=r.id;BLOCK[b.id]=b})});
+// Same dish in another row (lunch and dinner copies, bread) counts as one dish for joins
+const dishKey=id=>BLOCK[id]&&BLOCK[id].k||id;
+// Side switch: rice and pasta replace each other in place (same raw amount), the dish name follows
+const SWAP={reis:'pasta',pasta:'reis'};
+const SIDE_WORD={reis:'Reis',pasta:'Nudeln'};
+const swIdx=b=>!b||b.custom||b.nosw?-1:b.items.findIndex(([f])=>SWAP[f]);
+const foodAt=(d,b,i)=>d&&d.sw&&d.sw[b.id]&&i===swIdx(b)?d.sw[b.id]:b.items[i][0];
+function dishName(b,side){const i=swIdx(b);if(i<0||!side)return b.name;const base=b.items[i][0];if(side===base)return b.name;
+  return (b.sn&&b.sn[side])||b.name.replace(new RegExp(SIDE_WORD[base]+'(?![a-zäöüß])'),SIDE_WORD[side])}
 
 // ---------- Helfer ----------
 const START='2026-10-02';
@@ -474,25 +503,28 @@ const isEditing=date=>!store[date]||editing.has(date);
 // Leaving a saved day in edit mode: if the draft would save exactly what is stored, drop it so the day shows its saved view again
 function leaveIfUnchanged(date){
   const d=drafts[date];if(!d||!store[date]||!editing.has(date))return;
-  const sig=x=>JSON.stringify(draftMeals(x).map(m=>[m.row,m.block,m.items.map(it=>[it.f,it.q,it.use])]));
+  const sig=x=>JSON.stringify([draftMeals(x).map(m=>[m.row,m.block,m.items.map(it=>[it.f,it.q,it.use])]),x.dur,x.fr.off.slice().sort(),x.fr.add.slice().sort()]);
   delete drafts[date];const fresh=draftFor(date);drafts[date]=d;
   if(sig(d)===sig(fresh)){delete drafts[date];editing.delete(date)}
 }
 
 function draftFor(date){
-  if(drafts[date]){drafts[date].custom=drafts[date].custom||{};drafts[date].off=drafts[date].off||{};return drafts[date]}
-  const d={sel:{},q:{},custom:{},off:{},touched:false};
-  const doc=store[date];
+  if(drafts[date]){const x=drafts[date];x.custom=x.custom||{};x.off=x.off||{};x.sw=x.sw||{};x.dur=x.dur||[];x.fr=x.fr||{off:[],add:[]};return x}
+  const doc=store[date];const fr=doc&&doc.fridge||{};
+  // sw = swapped side per block, dur = Durchfall times, fr = fridge tags removed/added by hand on this day
+  const d={sel:{},q:{},custom:{},off:{},sw:{},dur:(doc&&doc.dur||[]).slice(),fr:{off:(fr.off||[]).slice(),add:(fr.add||[]).slice()},touched:false};
   if(doc){
     ROWS.forEach(r=>d.sel[r.id]=null);
     (doc.meals||[]).forEach(m=>{
       if(isCustom(m.block)){const it=m.items.filter(x=>F[x.f]).map(x=>[x.f,x.q]);if(it.length){d.custom[m.row]=it;d.sel[m.row]=m.block}return}
       const b=BLOCK[m.block];if(!b)return;d.sel[m.row]=m.block;
+      const si=swIdx(b);if(si>=0){const s=m.items.find(it=>it.i===si);if(s&&s.f===SWAP[b.items[si][0]])d.sw[b.id]=s.f}
       // Saved items map to the recipe by position, or by food when the recipe changed since (added or reordered items)
-      const o={},off={};m.items.forEach(it=>{const i=b.items[it.i]&&b.items[it.i][0]===it.f?it.i:b.items.findIndex(x=>x[0]===it.f);if(i<0)return;
+      const eff=i=>foodAt(d,b,i);
+      const o={},off={};m.items.forEach(it=>{const i=b.items[it.i]&&eff(it.i)===it.f?it.i:b.items.findIndex((x,j)=>eff(j)===it.f);if(i<0)return;
         if(it.q!==b.items[i][1])o[i]=it.q;if(it.v&&it.use===0)off[i]=true});
       if(Object.keys(o).length)d.q[m.block]=o;if(Object.keys(off).length)d.off[m.block]=off;});
-  } else {const plan=joinPlan(date);ROWS.forEach(r=>d.sel[r.id]=plan[r.id].order[0].id)}
+  } else {const plan=joinPlan(date);ROWS.forEach(r=>d.sel[r.id]=plan[r.id].order[0].id);d.autoSel=JSON.stringify(d.sel)}
   drafts[date]=d;return d;
 }
 // Eigenes Gericht: one per meal row, block id 'x-<rowId>', amounts live directly in d.custom[rowId]
@@ -510,9 +542,9 @@ const qty=(d,b,i)=>{if(b.custom)return b.items[i][1];const o=d.q[b.id];return (o
 // Pantry items carry use 1/0; a deselected one stays in the record but counts 0 kcal/protein
 function mealFromDraft(d,b){
   const off=(!b.custom&&d.off&&d.off[b.id])||{};
-  const items=b.items.map(([f],i)=>{const it=Object.assign({i},itemCalc(f,qty(d,b,i)));
+  const items=b.items.map((x,i)=>{const it=Object.assign({i},itemCalc(foodAt(d,b,i),qty(d,b,i)));
     if(it.v){it.use=off[i]?0:1;if(!it.use)Object.assign(it,{kcal:0,p:0,m:0,mc:0})}return it});
-  return {row:b.row,block:b.id,name:b.name,t:b.t,items,...sums(items)};
+  return {row:b.row,block:b.id,name:dishName(b,d.sw&&d.sw[b.id]),t:b.t,items,...sums(items)};
 }
 function sums(items){let kcal=0,p=0,meat=0,meatc=0;items.forEach(it=>{kcal+=it.kcal;p+=it.p;meat+=it.m;meatc+=it.mc||0});return {kcal:Math.round(kcal),p:Math.round(p),meat:Math.round(meat),meatc:Math.round(meatc)}}
 // Row target = min–max kcal of the default dishes only (ROWS defaults), never of custom dishes or edited amounts
@@ -534,26 +566,34 @@ const TURNUS={
   tomate:{days:4,uses:4}, htomate:{days:4,uses:3},
   dressing:{days:14,uses:3},
 };
+// Products added by hand in the fridge tags without own Turnus
+const TURNUS_HAND={days:7,uses:3};
+const turnusOf=f=>TURNUS[f]||TURNUS_HAND;
 const dayDiff=(a,b)=>Math.round((parseIso(b)-parseIso(a))/864e5);
-// Open Turnusse before `date`, from saved days only: {food:{start,left,blocks:Set}}
-function openJoins(date){
+// Fridge tags edited by hand on a day (fr = {off, add}) act at the start of that day: off ends the Turnus (also for the next days), add opens one
+function applyFridge(open,x,fr){if(!fr)return;
+  (fr.off||[]).forEach(f=>delete open[f]);
+  (fr.add||[]).forEach(f=>{if(F[f]&&!open[f])open[f]={start:x,left:turnusOf(f).uses,blocks:new Set()}})}
+// Open Turnusse before `date`, from saved days only, plus the hand edits of `date` itself: {food:{start,left,blocks:Set}}
+function openJoins(date,fr){
   const open={};
-  Object.keys(store).filter(x=>x<date).sort().forEach(x=>(store[x].meals||[]).forEach(m=>{
-    new Set(m.items.filter(it=>TURNUS[it.f]&&it.q>0&&it.use!==0).map(it=>it.f)).forEach(f=>{
-      let t=open[f];if(!t||t.left<=0||dayDiff(t.start,x)>TURNUS[f].days)t=open[f]={start:x,left:TURNUS[f].uses,blocks:new Set()};
-      t.left--;t.blocks.add(m.block)});
-  }));
-  Object.keys(open).forEach(f=>{const t=open[f];if(t.left<=0||dayDiff(t.start,date)>TURNUS[f].days)delete open[f]});
+  Object.keys(store).filter(x=>x<date).sort().forEach(x=>{applyFridge(open,x,store[x].fridge);(store[x].meals||[]).forEach(m=>{
+    new Set(m.items.filter(it=>(TURNUS[it.f]||open[it.f])&&it.q>0&&it.use!==0).map(it=>it.f)).forEach(f=>{
+      let t=open[f];if(!t||t.left<=0||dayDiff(t.start,x)>turnusOf(f).days){if(!TURNUS[f]){delete open[f];return}t=open[f]={start:x,left:TURNUS[f].uses,blocks:new Set()}}
+      t.left--;t.blocks.add(dishKey(m.block))});
+  })});
+  Object.keys(open).forEach(f=>{const t=open[f];if(t.left<=0||dayDiff(t.start,date)>turnusOf(f).days)delete open[f]});
+  applyFridge(open,date,fr);
   return open;
 }
 // Per meal row: blocks sorted by join weight (stable, ROWS order otherwise) and the marked products per block.
 // Rows are filled top-down; the preselected dish of a row uses up one remaining use, so later rows do not overbook a pack.
-function joinPlan(date){
-  const open=openJoins(date);const left={};Object.keys(open).forEach(f=>left[f]=open[f].left);
+function joinPlan(date,fr){
+  const open=openJoins(date,fr);const left={};Object.keys(open).forEach(f=>left[f]=open[f].left);
   const plan={};
   ROWS.forEach(r=>{
     const keys=b=>[...new Set(b.items.filter(([f,q])=>q>0&&open[f]&&left[f]>0).map(([f])=>f))];
-    const w=b=>keys(b).reduce((a,f)=>a+(open[f].blocks.has(b.id)?.5:1)/TURNUS[f].days,0);
+    const w=b=>keys(b).reduce((a,f)=>a+(open[f].blocks.has(dishKey(b.id))?.5:1)/turnusOf(f).days,0);
     const order=r.blocks.map((b,i)=>({b,i,w:w(b)})).sort((x,y)=>y.w-x.w||x.i-y.i).map(x=>x.b);
     const marks={};order.forEach(b=>{const k=keys(b);if(k.length)marks[b.id]=new Set(k)});
     keys(order[0]).forEach(f=>left[f]--);
@@ -610,8 +650,13 @@ const X_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 // Display order: fresh meat/fish or protein base first (cured meat like bacon or salami counts as the rest), then side, then the rest (stable); `i` keeps the stored position
 const rankOf=f=>{const o=F[f]?opt(f):{};return o.m&&o.c||o.pr?0:o.b?1:2};
 const byRank=items=>items.map((it,k)=>({it,k})).sort((x,y)=>rankOf(x.it.f)-rankOf(y.it.f)||x.k-y.k).map(x=>x.it);
-function itemsTable(items,editable,bid,all,jm){
-  return `<table class="items"><tbody>${byRank(items.filter(it=>all||!it.v)).map(it=>`<tr${jm&&jm.has(it.f)?' class="join"':''}><td>${jm&&jm.has(it.f)?`<span class="jn">${esc(it.n)}</span>`:esc(it.n)}<span class="hint" data-h="${it.i}">${numify(hintFor(it.f,it.q))}</span></td>
+// Side switch field (rice/pasta): a box like the join box with a swap icon; blue when the side is also an open join
+const SW_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h15M15 4l4 4-4 4M20 16H5M9 12l-4 4 4 4"/></svg>';
+function itemName(it,editable,jm,swi){const j=jm&&jm.has(it.f);
+  if(editable&&it.i===swi)return `<button type="button" class="sw${j?' join':''}" data-sw title="Beilage wechseln" aria-label="${esc(it.n)}, Beilage wechseln">${esc(it.n)}${SW_SVG}</button>`;
+  return j?`<span class="jn">${esc(it.n)}</span>`:esc(it.n)}
+function itemsTable(items,editable,bid,all,jm,swi){
+  return `<table class="items"><tbody>${byRank(items.filter(it=>all||!it.v)).map(it=>`<tr${jm&&jm.has(it.f)?' class="join"':''}><td>${itemName(it,editable,jm,swi)}<span class="hint" data-h="${it.i}">${numify(hintFor(it.f,it.q))}</span></td>
     <td>${editable?`<label class="q"><input id="q-${bid}-${it.i}" type="number" min="0" step="${opt(it.f).x?1:it.u==='Stk'||it.u==='Rezept'||it.u==='EL'?0.5:5}" data-i="${it.i}" value="${it.q}" aria-label="${esc(it.n)} Menge"><span>${unitTxt(it.f,it.u)}</span></label>`:`<span class="num">${fmt(it.q)}</span> <span class="hint" style="display:inline">${unitTxt(it.f,it.u)}</span>`}</td>
     ${F[it.f]&&opt(it.f).x?'<td></td>':`<td class="num" data-ik="${it.i}">${fmt(Math.round(it.kcal))}</td>`}</tr>`).join('')}</tbody></table>`;
 }
@@ -653,7 +698,8 @@ function render(){
 
 const picking=new Set();  // meal rows whose custom-dish picker is open (UI only)
 function renderEdit(){
-  const d=draftFor(cur);const plan=joinPlan(cur);
+  const d=draftFor(cur);const plan=joinPlan(cur,d.fr);
+  rowsEl.appendChild(fridgeEl(d));
   ROWS.forEach(r=>{
     const sec=document.createElement('section');sec.className='row';
     sec.innerHTML=`<header class="row-head"><h2>${r.name}</h2>${r.sub?`<span class="sub">${r.sub}</span>`:''}<span class="target">${numify(targetText(r))}</span></header>`;
@@ -664,6 +710,42 @@ function renderEdit(){
     wrap.appendChild(trashEl(r,d,wrap));armTrash(wrap,()=>!!d.sel[r.id]);
     sec.appendChild(wrap);rowsEl.appendChild(sec);markSel(wrap,r,d);
   });
+  rowsEl.appendChild(durEl());
+}
+// Fridge tags (edit mode only): every product with an open Turnus, in the join box look, with a cross to end it and a plus to add one by hand.
+// Hand edits are stored in the day record (fridge.off / fridge.add) and steer the joins of this and the following days.
+function fridgeEl(d){
+  const open=openJoins(cur,d.fr);const keys=Object.keys(open).sort((a,b)=>F[a][0].localeCompare(F[b][0],'de'));
+  const el=document.createElement('div');el.className='fridge';
+  el.innerHTML=keys.map(f=>`<span class="tag">${esc(F[f][0])}<button type="button" data-rm="${f}" title="Entfernen" aria-label="${esc(F[f][0])} entfernen">${X_SVG}</button></span>`).join('')+
+    `<label class="tag-add" title="Produkt hinzufügen">${PLUS_SVG}<select aria-label="Produkt hinzufügen"><option value="" selected disabled>Produkt hinzufügen</option>${PICK_ORDER.filter(k=>!opt(k).v&&!open[k]).map(k=>`<option value="${k}">${esc(F[k][0])}</option>`).join('')}</select></label>`;
+  el.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{const f=b.dataset.rm;const i=d.fr.add.indexOf(f);
+    if(i>=0)d.fr.add.splice(i,1);if(openJoins(cur,d.fr)[f]&&!d.fr.off.includes(f))d.fr.off.push(f);fridgeChanged(d)}));
+  el.querySelector('select').addEventListener('change',e=>{const f=e.target.value;if(!f)return;const i=d.fr.off.indexOf(f);
+    if(i>=0)d.fr.off.splice(i,1);if(!openJoins(cur,d.fr)[f])d.fr.add.push(f);fridgeChanged(d)});
+  return el;
+}
+// A new day whose dishes are still the automatic choice gets them chosen again from the edited fridge
+function fridgeChanged(d){
+  if(!store[cur]&&JSON.stringify(d.sel)===d.autoSel){const plan=joinPlan(cur,d.fr);ROWS.forEach(r=>d.sel[r.id]=plan[r.id].order[0].id);d.autoSel=JSON.stringify(d.sel)}
+  d.touched=true;render();
+}
+// Durchfall: three ticks under the meals, same box, font and position as a dish head. Stored as doc.dur (morgens, nachmittags, abends).
+// In edit mode they belong to the draft; on a saved day a tap saves right away.
+const DUR=['morgens','nachmittags','abends'];
+function durEl(){
+  const ed=isEditing(cur);const set=new Set(ed?draftFor(cur).dur:(store[cur].dur||[]));
+  const el=document.createElement('div');el.className='dur';
+  el.innerHTML=DUR.map(k=>`<button class="b-head${set.has(k)?' on':''}" type="button" role="checkbox" aria-checked="${set.has(k)}" data-dur="${k}"><span class="box"></span><span class="b-name">Durchfall ${k}</span></button>`).join('');
+  el.querySelectorAll('[data-dur]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.dur;
+    if(set.has(k))set.delete(k);else set.add(k);const on=set.has(k);b.classList.toggle('on',on);b.setAttribute('aria-checked',on);
+    const list=DUR.filter(x=>set.has(x));
+    if(isEditing(cur)){const d=draftFor(cur);d.dur=list;d.touched=true}else saveDur(list)}));
+  return el;
+}
+async function saveDur(list){
+  const doc=Object.assign({},store[cur]);if(list.length)doc.dur=list;else delete doc.dur;
+  try{if(db)await db.doc('days/'+cur).set(doc);store[cur]=doc;if(!db){persistLocal();fileSync()}}catch(e){render()}
 }
 // Trash column: hidden (0 px) until the row is scrolled to its end and pushed further; scrolling back hides it again.
 // It is the only way to leave a meal row empty, and asks first.
@@ -708,9 +790,9 @@ function blockEl(r,d,wrap,b,jm){
   const m=mealFromDraft(d,b);const on=d.sel[r.id]===b.id;
   const el=document.createElement('article');el.className='block'+(on?' on':'');el.id='blk-'+b.id;
   const side=`<button class="rst" type="button" title="Auf Standardwerte zurücksetzen" aria-label="${esc(b.name)} auf Standardwerte zurücksetzen">${RST_SVG}</button>`;
-  el.innerHTML=`<div class="b-top"><button class="b-head" type="button" role="radio" aria-checked="${on}"><span class="box"></span><span class="b-name">${esc(b.name)}</span></button>${side}</div>
+  el.innerHTML=`<div class="b-top"><button class="b-head" type="button" role="radio" aria-checked="${on}"><span class="box"></span><span class="b-name">${esc(m.name)}</span></button>${side}</div>
     <div class="b-meta"><span><b class="num" data-k>${fmt(m.kcal)}</b> kcal, <b class="num" data-p>${fmt(m.p)}</b> g Protein</span>${b.t?`<span>${numify(cap(b.t))}</span>`:''}</div>
-    ${itemsTable(m.items,true,b.id,false,jm)}
+    ${itemsTable(m.items,true,b.id,false,jm,swIdx(b))}
     ${m.items.some(it=>it.v)?'<div class="vorrat" data-v></div>':''}`;
   paintVorrat(el,b,m);
   el.querySelector('.b-head').addEventListener('click',()=>{if(d.sel[r.id]===b.id)return;d.sel[r.id]=b.id;d.touched=true;
@@ -720,7 +802,14 @@ function blockEl(r,d,wrap,b,jm){
   el.querySelector('.rst').addEventListener('click',e=>{
     const btn=e.currentTarget;btn.classList.remove('spin');void btn.offsetWidth;btn.classList.add('spin');
     delete d.q[b.id];delete d.off[b.id];d.touched=true;saveDrafts();
+    if(d.sw[b.id]){delete d.sw[b.id];const nel=rebuild();nel.querySelector('.rst').classList.add('spin');return}
     el.querySelectorAll('input').forEach(inp=>inp.value=b.items[+inp.dataset.i][1]);paintBlock(b);totals();});
+  // Side switch: rice <-> pasta in place, the name follows; the dish gets selected
+  const rebuild=()=>{const nel=blockEl(r,d,wrap,b,jm);el.replaceWith(nel);markSel(wrap,r,d);totals();return nel};
+  const swb=el.querySelector('[data-sw]');if(swb)swb.addEventListener('click',()=>{const si=swIdx(b);const next=SWAP[foodAt(d,b,si)];
+    if(next===b.items[si][0])delete d.sw[b.id];else d.sw[b.id]=next;d.touched=true;
+    if(d.sel[r.id]!==b.id){d.sel[r.id]=b.id;r.blocks.forEach(x=>{if(x.id!==b.id&&d.off[x.id]){delete d.off[x.id];paintBlock(x)}})}
+    rebuild()});
   el.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{if(isNaN(parseFloat(String(inp.value).replace(',','.'))))inp.value=qty(d,b,+inp.dataset.i)}));
   el.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
     const v=parseFloat(String(inp.value).replace(',','.'));if(isNaN(v)||v<0)return;
@@ -822,6 +911,7 @@ function renderFrozen(){
         :`<div class="empty">Nichts eingetragen</div>`);
     rowsEl.appendChild(sec);
   });
+  rowsEl.appendChild(durEl());
 }
 
 // ---------- Summen ----------
@@ -845,11 +935,12 @@ function totals(){
 // ---------- Speichern ----------
 async function saveDay(){
   const btn=document.getElementById('saveBtn');const msg=document.getElementById('saveMsg');
-  const meals=currentMeals();
+  const meals=currentMeals();const d=draftFor(cur);
   const tot=meals.length?meals.reduce((a,m)=>({kcal:a.kcal+m.kcal,p:a.p+m.p,meat:a.meat+m.meat,meatc:a.meatc+m.meatc}),{kcal:0,p:0,meat:0,meatc:0}):{kcal:null,p:null,meat:null,meatc:null};
   const doc={v:1,date:cur,savedAt:new Date().toISOString(),total:tot,
     meals:meals.map(m=>({row:m.row,block:m.block,name:m.name,kcal:m.kcal,p:m.p,meat:m.meat,meatc:m.meatc,
-      items:m.items.map(it=>({i:it.i,f:it.f,n:it.n,q:it.q,u:it.u,kcal:it.kcal,p:it.p,m:it.m,mc:it.mc,v:it.v,...(it.v?{use:it.use===0?0:1}:{})}))}))};
+      items:m.items.map(it=>({i:it.i,f:it.f,n:it.n,q:it.q,u:it.u,kcal:it.kcal,p:it.p,m:it.m,mc:it.mc,v:it.v,...(it.v?{use:it.use===0?0:1}:{})}))})),
+    ...(d.dur.length?{dur:d.dur.slice()}:{}),...(d.fr.off.length||d.fr.add.length?{fridge:{off:d.fr.off.slice(),add:d.fr.add.slice()}}:{})};
   btn.disabled=true;msg.className='';msg.textContent='Speichert …';
   try{
     if(db)await db.doc('days/'+cur).set(doc);
@@ -890,9 +981,9 @@ function renderShop(){
   const buy={},pan={};
   currentMeals().forEach(m=>m.items.forEach(it=>{if(it.v&&it.use===0)return;const t=it.v?pan:buy;t[it.f]=(t[it.f]||0)+it.q}));
   const keys=Object.keys(buy).filter(k=>F[k]&&!opt(k).x).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
-  const ul=document.getElementById('shopList');ul.innerHTML='';const lines=[];let lastG=null;
-  keys.forEach(k=>{const g=opt(k).g||9;const li=document.createElement('li');if(lastG!==null&&g!==lastG){li.className='gap';lines.push('')}
-    lastG=g;const s=unitOut(buy[k],F[k][1],k);li.innerHTML=`<span>${esc(F[k][0])}</span><span>${s}</span>`;ul.appendChild(li);lines.push(`${F[k][0]} ${s}`)});
+  // One plain list: sorted by shop group, but no gaps between groups, so a single item never stands apart
+  const ul=document.getElementById('shopList');ul.innerHTML='';const lines=[];
+  keys.forEach(k=>{const li=document.createElement('li');const s=unitOut(buy[k],F[k][1],k);li.innerHTML=`<span>${esc(F[k][0])}</span><span>${s}</span>`;ul.appendChild(li);lines.push(`${F[k][0]} ${s}`)});
   if(!keys.length)ul.innerHTML='<li><span>Für diesen Tag ist noch nichts ausgewählt.</span><span></span></li>';
   const pv=Object.keys(pan).filter(k=>F[k]).map(k=>`${F[k][0]} ${unitOut(pan[k],F[k][1],k)}`);
   document.getElementById('shopVorrat').textContent=pv.length?'Aus dem Vorrat: '+pv.join(', '):'';
@@ -900,7 +991,7 @@ function renderShop(){
 }
 
 // ---------- Export ----------
-const CSV_HEAD=['Datum','Wochentag','Mahlzeit','Gericht','Zutat','Menge','Einheit','kcal','Protein_g','Fleisch_Fisch_roh_g','Fleisch_Fisch_gekocht_g','Vorrat','Vorrat_genutzt','Tag_kcal','Tag_Protein_g','Tag_Fleisch_Fisch_roh_g','Tag_Fleisch_Fisch_gekocht_g'];
+const CSV_HEAD=['Datum','Wochentag','Mahlzeit','Gericht','Zutat','Menge','Einheit','kcal','Protein_g','Fleisch_Fisch_roh_g','Fleisch_Fisch_gekocht_g','Vorrat','Vorrat_genutzt','Tag_kcal','Tag_Protein_g','Tag_Fleisch_Fisch_roh_g','Tag_Fleisch_Fisch_gekocht_g','Durchfall'];
 const dec=n=>String(n).replace('.',',');
 const cell=s=>{s=String(s);return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
 // Every day from START to today; a day without saved meals is one row with only date and weekday (NULL), never 0.
@@ -911,11 +1002,11 @@ function buildCsv(){
   const rows=[CSV_HEAD.join(';')];
   dayList().forEach(date=>{const s=store[date];const wd=WD[parseIso(date).getDay()];
     const meals={};(s&&s.meals||[]).forEach(m=>meals[m.row]=m);
-    const tk=s&&s.total?val(s.total.kcal):'',tp=s&&s.total?val(s.total.p):'';
-    if(!ROWS.some(r=>meals[r.id]&&meals[r.id].items.length)){rows.push([date,wd,...CSV_HEAD.slice(2).map(()=>'')].map(cell).join(';'));return}
+    const tk=s&&s.total?val(s.total.kcal):'',tp=s&&s.total?val(s.total.p):'';const du=(s&&s.dur||[]).join(', ');
+    if(!ROWS.some(r=>meals[r.id]&&meals[r.id].items.length)){rows.push([date,wd,...CSV_HEAD.slice(2,-1).map(()=>''),du].map(cell).join(';'));return}
     let dm=0,dmc=0;ROWS.forEach(r=>{const m=meals[r.id];if(m)m.items.forEach(it=>{const x=meatCsv(it);dm+=x.m;dmc+=x.mc})});
     ROWS.forEach(r=>{const m=meals[r.id];if(!m)return;
-      m.items.forEach(it=>{const x=meatCsv(it);rows.push([date,wd,r.name,m.name,it.n,dec(it.q),it.u,dec(it.kcal),dec(it.p),x.m,x.mc,it.v?'ja':'nein',it.v?(it.use===0?'nein':'ja'):'',tk,tp,dm,dmc].map(cell).join(';'))})});});
+      m.items.forEach(it=>{const x=meatCsv(it);rows.push([date,wd,r.name,m.name,it.n,dec(it.q),it.u,dec(it.kcal),dec(it.p),x.m,x.mc,it.v?'ja':'nein',it.v?(it.use===0?'nein':'ja'):'',tk,tp,dm,dmc,du].map(cell).join(';'))})});});
   return '﻿'+rows.join('\r\n');
 }
 // Plain browser download (desktop: Downloads folder, iPhone/Android: Files app); inside claude.ai the downloads capability is used first
@@ -1052,7 +1143,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='893fecf0d6d0';
+const BUILD='0b85f9213e11';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

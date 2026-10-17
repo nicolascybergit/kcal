@@ -150,6 +150,8 @@ table.items{width:100%;border-collapse:collapse;font-size:14.5px}
 /* Durchfall ticks: plain list under the meals, box and name exactly where a dish head sits */
 .dur{display:flex;flex-direction:column;padding:0 0 0 6px;margin:4px 0 6px}
 .dur .b-head{flex:none}
+.dur.ro .b-head{cursor:default}
+.dur.ro .on .box{border-color:var(--muted);background:var(--muted)}
 .items .hint{display:block;color:var(--muted);font-size:13.5px;white-space:pre-line}
 .q{display:flex;align-items:center;gap:3px;white-space:nowrap}
 .q input{width:52px;font:inherit;font-family:var(--mono);font-size:13.5px;text-align:right;padding:2px 4px;border:1px solid var(--line);border-radius:0;background:var(--surface);color:var(--fg)}
@@ -740,21 +742,16 @@ function fridgeChanged(d){
   d.touched=true;render();
 }
 // Durchfall: three ticks under the meals, same box, font and position as a dish head. Stored as doc.dur (morgens, nachmittags, abends).
-// In edit mode they belong to the draft; on a saved day a tap saves right away.
+// Only editable in edit mode (part of the draft); a saved day shows them grey and read-only.
 const DUR=['morgens','nachmittags','abends'];
 function durEl(){
   const ed=isEditing(cur);const set=new Set(ed?draftFor(cur).dur:(store[cur].dur||[]));
-  const el=document.createElement('div');el.className='dur';
-  el.innerHTML=DUR.map(k=>`<button class="b-head${set.has(k)?' on':''}" type="button" role="checkbox" aria-checked="${set.has(k)}" data-dur="${k}"><span class="box"></span><span class="b-name">Durchfall ${k}</span></button>`).join('');
-  el.querySelectorAll('[data-dur]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.dur;
+  const el=document.createElement('div');el.className=ed?'dur':'dur ro';
+  el.innerHTML=DUR.map(k=>`<button class="b-head${set.has(k)?' on':''}" type="button" role="checkbox" aria-checked="${set.has(k)}"${ed?'':' disabled'} data-dur="${k}"><span class="box"></span><span class="b-name">Durchfall ${k}</span></button>`).join('');
+  if(ed)el.querySelectorAll('[data-dur]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.dur;
     if(set.has(k))set.delete(k);else set.add(k);const on=set.has(k);b.classList.toggle('on',on);b.setAttribute('aria-checked',on);
-    const list=DUR.filter(x=>set.has(x));
-    if(isEditing(cur)){const d=draftFor(cur);d.dur=list;d.touched=true}else saveDur(list)}));
+    const d=draftFor(cur);d.dur=DUR.filter(x=>set.has(x));d.touched=true}));
   return el;
-}
-async function saveDur(list){
-  const doc=Object.assign({},store[cur]);if(list.length)doc.dur=list;else delete doc.dur;
-  try{if(db)await db.doc('days/'+cur).set(doc);store[cur]=doc;if(!db){persistLocal();fileSync()}}catch(e){render()}
 }
 // Trash column: hidden (0 px) until the row is scrolled to its end and pushed further; scrolling back hides it again.
 // It is the only way to leave a meal row empty, and asks first.
@@ -1155,7 +1152,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='dc1df7ea3d2d';
+const BUILD='874779279736';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

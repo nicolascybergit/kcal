@@ -996,7 +996,7 @@ function renderShop(){
   const ul=document.getElementById('shopList');ul.innerHTML='';const lines=[];
   keys.forEach(k=>{const li=document.createElement('li');const s=unitOut(buy[k],F[k][1],k);li.innerHTML=`<span>${esc(F[k][0])}</span><span>${s}</span>`;ul.appendChild(li);lines.push(`${F[k][0]} ${s}`)});
   if(!keys.length)ul.innerHTML='<li><span>Für diesen Tag ist noch nichts ausgewählt.</span><span></span></li>';
-  const pv=Object.keys(pan).filter(k=>F[k]).map(k=>`${F[k][0]} ${unitOut(pan[k],F[k][1],k)}`);
+  const pv=Object.keys(pan).filter(k=>F[k]&&pan[k]>0).map(k=>`${F[k][0]} ${unitOut(pan[k],F[k][1],k)}`);
   document.getElementById('shopVorrat').textContent=pv.length?'Aus dem Vorrat: '+pv.join(', '):'';
   shopText=lines.join('\n');
 }
@@ -1154,7 +1154,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='cb28f98527d6';
+const BUILD='fa06f672738f';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

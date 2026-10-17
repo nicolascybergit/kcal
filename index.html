@@ -311,6 +311,7 @@ const F = {
   milch:['Vollmilch','ml',0.64,0.034,{d:300,g:3}],
   banane:['Bananen','Stk',105,1.3,{d:1,g:1}],
   avocado:['Avocado','Stk',224,2.8,{d:1,g:1}],
+  mandarine:['Mandarinen','Stk',40,0.6,{d:2,g:1}],
   pb:['Erdnussbutter','g',6.0,0.25,{d:30,g:6}],
   honig:['Honig','g',3.05,0,{d:15,v:1}],
   ei:['Eier','Stk',85,7.5,{d:3,g:3,pr:1}],
@@ -423,9 +424,9 @@ const mains=(order,dinner)=>order.map(k=>{const m=MAINS[k];
 const BREAD=[['semmel',1],['rschinken',60],['marmelade',40],['milch',300]];
 const ROWS = [
  {id:'shake',name:'Shake',sub:'Nach dem Aufstehen',blocks:[
-  {id:'s1',name:'Shake mit Mandelmilch',t:'1 min',items:[['mandel',330],['whey',30]]},
-  {id:'s3',name:'Shake mit Vollmilch',t:'1 min',items:[['milch',330],['whey',30]]},
-  {id:'s2',name:'Frühshake Plus',t:'2 min',items:[['mandel',330],['whey',30],['banane',1],['pb',15]]},
+  {id:'s1',name:'Shake mit Mandelmilch',t:'1 min',items:[['mandel',330],['whey',30],['mandarine',0]]},
+  {id:'s3',name:'Shake mit Vollmilch',t:'1 min',items:[['milch',330],['whey',30],['mandarine',0]]},
+  {id:'s2',name:'Frühshake Plus',t:'2 min',items:[['mandel',330],['whey',30],['banane',1],['pb',15],['mandarine',0]]},
  ]},
  {id:'fr',name:'Frühstück',sub:'',blocks:[
   {id:'f1',name:'Overnight Oats',t:'3 min am Vorabend',items:[['hafer',100],['milch',350],['banane',1],['pb',30],['honig',15]]},
@@ -1154,7 +1155,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='fa06f672738f';
+const BUILD='3bc25dce5a7d';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

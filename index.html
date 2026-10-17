@@ -337,7 +337,7 @@ const F = {
   milchreis:['Milchreis','g',1.1,0.033,{d:200,g:3}],
   oel:['Öl','ml',8.2,0,{d:10,v:1}],
   reis:['Reis','g',3.5,0.07,{d:125,g:5,c:2.5,cl:'gekocht',b:1}],
-  pasta:['Nudeln','g',3.55,0.125,{d:125,g:5,c:2.3,cl:'gekocht',b:1}],
+  pasta:['Nudeln','g',3.55,0.125,{d:200,g:5,c:2.3,cl:'gekocht',b:1}],
   hbrust:['Hähnchenbrust','g',1.1,0.23,{d:200,g:2,m:1,c:0.75,cl:'gekocht'}],
   // Chicken legs are entered as bought (with bone); nutrition comes from the edible part only:
   // KEULE_EDIBLE = raw meat and skin per bought gram, values per edible gram (190 kcal, 17 g protein per 100 g)
@@ -362,9 +362,9 @@ const F = {
   kidney:['Kidneybohnen','g',0.96,0.078,{d:200,g:6,h:'Dose 400 g, 255 g abgetropft, halb abgetropft rein'}],
   pizza:['Gustavo Gusto Schinken-Champignon','Stk',920,42,{d:1,g:7}],
   pesto:['Pesto','g',4.5,0.05,{d:40,g:6}],
-  gambas:['Gambas','g',0.8,0.18,{d:250,g:2,m:1,c:0.7,cl:'gekocht'}],
+  gambas:['Gambas','g',0.8,0.18,{d:225,g:2,m:1,c:0.7,cl:'gekocht'}],
   parmesan:['Parmesan','g',4.0,0.33,{d:20,g:3}],
-  gyros:['Hähnchen-Gyros','g',1.5,0.2,{d:200,g:2,m:1,c:0.75,cl:'gebraten'}],
+  gyros:['Hähnchen-Gyros','g',1.5,0.2,{d:500,g:2,m:1,c:0.75,cl:'gebraten'}],
   tzatziki:['Tzatziki','g',1.3,0.04,{d:100,g:3}],
   // Rosenbrötchen hell (wheat roll with potato flakes), 112 g each; ~260 kcal, ~8.5 g protein per 100 g (estimate, label not checked yet)
   semmel:['Semmelbrötchen','Stk',291,9.5,{d:1,g:4,b:1}],
@@ -386,7 +386,7 @@ const F = {
   quark:['Magerquark','g',0.67,0.12,{d:250,g:3}],
   pommes:['Pommes','g',1.4,0.025,{d:250,g:7,b:1}],
   bratwurst:['Bratwurst','g',2.08,0.15,{d:200,g:2,m:1,c:0.85,cl:'gebraten'}],
-  mixtrail:['Seeberger Mixtrail','g',4.73,0.11,{d:150,g:8}],
+  mixtrail:['Seeberger Mixtrail','g',4.73,0.11,{d:75,g:8}],
   tomsauce:['Tomatensauce','g',0.39,0.018,{d:100,g:6}],
   // hide:1 = kept for old records, not offered in the pick list
   // Manual entry (x:1): no food, the amount is the value itself; never in the pick list or the shopping list
@@ -400,7 +400,7 @@ const F = {
 const MAINS={
   bw:{ids:['m9','e8'],name:'Bratwurst mit Kidneybohnen und Reis',t:'25 min, inklusive 20 g Reis, der im Topf kleben bleibt',items:[['bratwurst',200],['kidney',200],['speck',62.5],['reis',150]]},
   ter:{ids:['m1','e9'],name:'Hähnchen Teriyaki mit Reis',t:'20 min',items:[['hbrust',220],['reis',180],['teriyaki',80],['oel',15]]},
-  gyr:{ids:['m8','e3'],name:'Gyros-Hähnchen-Reis',t:'20 min',items:[['gyros',200],['reis',120],['tzatziki',100],['htomate',1],['oel',10]]},
+  gyr:{ids:['m8','e3'],name:'Gyros-Hähnchen-Reis',t:'20 min',items:[['gyros',500],['reis',120],['tzatziki',100],['htomate',1],['oel',10]]},
   bur:{ids:['m4','e10'],name:'2 Burger mit Doppelpatty',t:'15 min',items:[['hack',280],['bun',2],['eisberg',40],['tomate',1]]},
   auf:{ids:['m5','e11'],name:'Chicken-Nudelauflauf',t:'40 min, 10 min aktiv',nosw:1,items:[['pasta',225],['hbrust',200],['speck',125],['paprika',1],['zucchini',0.5],['brokkoli',0.5],['mozz',50]]},
   piz:{ids:['m7','e12'],name:'Gustavo Gusto Pizza + Skyr',t:'15 min Ofen',items:[['pizza',1],['skyr',200],['honig',15]]},
@@ -408,9 +408,9 @@ const MAINS={
   stk:{ids:['m3','e14'],name:'Steak mit Bratkartoffeln',t:'25 min',items:[['steak',250],['okart',400],['oel',10]]},
   chi:{ids:['m6','e15'],name:'Chili con Carne mit Reis',t:'30 min',items:[['hack',200],['kidney',200],['passata',200],['reis',100]]},
   hw:{ids:['m10','e6'],name:'Hack-Wraps',t:'15 min',items:[['wrap',3],['hack',300],['tomate',1],['dressing',3],['oel',10]]},
-  gam:{ids:['m11','e1'],name:'Gambas-Pasta',t:'15 min',sn:{reis:'Gambas mit Reis'},items:[['gambas',300],['pasta',140],['parmesan',20],['htomate',1],['oel',15]]},
+  gam:{ids:['m11','e1'],name:'Gambas-Pasta',t:'15 min',sn:{reis:'Gambas mit Reis'},items:[['gambas',225],['pasta',200],['parmesan',20],['htomate',1],['oel',15]]},
   tof:{ids:['m12','e4'],name:'Vegane Tofu-Semmeln',t:'10 min',items:[['semmel',2],['tofu',380],['kraut',50],['suesssenf',40]]},
-  bol:{ids:['m13','e2'],name:'Spaghetti Bolognese',t:'25 min',nosw:1,items:[['hack',180],['pasta',100],['passata',200],['parmesan',15]]},
+  bol:{ids:['m13','e2'],name:'Spaghetti Bolognese',t:'25 min',nosw:1,items:[['hack',180],['pasta',200],['passata',200],['parmesan',15]]},
   cur:{ids:['m14','e7'],name:'Hähnchen-Curry mit Reis',t:'25 min',items:[['hbrust',200],['kokos',200],['curry',20],['reis',100]]},
   lac:{ids:['m15','e5'],name:'Lachs mit Reis',t:'20 min',items:[['lachs',250],['reis',110],['oel',10]]},
 };
@@ -433,27 +433,25 @@ const ROWS = [
   {id:'f6',name:'Spiegeleier mit Speck',t:'10 min',items:[['ei',4],['speck',125],['semmel',1],['htomate',1],['oel',10]]},
   {id:'f7',name:'Pfannkuchen mit Speck',t:'20 min',items:[['pfannk',1],['speck',125],['ahorn',40],['butter',10]]},
  ]},
+ {id:'mi',name:'Mittag',sub:'',blocks:mains(['bw','ter','gyr','bur','auf','piz','keu','stk','chi','hw','gam','tof','bol','cur','lac'],false)},
  {id:'sn1',name:'Snack 1',sub:'Zum Mitnehmen',blocks:[
   {id:'a1',name:'Skyr-Granola-Becher',t:'2 min',items:[['skyr',250],['granola',50],['honig',15]]},
   {id:'a2',name:'Schinken-Käse-Sandwich',t:'3 min',items:[['semmel',1],['kschinken',80],['gouda',30]]},
   {id:'a3',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200],['skyr',100]]},
   {id:'a4',name:'Bagel Frischkäse-Schinken',t:'2 min',items:[['bagel',1],['frischk',30],['rschinken',40]]},
   {id:'a5',name:'Thunfisch-Wrap',t:'3 min',items:[['wrap',1],['thun',130],['mayo',15]]},
-  {id:'a6',name:'Nüsse & Banane',t:'0 min',items:[['nuesse',50],['banane',1]]},
-  {id:'a7',name:'Mixtrail',t:'0 min',items:[['mixtrail',150]]},
+  {id:'a6',name:'Nüsse & Banane',t:'0 min',items:[['mixtrail',75],['banane',1]]},
   {id:'a8',name:'Semmelbrötchen mit Salami',t:'2 min',items:[['semmel',1],['salami',50]]},
   {id:'a9',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',k:'bread',items:BREAD},
  ]},
- {id:'mi',name:'Mittag',sub:'',blocks:mains(['bw','ter','gyr','bur','auf','piz','keu','stk','chi','hw','gam','tof','bol','cur','lac'],false)},
+ {id:'ab',name:'Abendessen',sub:'',blocks:mains(['hw','gyr','gam','tof','bol','cur','lac','bw','ter','bur','auf','piz','keu','stk','chi'],true)},
  {id:'sn2',name:'Snack 2',sub:'',blocks:[
   {id:'b1',name:'Bananenbrot',t:'Vorgebacken',items:[['bbrot',200],['skyr',100]]},
   {id:'b2',name:'Milch-Shake',t:'2 min',items:[['milch',400],['whey',30],['banane',1]]},
   {id:'b3',name:'Reiswaffeln mit Erdnussbutter',t:'2 min',items:[['reiswaffel',4],['pb',40],['banane',1]]},
-  {id:'b6',name:'Mixtrail',t:'0 min',items:[['mixtrail',150]]},
   {id:'b7',name:'Semmelbrötchen mit Salami',t:'2 min',items:[['semmel',1],['salami',50]]},
   {id:'b8',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',k:'bread',items:BREAD},
  ]},
- {id:'ab',name:'Abendessen',sub:'',blocks:mains(['hw','gyr','gam','tof','bol','cur','lac','bw','ter','bur','auf','piz','keu','stk','chi'],true)},
 ];
 const BLOCK={}; const ROW={};
 ROWS.forEach(r=>{ROW[r.id]=r; r.blocks.forEach(b=>{b.row=r.id;BLOCK[b.id]=b})});
@@ -564,7 +562,7 @@ function currentMeals(){
 // (shorter shelf life) weigh more, dishes covering several open products add up; a dish already eaten in the same Turnus counts half
 // (another dish is preferred, a repeat stays possible). Edit the values here only.
 const TURNUS={
-  hack:{days:3,uses:3}, bratwurst:{days:2,uses:2}, kidney:{days:2,uses:2}, hbrust:{days:3,uses:2}, gyros:{days:3,uses:2}, speck:{days:7,uses:2},
+  hack:{days:3,uses:3}, bratwurst:{days:2,uses:2}, kidney:{days:2,uses:2}, hbrust:{days:3,uses:2}, gyros:{days:3,uses:1}, speck:{days:7,uses:2},
   tomate:{days:4,uses:4}, htomate:{days:4,uses:3},
   dressing:{days:14,uses:3},
 };
@@ -1154,7 +1152,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='433a6dacf793';
+const BUILD='a3ba6347d5c1';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);

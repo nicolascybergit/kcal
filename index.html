@@ -310,6 +310,7 @@ const F = {
   hafer:['Haferflocken','g',3.7,0.135,{d:80,g:5}],
   milch:['Vollmilch','ml',0.64,0.034,{d:300,g:3}],
   banane:['Bananen','Stk',105,1.3,{d:1,g:1}],
+  avocado:['Avocado','Stk',224,2.8,{d:1,g:1}],
   pb:['Erdnussbutter','g',6.0,0.25,{d:30,g:6}],
   honig:['Honig','g',3.05,0,{d:15,v:1}],
   ei:['Eier','Stk',85,7.5,{d:3,g:3,pr:1}],
@@ -402,7 +403,7 @@ const F = {
 const MAINS={
   bw:{ids:['m9','e8'],name:'Bratwurst mit Kidneybohnen und Reis',t:'25 min, inklusive 20 g Reis, der im Topf kleben bleibt',items:[['bratwurst',200],['kidney',200],['speck',62.5],['reis',150]]},
   ter:{ids:['m1','e9'],name:'Hähnchen Teriyaki mit Reis',t:'20 min',items:[['hbrust',220],['reis',180],['teriyaki',80],['oel',15]]},
-  gyr:{ids:['m8','e3'],name:'Gyros-Hähnchen-Reis',t:'20 min',items:[['gyros',500],['reis',120],['tzatziki',100],['htomate',1],['oel',10]]},
+  gyr:{ids:['m8','e3'],name:'Gyros-Hähnchen-Reis',t:'20 min',items:[['gyros',500],['reis',120],['htomate',0],['oel',10]]},
   bur:{ids:['m4','e10'],name:'2 Burger mit Doppelpatty',t:'15 min',items:[['hack',280],['bun',2],['eisberg',40],['tomate',1]]},
   auf:{ids:['m5','e11'],name:'Chicken-Nudelauflauf',t:'40 min, 10 min aktiv',nosw:1,items:[['pasta',225],['hbrust',200],['speck',125],['paprika',1],['zucchini',0.5],['brokkoli',0.5],['mozz',50]]},
   piz:{ids:['m7','e12'],name:'Gustavo Gusto Pizza + Skyr',t:'15 min Ofen',items:[['pizza',1],['skyr',200],['honig',15]]},
@@ -432,7 +433,7 @@ const ROWS = [
   {id:'f3',name:'Schinkenbrot & Marmeladenbrot',t:'3 min',k:'bread',items:BREAD},
   {id:'f4',name:'Bagels mit Rührei',t:'8 min',items:[['bagel',2],['ei',3],['frischk',30],['htomate',1],['oel',10]]},
   {id:'f5',name:'Müsli-Schüssel',t:'2 min',items:[['granola',100],['milch',300],['banane',1],['nuesse',20]]},
-  {id:'f6',name:'Spiegeleier mit Speck',t:'10 min',items:[['ei',4],['speck',125],['semmel',1],['htomate',1],['oel',10]]},
+  {id:'f6',name:'Spiegeleier mit Speck',t:'10 min',items:[['ei',4],['speck',125],['semmel',1],['htomate',1],['oel',10],['avocado',1]]},
   {id:'f7',name:'Pfannkuchen mit Speck',t:'20 min',items:[['pfannk',1],['speck',125],['ahorn',40],['butter',10]]},
  ]},
  {id:'mi',name:'Mittag',sub:'',blocks:mains(['bw','ter','gyr','bur','auf','piz','keu','stk','chi','hw','gam','tof','bol','cur','lac'],false)},
@@ -989,7 +990,8 @@ function renderShop(){
   document.getElementById('shopSub').innerHTML=numify(isEditing(cur)?'Aktuelle Auswahl':savedText(store[cur]));
   const buy={},pan={};
   currentMeals().forEach(m=>m.items.forEach(it=>{if(it.v&&it.use===0)return;const t=it.v?pan:buy;t[it.f]=(t[it.f]||0)+it.q}));
-  const keys=Object.keys(buy).filter(k=>F[k]&&!opt(k).x).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
+  // Amount 0 (e.g. tomatoes only used up when at home) stays in the dish but is never bought
+  const keys=Object.keys(buy).filter(k=>F[k]&&!opt(k).x&&buy[k]>0).sort((a,b)=>(opt(a).g||9)-(opt(b).g||9)||F[a][0].localeCompare(F[b][0],'de'));
   // One plain list: sorted by shop group, but no gaps between groups, so a single item never stands apart
   const ul=document.getElementById('shopList');ul.innerHTML='';const lines=[];
   keys.forEach(k=>{const li=document.createElement('li');const s=unitOut(buy[k],F[k][1],k);li.innerHTML=`<span>${esc(F[k][0])}</span><span>${s}</span>`;ul.appendChild(li);lines.push(`${F[k][0]} ${s}`)});
@@ -1152,7 +1154,7 @@ function startCloud(uid){
 // ---------- Update-Check ----------
 // BUILD is replaced by kcal_sync.py on every deploy. The online page compares it with the freshly fetched index.html
 // (GitHub Pages caches for 10 minutes) and reloads once when a newer version is out.
-const BUILD='874779279736';
+const BUILD='cb28f98527d6';
 async function checkUpdate(){
   if(BUILD==='local'||location.protocol!=='https:')return;
   try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/const BUILD='([^']+)'/);
